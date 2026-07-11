@@ -53,6 +53,11 @@ const routes = [
                 path: 'karat',
                 component: () => import('../modules/karat/views/KaratView.vue'),
                 meta: { permission: 'karat' }
+            },
+            {
+                path: 'jeniskarat',
+                component: () => import('../modules/jeniskarat/views/JenisKaratView.vue'),
+                meta: { permission: 'jeniskarat' }
             }
         ]
     },
