@@ -2,16 +2,17 @@
     <div
         class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs overflow-hidden relative">
 
-        <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
+        <div
+            class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 class="font-bold text-slate-900 dark:text-white text-base">Daftar Jabatan</h2>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                 <button @click="handleRefresh" :disabled="isLoading" title="Refresh Data"
                     class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl transition active:scale-95 disabled:opacity-50">
                     <RotateCw class="w-4 h-4" :class="{ 'animate-spin': isLoading }" />
                 </button>
 
-                <div class="relative w-64">
+                <div class="relative flex-1 sm:flex-none sm:w-64">
                     <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input v-model="searchQuery" type="text" placeholder="Search..."
                         class="w-full pl-9 pr-4 py-1.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition" />
@@ -19,7 +20,7 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto relative">
+        <div class="w-full overflow-x-auto relative">
 
             <div v-if="isLoading && paginatedJabatan.length > 0"
                 class="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-[0.5px] z-10 flex items-center justify-center transition-all duration-200">
@@ -30,14 +31,14 @@
                 </div>
             </div>
 
-            <table class="w-full text-left border-collapse table-fixed">
+            <table class="w-full text-left border-collapse min-w-[600px]">
                 <thead>
                     <tr
                         class="bg-slate-50 dark:bg-slate-950 text-slate-400 text-xs font-semibold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
-                        <th class="py-3 px-4 w-[10%] text-center">No.</th>
-                        <th class="py-3 px-4 w-[55%]">Nama Jabatan</th>
-                        <th class="py-3 px-4 w-[15%] text-center">Status</th>
-                        <th class="py-3 px-4 w-[20%] text-center">Actions</th>
+                        <th class="py-3 px-4 w-[10%] text-center whitespace-nowrap">No.</th>
+                        <th class="py-3 px-4 w-[50%] whitespace-nowrap">Jabatan</th>
+                        <th class="py-3 px-4 w-[20%] text-center whitespace-nowrap">Status</th>
+                        <th class="py-3 px-4 w-[20%] text-center whitespace-nowrap">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
@@ -54,15 +55,16 @@
 
                     <tr v-else v-for="(item, index) in paginatedJabatan" :key="item.id"
                         class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
-                        <td class="py-3 px-4 text-center font-medium text-slate-400">
+                        <td class="py-3 px-4 text-center font-medium text-slate-400 whitespace-nowrap">
                             {{ (currentPage - 1) * 5 + index + 1 }}
                         </td>
 
-                        <td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-200 uppercase truncate">
-                            {{ item.jabatan }}
+                        <td
+                            class="py-3 px-4 font-medium text-slate-900 dark:text-slate-200 uppercase whitespace-nowrap">
+                            {{ item.jabatan }} K
                         </td>
 
-                        <td class="py-3 px-4 text-center">
+                        <td class="py-3 px-4 text-center whitespace-nowrap">
                             <span v-if="item.status === 1 || item.status === 'ACTIVE'"
                                 class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 rounded-lg">
                                 ACTIVE
@@ -73,7 +75,7 @@
                             </span>
                         </td>
 
-                        <td class="py-3 px-4">
+                        <td class="py-3 px-4 whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1">
                                 <button @click="handleEdit(item)" title="Edit"
                                     class="p-1.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition active:scale-95">
@@ -88,7 +90,8 @@
                     </tr>
 
                     <tr v-if="!isLoading && paginatedJabatan.length === 0">
-                        <td colspan="4" class="py-10 text-center text-slate-400 dark:text-slate-500 text-xs">
+                        <td colspan="4"
+                            class="py-10 text-center text-slate-400 dark:text-slate-500 text-xs whitespace-nowrap">
                             No data available.
                         </td>
                     </tr>
