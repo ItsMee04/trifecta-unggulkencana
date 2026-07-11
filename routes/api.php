@@ -6,6 +6,7 @@ use App\Http\Controllers\Master\PegawaiController;
 use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Produk\KaratController;
 use App\Http\Controllers\Produk\KondisiController;
 // use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -73,6 +74,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [KondisiController::class, 'storeKondisi']);
             Route::post('update', [KondisiController::class, 'updateKondisi']);
             Route::post('delete', [KondisiController::class, 'deleteKondisi']);
+        });
+
+        Route::prefix('karat')->group(function () {
+            Route::get('/', [KaratController::class, 'getKarat']);
+            Route::post('store', [KaratController::class, 'storeKarat']);
+            Route::post('update', [KaratController::class, 'updateKarat']);
+            Route::post('delete', [KaratController::class, 'deleteKarat']);
         });
 
     });

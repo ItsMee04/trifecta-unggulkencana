@@ -48,6 +48,11 @@ const routes = [
                 path: 'kondisi',
                 component: () => import('../modules/kondisi/views/KondisiView.vue'),
                 meta: { permission: 'kondisi' }
+            },
+            {
+                path: 'karat',
+                component: () => import('../modules/karat/views/KaratView.vue'),
+                meta: { permission: 'karat' }
             }
         ]
     },
