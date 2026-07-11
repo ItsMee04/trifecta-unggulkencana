@@ -12,12 +12,12 @@ const routes = [
     {
         path: '/login',
         component: LoginView,
-        // meta: { guestOnly: true } // 🌟 Penanda: Hanya untuk user yang BELUM login
+        meta: { guestOnly: true }
     },
     {
         path: '/',
         component: MainLayout,
-        meta: { requiresAuth: true }, // 🌟 Penanda: Semua halaman di dalam layout ini WAJIB login
+        meta: { requiresAuth: true },
         children: [
             {
                 path: 'dashboard',
@@ -27,7 +27,7 @@ const routes = [
             {
                 path: 'jabatan',
                 component: () => import('../modules/jabatan/views/JabatanView.vue'),
-                meta: { permission: 'jabatan' } // 🌟 Nama menu harus sesuai dengan key permission dari backend
+                meta: { permission: 'jabatan' }
             },
             {
                 path: 'pegawai',
@@ -42,12 +42,16 @@ const routes = [
             {
                 path: 'users',
                 component: () => import('../modules/user/views/UserView.vue'),
-                meta: { permission: 'users' } // 🌟 Sesuaikan dengan string menu di database (misal: 'user')
+                meta: { permission: 'users' }
+            },
+            {
+                path: 'kondisi',
+                component: () => import('../modules/kondisi/views/KondisiView.vue'),
+                meta: { permission: 'kondisi' }
             }
         ]
     },
     {
-        // Fallback jika user mengetik URL asal-asalan yang tidak terdaftar
         path: '/:pathMatch(.*)*',
         redirect: '/dashboard'
     }
@@ -58,36 +62,22 @@ const router = createRouter({
     routes,
 });
 
-// ─── 🛡️ VUE ROUTER NAVIGATION GUARD ───
 router.beforeEach((to, from, next) => {
-    // Ambil state dan helper function dari composable useAuth
     const { isAuthenticated, hasPermission } = useAuthentication();
-
-    // KONDISI 1: Halaman butuh login, tapi user BELUM login
     if (to.meta.requiresAuth && !isAuthenticated.value) {
         return next('/login');
     }
-
-    // KONDISI 2: User SUDAH login, tapi mencoba kembali ke halaman /login
     if (to.meta.guestOnly && isAuthenticated.value) {
         return next('/dashboard');
     }
-
-    // KONDISI 3: Pengecekan Otorisasi Menu Dinamis dari Database
     if (to.meta.permission) {
         const menuName = to.meta.permission;
-
-        // Cek apakah properti 'read' bernilai true/1 untuk menu ini
         if (!hasPermission(menuName, 'read')) {
-            // 🌟 KUNCI: Ubah state modal menjadi true untuk memicu modal Tailwind muncul
             const { isAccessDeniedOpen } = useAuthentication();
             isAccessDeniedOpen.value = true;
-
-            return next('/dashboard'); // Amankan dengan mengembalikan user ke dashboard
+            return next('/dashboard');
         }
     }
-
-    // Jika lolos semua pengecekan, izinkan masuk halaman tujuan
     next();
 });
 

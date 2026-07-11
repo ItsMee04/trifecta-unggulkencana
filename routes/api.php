@@ -6,6 +6,7 @@ use App\Http\Controllers\Master\PegawaiController;
 use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Produk\KondisiController;
 // use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -61,6 +62,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('permission')->group(function () {
             Route::post('/', [PermissionController::class, 'getPermission']);
             Route::post('update', [PermissionController::class, 'updatePermission']);
+        });
+
+    });
+
+    Route::prefix('produk')->group(function () {
+
+        Route::prefix('kondisi')->group(function () {
+            Route::get('/', [KondisiController::class, 'getKondisi']);
+            Route::post('store', [KondisiController::class, 'storeKondisi']);
+            Route::post('update', [KondisiController::class, 'updateKondisi']);
+            Route::post('delete', [KondisiController::class, 'deleteKondisi']);
         });
 
     });
