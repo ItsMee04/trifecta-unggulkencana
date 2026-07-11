@@ -12,7 +12,7 @@ const routes = [
     {
         path: '/login',
         component: LoginView,
-        meta: { guestOnly: true } // 🌟 Penanda: Hanya untuk user yang BELUM login
+        // meta: { guestOnly: true } // 🌟 Penanda: Hanya untuk user yang BELUM login
     },
     {
         path: '/',
