@@ -63,6 +63,11 @@ const routes = [
                 path: 'harga',
                 component: () => import('../modules/harga/views/HargaView.vue'),
                 meta: { permission: 'harga' }
+            },
+            {
+                path: 'diskon',
+                component: () => import('../modules/diskon/views/DiskonView.vue'),
+                meta: { permission: 'diskon' }
             }
         ]
     },

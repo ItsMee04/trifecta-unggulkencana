@@ -6,6 +6,7 @@ use App\Http\Controllers\Master\PegawaiController;
 use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Produk\DiskonController;
 use App\Http\Controllers\Produk\HargaController;
 use App\Http\Controllers\Produk\JenisKaratController;
 use App\Http\Controllers\Produk\KaratController;
@@ -97,6 +98,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [HargaController::class, 'storeHarga'])->middleware('check_permission:harga,create');
             Route::post('update', [HargaController::class, 'updateHarga'])->middleware('check_permission:harga,update');
             Route::post('delete', [HargaController::class, 'deleteHarga'])->middleware('check_permission:harga,delete');
+        });
+
+        Route::prefix('diskon')->group(function () {
+            Route::get('/', [DiskonController::class, 'getDiskon'])->middleware('check_permission:diskon,read');
+            Route::post('store', [DiskonController::class, 'storeDiskon'])->middleware('check_permission:diskon,create');
+            Route::post('update', [DiskonController::class, 'updateDiskon'])->middleware('check_permission:diskon,update');
+            Route::post('delete', [DiskonController::class, 'deleteDiskon'])->middleware('check_permission:diskon,delete');
         });
 
     });
