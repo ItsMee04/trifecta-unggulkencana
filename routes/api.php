@@ -9,6 +9,7 @@ use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Produk\DiskonController;
 use App\Http\Controllers\Produk\HargaController;
 use App\Http\Controllers\Produk\JenisKaratController;
+use App\Http\Controllers\Produk\JenisProdukController;
 use App\Http\Controllers\Produk\KaratController;
 use App\Http\Controllers\Produk\KondisiController;
 // use Illuminate\Http\Request;
@@ -105,6 +106,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [DiskonController::class, 'storeDiskon'])->middleware('check_permission:diskon,create');
             Route::post('update', [DiskonController::class, 'updateDiskon'])->middleware('check_permission:diskon,update');
             Route::post('delete', [DiskonController::class, 'deleteDiskon'])->middleware('check_permission:diskon,delete');
+        });
+
+        Route::prefix('jenisproduk')->group(function () {
+            Route::get('/', [JenisProdukController::class, 'getJenisProduk'])->middleware('check_permission:jenisproduk,read');
+            Route::post('store', [JenisProdukController::class, 'storeJenisProduk'])->middleware('check_permission:jenisproduk,create');
+            Route::post('update', [JenisProdukController::class, 'updateJenisProduk'])->middleware('check_permission:jenisproduk,update');
+            Route::post('delete', [JenisProdukController::class, 'deleteJenisProduk'])->middleware('check_permission:jenisproduk,delete');
         });
 
     });

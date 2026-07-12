@@ -68,6 +68,11 @@ const routes = [
                 path: 'diskon',
                 component: () => import('../modules/diskon/views/DiskonView.vue'),
                 meta: { permission: 'diskon' }
+            },
+            {
+                path: 'jenisproduk',
+                component: () => import('../modules/jenisproduk/views/JenisProdukView.vue'),
+                meta: { permission: 'jenisproduk' }
             }
         ]
     },
