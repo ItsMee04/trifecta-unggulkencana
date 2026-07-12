@@ -125,12 +125,28 @@ export function useAuthentication() {
     };
 
     /**
-     * Menguji hak akses untuk menu sidebar atau tombol aksi
-     */
+ * Menguji hak akses untuk menu sidebar atau tombol aksi
+ */
     const hasPermission = (menu, action = 'read') => {
         if (!user.value) return false;
-        if (menu === 'dashboard') return true;
-        return !!user.value.permissions?.[menu]?.[action];
+
+        // Ambil data permissions dari user
+        const userPermissions = user.value.permissions;
+        if (!userPermissions) return false;
+
+        // 🌟 KONDISI 1: Jika permissions ternyata berbentuk ARRAY
+        if (Array.isArray(userPermissions)) {
+            return userPermissions.some(p => p.menu === menu && p[action] === 1);
+        }
+
+        // 🌟 KONDISI 2: Jika permissions berbentuk OBJECT (seperti struktur lama Anda)
+        // Contoh: { jabatan: { read: 1, create: 1 }, karat: { read: 1 } }
+        if (typeof userPermissions === 'object') {
+            // Cek apakah ada properti menu tersebut, dan apakah sub-propertinya bernilai 1 atau true
+            return !!userPermissions[menu]?.[action];
+        }
+
+        return false;
     };
 
     // 🌟 Tambahkan fungsi ini untuk sync state dengan localStorage terbaru

@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '../modules/authentication/views/LoginView.vue';
 import MainLayout from '../layouts/MainLayout.vue';
 import Dashboard from '../modules/home/views/DashboardView.vue';
-import { useAuthentication } from '../modules/authentication/composables/useAuthentication.js'; // 🌟 1. Impor Composable Auth
+import { useAuthentication } from '../modules/authentication/composables/useAuthentication.js';
 
 const routes = [
     {
@@ -73,21 +73,37 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    const { isAuthenticated, hasPermission } = useAuthentication();
+    // Ambil fungsi auth dari composable
+    const { isAuthenticated, hasPermission, isAccessDeniedOpen } = useAuthentication();
+
+    // 1. Jika halaman butuh login, tapi user belum login
     if (to.meta.requiresAuth && !isAuthenticated.value) {
         return next('/login');
     }
+
+    // 2. Jika halaman khusus guest (seperti login), tapi user sudah login
     if (to.meta.guestOnly && isAuthenticated.value) {
         return next('/dashboard');
     }
+
+    // 3. Pengecekan matriks Permission Menu
     if (to.meta.permission) {
         const menuName = to.meta.permission;
+
         if (!hasPermission(menuName, 'read')) {
-            const { isAccessDeniedOpen } = useAuthentication();
-            isAccessDeniedOpen.value = true;
-            return next('/dashboard');
+            isAccessDeniedOpen.value = true; // Munculkan pop-up access denied
+
+            // 🌟 PENGAMAN: Jika user asal mulanya belum dari mana-mana (buka url manual pertama kali)
+            if (from.path === '/' || from.path === to.path) {
+                // Jika dia punya akses dashboard, lempar ke dashboard. Jika tidak, batalkan total (stay/blank aman)
+                return hasPermission('dashboard', 'read') ? next('/dashboard') : next(false);
+            }
+
+            // Jika dia berpindah dari halaman valid sebelumnya, batalkan perpindahan (tetap di halaman asal)
+            return next(false);
         }
     }
+
     next();
 });
 
