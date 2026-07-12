@@ -14,9 +14,10 @@
             <div
                 class="h-14 flex items-center justify-between px-5 border-b border-slate-100 dark:border-slate-900 shrink-0 overflow-hidden">
                 <div class="flex items-center gap-2.5 min-w-0">
+
                     <div
-                        class="bg-blue-950 text-white p-1.5 rounded-xl shadow-lg shadow-indigo-100 dark:shadow-none shrink-0">
-                        <Layers class="w-4 h-4" />
+                        class="bg-blue-950 p-1 rounded-xl shadow-lg shadow-indigo-100 dark:shadow-none shrink-0 w-8 h-8 flex items-center justify-center overflow-hidden">
+                        <img :src="LogoStatis" alt="Trifecta Logo" class="w-full h-full object-contain" />
                     </div>
                     <span v-if="!isMiniSidebar || isMobileOpen"
                         class="font-bold text-sm tracking-tight text-slate-950 dark:text-white whitespace-nowrap truncate">
@@ -54,7 +55,7 @@
                             <component :is="iconMap[menu.icon] || HelpCircle"
                                 class="w-4 h-4 shrink-0 transition-colors duration-150" />
                             <span v-if="!isMiniSidebar || isMobileOpen" class="whitespace-nowrap">{{ menu.label
-                                }}</span>
+                            }}</span>
                         </router-link>
 
                         <div v-else>
@@ -133,6 +134,9 @@ import {
     LayoutGrid, Users, Archive, Info, HardDrive, Pocket, ShoppingBag, Repeat, Server, Book,
     ArrowLeftCircle, ArrowRightCircle, ArrowUpCircle
 } from 'lucide-vue-next';
+
+// 🌟 TAMBAHKAN IMPORT LOGO DI SINI (Sesuaikan alias '@' project Anda)
+import LogoStatis from '@/assets/img/logo.png';
 
 const route = useRoute();
 
