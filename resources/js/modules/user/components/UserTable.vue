@@ -36,9 +36,9 @@
                     <tr
                         class="bg-slate-50 dark:bg-slate-950 text-slate-400 text-xs font-semibold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                         <th class="py-3 px-4 w-[10%] text-center">No.</th>
-                        <th class="py-3 px-4 w-[55%]">Pegawai</th>
-                        <th class="py-3 px-4 w-[55%]">Email</th>
-                        <th class="py-3 px-4 w-[55%]">Role</th>
+                        <th class="py-3 px-4 w-[35%]">Pegawai</th>
+                        <th class="py-3 px-4 w-[25%]">Email</th>
+                        <th class="py-3 px-4 w-[25%]">Role</th>
                         <th class="py-3 px-4 w-[15%] text-center">Status</th>
                         <th class="py-3 px-4 w-[20%] text-center">Actions</th>
                     </tr>
