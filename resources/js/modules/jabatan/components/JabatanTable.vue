@@ -61,7 +61,7 @@
 
                         <td
                             class="py-3 px-4 font-medium text-slate-900 dark:text-slate-200 uppercase whitespace-nowrap">
-                            {{ item.jabatan }} K
+                            {{ item.jabatan }}
                         </td>
 
                         <td class="py-3 px-4 text-center whitespace-nowrap">
