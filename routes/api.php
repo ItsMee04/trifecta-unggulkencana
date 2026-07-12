@@ -6,6 +6,7 @@ use App\Http\Controllers\Master\PegawaiController;
 use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Produk\HargaController;
 use App\Http\Controllers\Produk\JenisKaratController;
 use App\Http\Controllers\Produk\KaratController;
 use App\Http\Controllers\Produk\KondisiController;
@@ -89,6 +90,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [JenisKaratController::class, 'storeJenisKarat'])->middleware('check_permission:jeniskarat,create');
             Route::post('update', [JenisKaratController::class, 'updateJenisKarat'])->middleware('check_permission:jeniskarat,update');
             Route::post('delete', [JenisKaratController::class, 'deleteJenisKarat'])->middleware('check_permission:jeniskarat,delete');
+        });
+
+        Route::prefix('harga')->group(function () {
+            Route::get('/', [HargaController::class, 'getHarga'])->middleware('check_permission:harga,read');
+            Route::post('store', [HargaController::class, 'storeHarga'])->middleware('check_permission:harga,create');
+            Route::post('update', [HargaController::class, 'updateHarga'])->middleware('check_permission:harga,update');
+            Route::post('delete', [HargaController::class, 'deleteHarga'])->middleware('check_permission:harga,delete');
         });
 
     });

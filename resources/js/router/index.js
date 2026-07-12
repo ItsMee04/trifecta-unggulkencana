@@ -58,6 +58,11 @@ const routes = [
                 path: 'jeniskarat',
                 component: () => import('../modules/jeniskarat/views/JenisKaratView.vue'),
                 meta: { permission: 'jeniskarat' }
+            },
+            {
+                path: 'harga',
+                component: () => import('../modules/harga/views/HargaView.vue'),
+                meta: { permission: 'harga' }
             }
         ]
     },
