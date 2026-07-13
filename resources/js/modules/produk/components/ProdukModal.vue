@@ -295,6 +295,25 @@ const loadedHargaIds = ref(new Set());
 watch(() => isModalOpen.value, (isOpen) => {
     if (!isOpen) {
         loadedHargaIds.value.clear();
+    } else {
+        // 🌟 TAMBAHKAN LOGIKA INI DI DALAM BLOK 'else' 🌟
+        if (isEdit.value && formProduk.image) {
+            // Jika formProduk.image berupa string (nama file gambar dari DB)
+            if (typeof formProduk.image === 'string') {
+                // Ambil domain utama API Anda (contoh default: http://localhost:8000)
+                const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+                // Bersihkan nama file jika di DB tidak sengaja masih tersimpan path lengkapnya
+                const fileName = formProduk.image.split('/').pop();
+
+                // Gabungkan domain + path folder produk + nama file
+                imagePreview.value = `${apiBase}/storage/produk/image/${fileName}`;
+            }
+            // Jika formProduk.image berupa object File (karena user baru pilih gambar baru via input)
+            else if (formProduk.image instanceof File) {
+                imagePreview.value = URL.createObjectURL(formProduk.image);
+            }
+        }
     }
 });
 
