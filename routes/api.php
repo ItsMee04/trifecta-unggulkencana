@@ -7,6 +7,7 @@ use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Nampan\NampanController;
+use App\Http\Controllers\Nampan\NampanProdukController;
 use App\Http\Controllers\Produk\DiskonController;
 use App\Http\Controllers\Produk\HargaController;
 use App\Http\Controllers\Produk\JenisKaratController;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 | Public Routes (Bisa diakses tanpa login)
 |--------------------------------------------------------------------------
 */
+
 Route::post('login', [AuthenticationController::class, 'login']);
 
 
@@ -70,7 +72,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [PermissionController::class, 'getPermission']);
             Route::post('update', [PermissionController::class, 'updatePermission']);
         });
-
     });
 
     Route::prefix('produk')->group(function () {
@@ -123,7 +124,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('update', [ProdukController::class, 'updateProduk'])->middleware('check_permission:produk,update');
             Route::post('delete', [ProdukController::class, 'deleteProduk'])->middleware('check_permission:produk,delete');
         });
-
     });
 
     Route::prefix('nampan')->group(function () {
@@ -133,6 +133,17 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [NampanController::class, 'storeNampan'])->middleware('check_permission:nampan,create');
             Route::post('update', [NampanController::class, 'updateNampan'])->middleware('check_permission:nampan,update');
             Route::post('delete', [NampanController::class, 'deleteNampan'])->middleware('check_permission:nampan,delete');
+        });
+
+        Route::prefix('nampanproduk')->group(function () {
+            Route::get('/', [NampanProdukController::class, 'getNampanProduk'])->middleware('check_permission:nampanproduk,read');
+            Route::post('getNampanProdukByNampan', [NampanProdukController::class, 'getNampanProdukByNampan'])->middleware('check_permission:nampanproduk,read');
+            Route::post('getProdukByJenisNampan', [NampanProdukController::class, 'getProdukByJenisNampan'])->middleware('check_permission:nampanproduk,read');
+            Route::post('getProdukInNampanByJenis', [NampanProdukController::class, 'getProdukInNampanByJenis'])->middleware('check_permission:nampanproduk,read');
+            Route::post('store', [NampanProdukController::class, 'storeNampanProduk'])->middleware('check_permission:nampanproduk,create');
+            Route::post('update', [NampanProdukController::class, 'pindahNampanProduk'])->middleware('check_permission:nampanproduk,update');
+            Route::post('delete', [NampanProdukController::class, 'deleteNampanProduk'])->middleware('check_permission:nampanproduk,delete');
+
         });
 
     });
