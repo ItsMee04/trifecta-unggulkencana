@@ -170,7 +170,7 @@ export function useProduk() {
         formProduk.image = item.image; // Menyimpan nama file / path lama
 
         if (item.image) {
-            const storageUrl = import.meta.env.VITE_STORAGE_URL;
+            const storageUrl = import.meta.env.VITE_PRODUK_URL;
             imagePreview.value = `${storageUrl}/${item.image}`;
         } else {
             imagePreview.value = null;

@@ -1,15 +1,12 @@
 <template>
     <div v-if="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
-
         <Transition appear enter-active-class="ease-out duration-300" enter-from-class="opacity-0"
             enter-to-class="opacity-100" leave-active-class="ease-in duration-200" leave-from-class="opacity-100"
             leave-to-class="opacity-0">
             <div v-show="isModalOpen" @click="handleClose"
                 class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-all"></div>
         </Transition>
-
         <div class="flex min-h-full items-center justify-center p-4 text-center">
-
             <Transition appear enter-active-class="ease-out duration-300"
                 enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 enter-to-class="opacity-100 translate-y-0 sm:scale-100" leave-active-class="ease-in duration-200"
@@ -17,7 +14,6 @@
                 leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                 <div v-show="isModalOpen"
                     class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xl relative z-10 overflow-hidden text-left transition-all">
-
                     <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <h2 class="font-bold text-slate-900 dark:text-white text-base">
                             {{ isEdit ? 'EDIT PRODUK' : 'TAMBAH PRODUK' }}
@@ -27,9 +23,7 @@
                             <X class="w-4 h-4" />
                         </button>
                     </div>
-
                     <form @submit.prevent="handleSubmit" class="p-6 space-y-4 font-sans text-xs">
-
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Nama
@@ -39,7 +33,6 @@
                                 <span v-if="errors.nama" class="text-xs text-rose-500 font-medium block mt-1">{{
                                     errors.nama }}</span>
                             </div>
-
                             <div class="space-y-1.5 relative">
                                 <label class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Jenis
                                     Produk</label>
@@ -81,7 +74,6 @@
                                     }}</span>
                             </div>
                         </div>
-
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5 relative">
                                 <label
@@ -119,7 +111,6 @@
                                 <span v-if="errors.karat_id" class="text-xs text-rose-500 font-medium block mt-1">{{
                                     errors.karat_id }}</span>
                             </div>
-
                             <div class="space-y-1.5 relative">
                                 <label class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Jenis
                                     Karat</label>
@@ -129,7 +120,7 @@
                                         class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-left flex items-center justify-between text-slate-900 dark:text-white transition focus:outline-none focus:border-indigo-500 disabled:opacity-60 disabled:bg-slate-50 dark:disabled:bg-slate-900/50 disabled:cursor-not-allowed">
                                         <span :class="{ 'text-slate-400': !formProduk.jeniskarat_id }">
                                             {{ !formProduk.karat_id ? '-- Pilih Karat Terlebih Dahulu --' :
-                                                labelJenisKaratTerpilih }}
+                                            labelJenisKaratTerpilih }}
                                         </span>
                                         <ChevronDown
                                             class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0"
@@ -162,7 +153,6 @@
                                     }}</span>
                             </div>
                         </div>
-
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Berat
@@ -172,7 +162,6 @@
                                 <span v-if="errors.berat" class="text-xs text-rose-500 font-medium block mt-1">{{
                                     errors.berat }}</span>
                             </div>
-
                             <div class="space-y-1.5">
                                 <label class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Harga
                                     Jual Dasar / Gram</label>
@@ -185,7 +174,6 @@
                                 </p>
                             </div>
                         </div>
-
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Lingkar
@@ -196,7 +184,6 @@
                                 <span v-if="errors.lingkar" class="text-xs text-rose-500 font-medium block mt-1">{{
                                     errors.lingkar }}</span>
                             </div>
-
                             <div class="space-y-1.5">
                                 <label class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Panjang
                                     <span class="text-slate-400 font-normal">(Boleh Kosong)</span></label>
@@ -207,7 +194,6 @@
                                     errors.panjang }}</span>
                             </div>
                         </div>
-
                         <div class="space-y-1.5">
                             <label
                                 class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Keterangan</label>
@@ -215,7 +201,6 @@
                                 placeholder="Masukkan keterangan tambahan..."
                                 class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition resize-none"></textarea>
                         </div>
-
                         <div class="space-y-1.5">
                             <label class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Foto
                                 Produk</label>
@@ -240,7 +225,6 @@
                             <span v-if="errors.image" class="text-xs text-rose-500 font-medium block mt-1">{{
                                 errors.image }}</span>
                         </div>
-
                         <div
                             class="flex items-center justify-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 mt-6">
                             <button type="button" @click="handleClose"
@@ -253,17 +237,19 @@
                             </button>
                         </div>
                     </form>
-
                 </div>
             </Transition>
-
         </div>
     </div>
 </template>
 
+
+
 <script setup>
+
 import { ref, onMounted, computed, watch } from 'vue';
 import { X, ChevronDown, Search, Check, Package } from 'lucide-vue-next';
+
 import { useProduk } from '../composables/useProduk';
 import { jenisprodukService } from '../../jenisproduk/services/jenisprodukService';
 import { karatService } from '../../karat/services/karatService';
@@ -281,7 +267,6 @@ const masterDaftarHarga = ref([]); // Menyimpan seluruh baris tabel harga dari D
 const isJenisProdukDropdownOpen = ref(false);
 const isKaratDropdownOpen = ref(false);
 const isJenisKaratDropdownOpen = ref(false);
-
 const searchJenisProdukQuery = ref('');
 const searchKaratQuery = ref('');
 const searchJenisKaratQuery = ref('');
@@ -290,29 +275,17 @@ const displayHargaMaster = ref(0); // State lokal untuk render nominal Rp ke vie
 // ─── STATE LOCKER EDIT (ANTI ASYNC RACE-CONDITION) ───
 // Menggunakan Set untuk mencatat harga_id mana yang sudah berhasil dimuat saat pertama kali edit dibuka
 const loadedHargaIds = ref(new Set());
-
 // Kosongkan rekaman locker setiap kali modal ditutup agar bersih saat membuka produk berikutnya
 watch(() => isModalOpen.value, (isOpen) => {
     if (!isOpen) {
         loadedHargaIds.value.clear();
-    } else {
-        // 🌟 TAMBAHKAN LOGIKA INI DI DALAM BLOK 'else' 🌟
-        if (isEdit.value && formProduk.image) {
-            // Jika formProduk.image berupa string (nama file gambar dari DB)
-            if (typeof formProduk.image === 'string') {
-                // Ambil domain utama API Anda (contoh default: http://localhost:8000)
-                const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-
-                // Bersihkan nama file jika di DB tidak sengaja masih tersimpan path lengkapnya
-                const fileName = formProduk.image.split('/').pop();
-
-                // Gabungkan domain + path folder produk + nama file
-                imagePreview.value = `${apiBase}/storage/produk/image/${fileName}`;
-            }
-            // Jika formProduk.image berupa object File (karena user baru pilih gambar baru via input)
-            else if (formProduk.image instanceof File) {
-                imagePreview.value = URL.createObjectURL(formProduk.image);
-            }
+        displayHargaMaster.value = 0; // Reset ke 0 hanya saat benar-benar tutup
+    } else if (isOpen && isEdit.value && formProduk.harga_id) {
+        // Jika modal dibuka dalam posisi EDIT, paksa cari harganya di master data
+        const matchHarga = masterDaftarHarga.value.find(h => h.id == formProduk.harga_id);
+        if (matchHarga) {
+            displayHargaMaster.value = matchHarga.harga;
+            loadedHargaIds.value.add(formProduk.harga_id); // Kunci kembali
         }
     }
 });
@@ -388,7 +361,6 @@ watch(
             displayHargaMaster.value = 0;
             return;
         }
-
         // 2. SKENARIO A: MODE EDIT & HARGA ID BAWAAN DB SUDAH SIAP & BELUM PERNAH DI-LOCK
         if (isEdit.value && currentHargaId && !loadedHargaIds.value.has(currentHargaId)) {
             const matchHargaById = currentMasterHarga.find(h => h.id == currentHargaId);
@@ -398,7 +370,6 @@ watch(
                 return; // 🛑 Hentikan aliran kode di sini
             }
         }
-
         // 3. SKENARIO B: TAMBAH BARU / USER SUDAH MENGUBAH PILIHAN DROPDOWN SECARA MANUAL
         if (!newKarat || !newJenisKarat) {
             // Cegah mutasi berulang jika nilainya memang sudah kosong
@@ -408,7 +379,6 @@ watch(
             displayHargaMaster.value = 0;
             return;
         }
-
         // Cari baris harga baru berdasarkan kombinasi dropdown karat & jenis karat teranyar
         const matchHargaByKombinasi = currentMasterHarga.find(
             h => h.karat_id == newKarat && h.jeniskarat_id == newJenisKarat
@@ -430,7 +400,6 @@ watch(
     },
     { immediate: true, deep: true }
 );
-
 // Pemuatan data dari backend saat modal dirender
 onMounted(async () => {
     try {
@@ -440,7 +409,6 @@ onMounted(async () => {
             jeniskaratService.getJenisKarat(),
             hargaService.getHarga() // Ambil list data harga master
         ]);
-
         daftarJenisProduk.value = resJenis.data || resJenis;
         daftarKarat.value = resKarat.data || resKarat;
         daftarJenisKarat.value = resJenisKarat.data || resJenisKarat;
