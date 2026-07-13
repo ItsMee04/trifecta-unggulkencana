@@ -6,6 +6,7 @@ use App\Http\Controllers\Master\PegawaiController;
 use App\Http\Controllers\Master\PermissionController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Nampan\NampanController;
 use App\Http\Controllers\Produk\DiskonController;
 use App\Http\Controllers\Produk\HargaController;
 use App\Http\Controllers\Produk\JenisKaratController;
@@ -121,6 +122,17 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [ProdukController::class, 'storeProduk'])->middleware('check_permission:produk,create');
             Route::post('update', [ProdukController::class, 'updateProduk'])->middleware('check_permission:produk,update');
             Route::post('delete', [ProdukController::class, 'deleteProduk'])->middleware('check_permission:produk,delete');
+        });
+
+    });
+
+    Route::prefix('nampan')->group(function () {
+
+        Route::prefix('nampan')->group(function () {
+            Route::get('/', [NampanController::class, 'getNampan'])->middleware('check_permission:nampan,read');
+            Route::post('store', [NampanController::class, 'storeNampan'])->middleware('check_permission:nampan,create');
+            Route::post('update', [NampanController::class, 'updateNampan'])->middleware('check_permission:nampan,update');
+            Route::post('delete', [NampanController::class, 'deleteNampan'])->middleware('check_permission:nampan,delete');
         });
 
     });

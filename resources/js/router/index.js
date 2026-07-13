@@ -78,6 +78,11 @@ const routes = [
                 path: 'produk',
                 component: () => import('../modules/produk/views/ProdukView.vue'),
                 meta: { permission: 'produk' }
+            },
+            {
+                path: 'nampan',
+                component: () => import('../modules/nampan/views/NampanView.vue'),
+                meta: { permission: 'nampan' }
             }
         ]
     },
