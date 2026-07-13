@@ -73,6 +73,11 @@ const routes = [
                 path: 'jenisproduk',
                 component: () => import('../modules/jenisproduk/views/JenisProdukView.vue'),
                 meta: { permission: 'jenisproduk' }
+            },
+            {
+                path: 'produk',
+                component: () => import('../modules/produk/views/ProdukView.vue'),
+                meta: { permission: 'produk' }
             }
         ]
     },

@@ -12,6 +12,7 @@ use App\Http\Controllers\Produk\JenisKaratController;
 use App\Http\Controllers\Produk\JenisProdukController;
 use App\Http\Controllers\Produk\KaratController;
 use App\Http\Controllers\Produk\KondisiController;
+use App\Http\Controllers\Produk\ProdukController;
 // use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -113,6 +114,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [JenisProdukController::class, 'storeJenisProduk'])->middleware('check_permission:jenisproduk,create');
             Route::post('update', [JenisProdukController::class, 'updateJenisProduk'])->middleware('check_permission:jenisproduk,update');
             Route::post('delete', [JenisProdukController::class, 'deleteJenisProduk'])->middleware('check_permission:jenisproduk,delete');
+        });
+
+        Route::prefix('produk')->group(function () {
+            Route::get('/', [ProdukController::class, 'getProduk'])->middleware('check_permission:produk,read');
+            Route::post('store', [ProdukController::class, 'storeProduk'])->middleware('check_permission:produk,create');
+            Route::post('update', [ProdukController::class, 'updateProduk'])->middleware('check_permission:produk,update');
+            Route::post('delete', [ProdukController::class, 'deleteProduk'])->middleware('check_permission:produk,delete');
         });
 
     });
