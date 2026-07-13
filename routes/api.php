@@ -8,6 +8,7 @@ use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Nampan\NampanController;
 use App\Http\Controllers\Nampan\NampanProdukController;
+use App\Http\Controllers\Pelanggan\PelangganController;
 use App\Http\Controllers\Produk\DiskonController;
 use App\Http\Controllers\Produk\HargaController;
 use App\Http\Controllers\Produk\JenisKaratController;
@@ -145,6 +146,28 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('delete', [NampanProdukController::class, 'deleteNampanProduk'])->middleware('check_permission:nampanproduk,delete');
 
         });
+
+    });
+
+    Route::prefix('pelanggan')->group(function () {
+
+        Route::prefix('pelanggan')->group(function () {
+            Route::get('/', [PelangganController::class, 'getPelanggan'])->middleware('check_permission:pelanggan,read');
+            Route::post('store', [PelangganController::class, 'storePelanggan'])->middleware('check_permission:pelanggan,create');
+            Route::post('update', [PelangganController::class, 'updatePelanggan'])->middleware('check_permission:pelanggan,update');
+            Route::post('delete', [PelangganController::class, 'deletePelanggan'])->middleware('check_permission:pelanggan,delete');
+        });
+
+        // Route::prefix('nampanproduk')->group(function () {
+        //     Route::get('/', [NampanProdukController::class, 'getNampanProduk'])->middleware('check_permission:nampanproduk,read');
+        //     Route::post('getNampanProdukByNampan', [NampanProdukController::class, 'getNampanProdukByNampan'])->middleware('check_permission:nampanproduk,read');
+        //     Route::post('getProdukByJenisNampan', [NampanProdukController::class, 'getProdukByJenisNampan'])->middleware('check_permission:nampanproduk,read');
+        //     Route::post('getProdukInNampanByJenis', [NampanProdukController::class, 'getProdukInNampanByJenis'])->middleware('check_permission:nampanproduk,read');
+        //     Route::post('store', [NampanProdukController::class, 'storeNampanProduk'])->middleware('check_permission:nampanproduk,create');
+        //     Route::post('update', [NampanProdukController::class, 'pindahNampanProduk'])->middleware('check_permission:nampanproduk,update');
+        //     Route::post('delete', [NampanProdukController::class, 'deleteNampanProduk'])->middleware('check_permission:nampanproduk,delete');
+
+        // });
 
     });
 });
