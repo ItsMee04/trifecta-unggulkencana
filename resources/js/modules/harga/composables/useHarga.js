@@ -47,8 +47,14 @@ export function useHarga() {
 
     const validateForm = () => {
         errors.value = {};
-        // harga
-        if (!formHarga.harga?.trim()) {
+
+        // 🌟 PERBAIKAN HARGA: Cek apakah nilainya null, undefined, kosong '', atau 0
+        if (
+            formHarga.harga === null ||
+            formHarga.harga === undefined ||
+            formHarga.harga === '' ||
+            formHarga.harga === 0
+        ) {
             errors.value.harga = 'Harga wajib diisi.';
         }
 
@@ -67,7 +73,8 @@ export function useHarga() {
             formHarga.jeniskarat_id === undefined ||
             formHarga.jeniskarat_id === ''
         ) {
-            errors.value.karat_id = 'Jenis Karat wajib dipilih.';
+            // 🌟 PERBAIKAN: Targetkan ke properti jeniskarat_id yang benar
+            errors.value.jeniskarat_id = 'Jenis Karat wajib dipilih.';
         }
 
         return Object.keys(errors.value).length === 0;
