@@ -110,7 +110,7 @@ class ProdukService
                 'panjang'           => $data['panjang'] ?? 0,
                 'harga_id'          => $data['harga_id'],
                 'hargabeli'         => $data['hargabeli'] ?? 0,
-                'keterangan'        => isset($data['keterangan']) ? strtoupper($data['keterangan']) : null,
+                'keterangan'        => $data['keterangan'],
                 'image'             => $imageName,
             ]);
 
