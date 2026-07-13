@@ -168,7 +168,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 // Tambahkan ChevronDown, Search, dan Check dari lucide
 import { X, User, ChevronDown, Search, Check } from 'lucide-vue-next';
 import { usePegawai } from '../composables/usePegawai';
@@ -204,32 +204,6 @@ const pilihJabatan = (jab) => {
     isJabatanDropdownOpen.value = false; // Tutup dropdown
     searchJabatanQuery.value = ''; // Reset keyword pencarian
 };
-
-watch(() => isModalOpen.value, (isOpen) => {
-    if (!isOpen) {
-        searchJabatanQuery.value = '';
-        isJabatanDropdownOpen.value = false;
-    } else {
-        // Generasi preview gambar saat modal EDIT pegawai dibuka
-        if (isEdit.value && formPegawai.image) {
-            // Jika formPegawai.image berupa string nama file bawaan dari database
-            if (typeof formPegawai.image === 'string') {
-                // Ambil base domain backend utama Anda (e.g., http://localhost:8000)
-                const apiBase = import.meta.env.VITE_STORAGE_URL;
-
-                // Ambil nama filenya saja (bersihkan jika ada sisa path folder lama)
-                const fileName = formPegawai.image.split('/').pop();
-
-                // Gabungkan domain + path folder target sesuai konfigurasi Anda + nama file
-                imagePreview.value = `${apiBase}/${fileName}`;
-            }
-            // Jika formPegawai.image berupa file baru yang baru saja di-upload user lewat layar
-            else if (formPegawai.image instanceof File) {
-                imagePreview.value = URL.createObjectURL(formPegawai.image);
-            }
-        }
-    }
-});
 
 // Ambil data Dropdown dari API
 onMounted(async () => {
