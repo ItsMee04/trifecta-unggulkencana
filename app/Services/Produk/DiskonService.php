@@ -24,7 +24,7 @@ class DiskonService
     }
 
     // Tambahkan int pada $id agar Intelephense tahu ini adalah angka
-    public function updateDiskon(int $id, array $data): ?Diskon
+    public function updateDiskon(int $id, array $NewData): ?Diskon
     {
         $data = Diskon::find($id);
 
@@ -33,8 +33,8 @@ class DiskonService
         }
 
         $data->update([
-            'diskon'    => strtoupper($data['diskon']),
-            'nilai'     => $data['nilai']
+            'diskon'    => strtoupper($NewData['diskon']),
+            'nilai'     => $NewData['nilai']
         ]);
 
         return $data;
