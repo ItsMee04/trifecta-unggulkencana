@@ -32,18 +32,18 @@
 
                     <form @submit.prevent="submitPelanggan" class="p-6 space-y-4 font-sans">
 
-                        <div class="space-y-1.5">
-                            <label for="nama" class="text-sm font-medium text-slate-900 dark:text-slate-200 block">
-                                Nama Pelanggan
-                            </label>
-                            <input v-model="formPelanggan.nama" type="text" id="nama" placeholder="Nama pelanggan"
-                                class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-600 text-slate-900 dark:text-white transition" />
-                            <span v-if="errors.nama" class="text-xs text-rose-500 font-medium block mt-1">
-                                {{ errors.nama }}
-                            </span>
-                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label for="nama" class="text-sm font-medium text-slate-900 dark:text-slate-200 block">
+                                    Nama Pelanggan
+                                </label>
+                                <input v-model="formPelanggan.nama" type="text" id="nama" placeholder="Nama pelanggan"
+                                    class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-600 text-slate-900 dark:text-white transition" />
+                                <span v-if="errors.nama" class="text-xs text-rose-500 font-medium block mt-1">
+                                    {{ errors.nama }}
+                                </span>
+                            </div>
 
-                        <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label for="kontak"
                                     class="text-sm font-medium text-slate-900 dark:text-slate-200 block">
@@ -55,33 +55,9 @@
                                     {{ errors.kontak }}
                                 </span>
                             </div>
-
-                            <div class="space-y-1.5">
-                                <label for="poin" class="text-sm font-medium text-slate-900 dark:text-slate-200 block">
-                                    Poin
-                                </label>
-                                <input v-model="formPelanggan.poin" type="number" id="poin" placeholder="0" min="0"
-                                    class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-600 text-slate-900 dark:text-white transition" />
-                                <span v-if="errors.poin" class="text-xs text-rose-500 font-medium block mt-1">
-                                    {{ errors.poin }}
-                                </span>
-                            </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label for="alamat"
-                                    class="text-sm font-medium text-slate-900 dark:text-slate-200 block">
-                                    Alamat
-                                </label>
-                                <input v-model="formPelanggan.alamat" type="text" id="alamat"
-                                    placeholder="Alamat lengkap"
-                                    class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-600 text-slate-900 dark:text-white transition" />
-                                <span v-if="errors.alamat" class="text-xs text-rose-500 font-medium block mt-1">
-                                    {{ errors.alamat }}
-                                </span>
-                            </div>
-
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label for="tanggal"
                                     class="text-sm font-medium text-slate-900 dark:text-slate-200 block">
@@ -94,6 +70,25 @@
                                     {{ errors.tanggal }}
                                 </span>
                             </div>
+
+                             <div class="space-y-1.5">
+                                <label for="poin" class="text-sm font-medium text-slate-900 dark:text-slate-200 block">
+                                    Poin
+                                </label>
+                                <input v-model="formPelanggan.poin" type="number" id="poin" placeholder="0" min="0"
+                                    class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-600 text-slate-900 dark:text-white transition" />
+                                <span v-if="errors.poin" class="text-xs text-rose-500 font-medium block mt-1">
+                                    {{ errors.poin }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-slate-900 dark:text-slate-200 mb-3 block">Alamat</label>
+                            <textarea v-model="formPelanggan.alamat" rows="2" placeholder="Masukkan alamat lengkap..."
+                                class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition resize-none"></textarea>
+                            <span v-if="errors.alamat" class="text-xs text-rose-500 font-medium block mt-1">{{
+                                errors.alamat }}</span>
                         </div>
 
                         <div
