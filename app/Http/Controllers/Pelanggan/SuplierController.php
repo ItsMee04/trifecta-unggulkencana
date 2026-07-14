@@ -85,7 +85,7 @@ class SuplierController extends Controller
         return response()->json([
             'status'    => 200,
             'success'   => true,
-            'message'   => 'Data pelanggan berhasil diupdate',
+            'message'   => 'Data suplier berhasil diupdate',
             'data'      => $data
         ], 200);
     }
