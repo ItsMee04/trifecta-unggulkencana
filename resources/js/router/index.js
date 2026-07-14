@@ -108,6 +108,11 @@ const routes = [
                 path: 'saldo',
                 component: () => import('../modules/saldo/views/SaldoView.vue'),
                 meta: { permission: 'saldo' }
+            },
+            {
+                path: 'mutasisaldo',
+                component: () => import('../modules/mutasisaldo/views/MutasiSaldoView.vue'),
+                meta: { permission: 'mutasisaldo' }
             }
         ]
     },

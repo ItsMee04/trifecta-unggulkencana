@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Authentication\AuthenticationController;
+use App\Http\Controllers\Keuangan\MutasiSaldoController;
 use App\Http\Controllers\Keuangan\SaldoController;
 use App\Http\Controllers\Master\JabatanController;
 use App\Http\Controllers\Master\PegawaiController;
@@ -186,5 +187,11 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('delete', [SaldoController::class, 'deleteSaldo'])->middleware('check_permission:saldo,delete');
         });
 
+        Route::prefix('mutasisaldo')->group(function () {
+            Route::get('/', [MutasiSaldoController::class, 'getMutasiSaldo'])->middleware('check_permission:mutasisaldo,read');
+            Route::post('store', [MutasiSaldoController::class, 'storeMutasiSaldo'])->middleware('check_permission:mutasisaldo,create');
+            Route::post('update', [MutasiSaldoController::class, 'updateMutasiSaldo'])->middleware('check_permission:mutasisaldo,update');
+            Route::post('delete', [MutasiSaldoController::class, 'deleteMutasiSaldo'])->middleware('check_permission:mutasisaldo,delete');
+        });
     });
 });
