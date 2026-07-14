@@ -9,6 +9,7 @@ use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Nampan\NampanController;
 use App\Http\Controllers\Nampan\NampanProdukController;
 use App\Http\Controllers\Pelanggan\PelangganController;
+use App\Http\Controllers\Pelanggan\PesanController;
 use App\Http\Controllers\Pelanggan\SuplierController;
 use App\Http\Controllers\Produk\DiskonController;
 use App\Http\Controllers\Produk\HargaController;
@@ -164,6 +165,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [SuplierController::class, 'storeSuplier'])->middleware('check_permission:suplier,create');
             Route::post('update', [SuplierController::class, 'updateSuplier'])->middleware('check_permission:suplier,update');
             Route::post('delete', [SuplierController::class, 'deleteSuplier'])->middleware('check_permission:suplier,delete');
+        });
+
+        Route::prefix('pesan')->group(function () {
+            Route::get('/', [PesanController::class, 'getPesan'])->middleware('check_permission:pesan,read');
+            Route::post('store', [PesanController::class, 'storePesan'])->middleware('check_permission:pesan,create');
+            Route::post('update', [PesanController::class, 'updatePesan'])->middleware('check_permission:pesan,update');
+            Route::post('delete', [PesanController::class, 'deletePesan'])->middleware('check_permission:pesan,delete');
         });
 
     });
