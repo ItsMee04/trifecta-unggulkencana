@@ -62,12 +62,23 @@ export function usePOS() {
         try {
             const response = await nampanprodukService.getNampanProduk();
             const data = response.data || response;
-            allProdukMaster.value = data;
 
+            // 1. KUNCI UTAMA: Hanya isi allProdukMaster jika data yang ditarik adalah 'all'
+            // atau jika allProdukMaster masih kosong. Ini menjaga database master counter tetap utuh.
+            if (jenisId === 'all' || allProdukMaster.value.length === 0) {
+                allProdukMaster.value = data;
+            }
+
+            // 2. Lakukan filtering untuk ditampilkan ke user
             if (jenisId === 'all') {
                 produk.value = data;
             } else {
+                // Jika API mengembalikan semua data, filter di frontend:
                 produk.value = data.filter(item => item.jenisproduk_id === jenisId);
+
+                // CATATAN: Jika API backend Anda otomatis memfilter data berdasarkan parameter,
+                // gunakan baris di bawah ini alih-alih filter frontend:
+                // produk.value = data;
             }
         } catch (error) {
             console.error(error);

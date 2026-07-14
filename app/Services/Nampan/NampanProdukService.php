@@ -141,7 +141,7 @@ class NampanProdukService
         });
     }
 
-    public function getProdukInNampanByJenis(int $jenisId)
+    public function getProdukInNampanByJenis(int|string $jenisId)
     {
         $query = NampanProduk::with([
             'nampan',
