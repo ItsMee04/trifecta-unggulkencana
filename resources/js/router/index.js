@@ -93,6 +93,11 @@ const routes = [
                 path: 'pelanggan',
                 component: () => import('../modules/pelanggan/views/PelangganView.vue'),
                 meta: { permission: 'pelanggan' }
+            },
+            {
+                path: 'suplier',
+                component: () => import('../modules/suplier/views/SuplierView.vue'),
+                meta: { permission: 'suplier' }
             }
         ]
     },
