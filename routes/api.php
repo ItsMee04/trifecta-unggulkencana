@@ -20,7 +20,7 @@ use App\Http\Controllers\Produk\JenisProdukController;
 use App\Http\Controllers\Produk\KaratController;
 use App\Http\Controllers\Produk\KondisiController;
 use App\Http\Controllers\Produk\ProdukController;
-// use Illuminate\Http\Request;
+use App\Http\Controllers\Transaksi\TransaksiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -148,9 +148,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [NampanProdukController::class, 'storeNampanProduk'])->middleware('check_permission:nampanproduk,create');
             Route::post('update', [NampanProdukController::class, 'pindahNampanProduk'])->middleware('check_permission:nampanproduk,update');
             Route::post('delete', [NampanProdukController::class, 'deleteNampanProduk'])->middleware('check_permission:nampanproduk,delete');
-
         });
-
     });
 
     Route::prefix('pelanggan')->group(function () {
@@ -175,7 +173,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('update', [PesanController::class, 'updatePesan'])->middleware('check_permission:pesan,update');
             Route::post('delete', [PesanController::class, 'deletePesan'])->middleware('check_permission:pesan,delete');
         });
-
     });
 
     Route::prefix('keuangan')->group(function () {
@@ -193,5 +190,19 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('update', [MutasiSaldoController::class, 'updateMutasiSaldo'])->middleware('check_permission:mutasisaldo,update');
             Route::post('delete', [MutasiSaldoController::class, 'deleteMutasiSaldo'])->middleware('check_permission:mutasisaldo,delete');
         });
+    });
+
+    Route::prefix('transaksi')->group(function () {
+
+        Route::prefix('transaksi')->group(function () {
+            Route::get('getKodeTransaksi', [TransaksiController::class, 'getKodeTransaksi'])->middleware('check.permission:transaksi,read');
+            Route::post('storeProdukToTransaksiDetail', [TransaksiController::class, 'storeProdukToTransaksiDetail'])->middleware('check.permission:transaksi,create');
+            Route::get('getTransaksiDetail', [TransaksiController::class, 'getTransaksiDetail'])->middleware('check.permission:transaksi,read');
+            Route::post('batalTransaksiDetail', [TransaksiController::class, 'batalTransaksiDetail'])->middleware('check.permission:transaksi,update');
+            Route::post('paymentTransaksi', [TransaksiController::class, 'paymentTransaksi'])->middleware('check.permission:transaksi,create');
+            Route::post('/getSignedNotaPenjualanUrl', [TransaksiController::class, 'getSignedNotaPenjualanUrl'])->middleware('check.permission:transaksi,read');
+            Route::post('telegram/sendnotification', [TransaksiController::class, 'sendTelegramNotification'])->middleware('check.permission:transaksi,create');
+        });
+
     });
 });
