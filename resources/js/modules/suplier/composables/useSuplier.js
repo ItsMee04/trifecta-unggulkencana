@@ -48,7 +48,7 @@ export function useSuplier() {
     const validateForm = () => {
         errors.value = {};
         if (!formSuplier.nama) {
-            errors.value.nama = 'Nama diskon wajib diisi.';
+            errors.value.nama = 'Nama wajib diisi.';
         }
         if (!formSuplier.kontak) {
             errors.value.kontak = 'Kontak wajib diisi.';
