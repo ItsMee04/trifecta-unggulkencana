@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Authentication\AuthenticationController;
+use App\Http\Controllers\Keuangan\SaldoController;
 use App\Http\Controllers\Master\JabatanController;
 use App\Http\Controllers\Master\PegawaiController;
 use App\Http\Controllers\Master\PermissionController;
@@ -172,6 +173,17 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('store', [PesanController::class, 'storePesan'])->middleware('check_permission:pesan,create');
             Route::post('update', [PesanController::class, 'updatePesan'])->middleware('check_permission:pesan,update');
             Route::post('delete', [PesanController::class, 'deletePesan'])->middleware('check_permission:pesan,delete');
+        });
+
+    });
+
+    Route::prefix('keuangan')->group(function () {
+
+        Route::prefix('saldo')->group(function () {
+            Route::get('/', [SaldoController::class, 'getSaldo'])->middleware('check_permission:saldo,read');
+            Route::post('store', [SaldoController::class, 'storeSaldo'])->middleware('check_permission:saldo,create');
+            Route::post('update', [SaldoController::class, 'updateSaldo'])->middleware('check_permission:saldo,update');
+            Route::post('delete', [SaldoController::class, 'deleteSaldo'])->middleware('check_permission:saldo,delete');
         });
 
     });

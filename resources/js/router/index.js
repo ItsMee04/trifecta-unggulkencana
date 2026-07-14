@@ -103,6 +103,11 @@ const routes = [
                 path: 'pesan',
                 component: () => import('../modules/pesan/views/PesanView.vue'),
                 meta: { permission: 'pesan' }
+            },
+            {
+                path: 'saldo',
+                component: () => import('../modules/saldo/views/SaldoView.vue'),
+                meta: { permission: 'saldo' }
             }
         ]
     },
