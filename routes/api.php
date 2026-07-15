@@ -195,13 +195,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('transaksi')->group(function () {
 
         Route::prefix('transaksi')->group(function () {
-            Route::get('getKodeTransaksi', [TransaksiController::class, 'getKodeTransaksi'])->middleware('check.permission:transaksi,read');
-            Route::post('storeProdukToTransaksiDetail', [TransaksiController::class, 'storeProdukToTransaksiDetail'])->middleware('check.permission:transaksi,create');
-            Route::get('getTransaksiDetail', [TransaksiController::class, 'getTransaksiDetail'])->middleware('check.permission:transaksi,read');
-            Route::post('batalTransaksiDetail', [TransaksiController::class, 'batalTransaksiDetail'])->middleware('check.permission:transaksi,update');
-            Route::post('paymentTransaksi', [TransaksiController::class, 'paymentTransaksi'])->middleware('check.permission:transaksi,create');
-            Route::post('/getSignedNotaPenjualanUrl', [TransaksiController::class, 'getSignedNotaPenjualanUrl'])->middleware('check.permission:transaksi,read');
-            Route::post('telegram/sendnotification', [TransaksiController::class, 'sendTelegramNotification'])->middleware('check.permission:transaksi,create');
+            Route::get('getKodeTransaksi', [TransaksiController::class, 'getKodeTransaksi'])->middleware('check_permission:transaksi,read');
+            Route::post('storeProdukToTransaksiDetail', [TransaksiController::class, 'storeProdukToTransaksiDetail'])->middleware('check_permission:transaksi,create');
+            Route::get('getTransaksiDetail', [TransaksiController::class, 'getTransaksiDetail'])->middleware('check_permission:transaksi,read');
+            Route::post('batalTransaksiDetail', [TransaksiController::class, 'batalTransaksiDetail'])->middleware('check_permission:transaksi,update');
+            Route::post('paymentTransaksi', [TransaksiController::class, 'paymentTransaksi'])->middleware('check_permission:transaksi,create');
+            Route::post('getSignedNotaPenjualanUrl', [TransaksiController::class, 'getSignedNotaPenjualanUrl'])->middleware('check_permission:transaksi,read');
+            Route::post('telegram/sendnotification', [TransaksiController::class, 'sendTelegramNotification'])->middleware('check_permission:transaksi,create');
         });
 
     });

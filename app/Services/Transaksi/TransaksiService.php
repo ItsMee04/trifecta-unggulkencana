@@ -203,8 +203,8 @@ class TransaksiService
 
             // Update Header
             $transaksi->update([
-                'pelanggan_id'  => $data['pelanggan'],
-                'diskon_id'     => $data['diskon'] ?? null,
+                'pelanggan_id'  => $data['pelanggan_id'],
+                'diskon_id'     => $data['diskon_id'] ?? null,
                 'total'         => $data['total'],
                 'point_dapat'   => $jumlahPoinBaru,
                 'point_dipakai' => $jumlahPoinPakai,

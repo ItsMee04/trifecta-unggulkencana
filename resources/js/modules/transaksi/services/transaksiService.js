@@ -3,7 +3,7 @@ import api from '../../../utilities/api/apiClient';
 export const transaksiService = {
     async getKodeTransaksi() {
         try {
-            const response = await api.get('/transaksi/transaksi');
+            const response = await api.get('/transaksi/transaksi/getKodeTransaksi');
             return response.data;
         } catch (error) {
             throw error;
@@ -12,7 +12,7 @@ export const transaksiService = {
 
     async storeProdukToTransaksiDetail(payload) {
         try {
-            const response = await api.post('/transaksi/transaksi/store', payload);
+            const response = await api.post('/transaksi/transaksi/storeProdukToTransaksiDetail', payload);
             return response.data;
         } catch (error) {
             throw error;
@@ -21,7 +21,7 @@ export const transaksiService = {
 
     async getTransaksiDetail(payload) {
         try {
-            const response = await api.get('/transaksi/transaksi/update', payload);
+            const response = await api.get('/transaksi/transaksi/getTransaksiDetail', payload);
             return response.data;
         } catch (error) {
             throw error;
@@ -30,7 +30,7 @@ export const transaksiService = {
 
     async batalTransaksiDetail(payload) {
         try {
-            const response = await api.post('/transaksi/transaksi/delete', payload);
+            const response = await api.post('/transaksi/transaksi/batalTransaksiDetail', payload);
             return response.data;
         } catch (error) {
             throw error;
@@ -39,7 +39,7 @@ export const transaksiService = {
 
     async paymentTransaksi(payload) {
         try {
-            const response = await api.post('/transaksi/transaksi/delete', payload);
+            const response = await api.post('/transaksi/transaksi/paymentTransaksi', payload);
             return response.data;
         } catch (error) {
             throw error;

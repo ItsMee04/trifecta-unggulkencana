@@ -27,7 +27,7 @@
 
             <div class="lg:col-span-5 xl:col-span-4 w-full sticky top-6">
                 <div class="p-6 bg-slate-100 dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl text-center text-slate-400 dark:text-slate-600 text-xs py-12">
-                    PointOfSaleKasirList.vue di sini
+                    <PointOfSaleKasirList />
                 </div>
             </div>
 
@@ -39,6 +39,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import PointOfSaleProdukList from '../components/PointOfSaleProdukList.vue';
+import PointOfSaleKasirList from '../components/PointOfSaleKasirList.vue';
 // import { usePOS } from '../composables/usePOS.js';
 
 // const { fetchPelanggan, fetchDiskon, fetchKodeTransaksi, fetchTransaksiDetail } = usePOS();

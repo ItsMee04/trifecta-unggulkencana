@@ -12,7 +12,7 @@
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </span>
-                    <input type="text" v-model="searchProdukQuery"
+                    <input type="text" v-model="searchProdukQuery" @input="handleInputSearch"
                         placeholder="Cari perhiasan berdasarkan nama, jenis, atau kode..."
                         class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-600 text-slate-900 dark:text-white transition-all placeholder-slate-400 dark:placeholder-slate-500 font-medium" />
                 </div>
@@ -81,7 +81,7 @@
                 <div
                     class="w-9 h-9 border-3 border-blue-950/20 border-t-blue-950 dark:border-t-white rounded-full animate-spin mb-3">
                 </div>
-                <h6 class="text-xs font-semibold text-slate-500 dark:text-slate-400">Memuat data dari kategori...</h6>
+                <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Memuat data dari kategori...</div>
             </div>
 
             <div v-else-if="paginatedProduk.length === 0"
@@ -91,19 +91,22 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                         d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
-                <p class="text-xs font-semibold text-slate-400 dark:text-slate-500">Tidak ada perhiasan yang ditemukan
-                </p>
+                <p class="text-xs font-semibold text-slate-400 dark:text-slate-500">Tidak ada perhiasan yang ditemukan</p>
             </div>
 
             <div v-else class="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3 flex-grow content-start">
-                <div v-for="item in paginatedProduk" :key="item.id" @click="handlePilihProduk(item.kodeproduk)"
+                <div v-for="item in paginatedProduk" :key="item.id" @click="handlePilihProduk(item)"
                     class="bg-white dark:bg-slate-950 rounded-xl border border-slate-150 dark:border-slate-800/80 overflow-hidden shadow-xs hover:shadow-lg hover:border-blue-950/40 dark:hover:border-slate-700 transition-all duration-300 cursor-pointer flex flex-col group select-none relative h-full justify-between">
 
                     <div>
                         <div
                             class="aspect-4/3 w-full bg-slate-50 dark:bg-slate-900 relative overflow-hidden border-b border-slate-100 dark:border-slate-800">
-                            <img v-if="item.image" :src="`${storageUrl}/${item.image}`" alt="Foto Produk"
+
+                            <img v-if="item.image && item.image !== 'default.png' && !item.hasImageError"
+                                :src="`${storageUrl}/${item.image}`" alt="Foto Produk"
+                                @error="item.hasImageError = true"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+
                             <div v-else
                                 class="w-full h-full flex flex-col items-center justify-center text-slate-300 dark:text-slate-700">
                                 <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -111,6 +114,7 @@
                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
+
                             <span
                                 class="absolute top-2 left-2 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md tracking-wider">
                                 {{ item.kodeproduk }}
@@ -129,10 +133,10 @@
                                 </span>
                             </div>
 
-                            <h6
+                            <div
                                 class="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1 group-hover:text-blue-950 dark:group-hover:text-white transition-colors">
                                 {{ item.nama }}
-                            </h6>
+                            </div>
 
                             <div class="flex items-center gap-1.5 text-[10px] text-slate-400">
                                 <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
@@ -192,6 +196,9 @@ import { jenisprodukService } from '../../jenisproduk/services/jenisprodukServic
 import { nampanprodukService } from '../../nampanproduk/services/nampanprodukService';
 import { transaksiService } from '../../transaksi/services/transaksiService';
 
+// IMPORT HELPER LARAVEL ECHO REALTIME
+import { useTransaksiRealtime } from '../composables/useTransaksiRealtime';
+
 const storageUrl = import.meta.env.VITE_PRODUK_URL;
 const toast = useToast();
 
@@ -205,18 +212,21 @@ const searchProdukQuery = ref('');
 const currentPageProduk = ref(1);
 const itemsPerPageProduk = 8;
 
-// --- A. METHOD SESUAI LOGIKA BENTUK PROJECT LAMA ---
+// STATE TAMBAHAN UNTUK SINKRONISASI KERANJANG AKTIF
+const TransaksiID = ref('');
+const TransaksiDetail = ref([]);
+
+// --- A. METHOD AMBIL DATA DARI API BACKEND ---
 
 // 1. Ambil Jenis Produk (Kategori)
 const fetchJenisProduk = async () => {
     try {
         const response = await jenisprodukService.getJenisProduk();
-        // Sesuai response asli: data ada di dalam response.data
         const rawData = response.data || [];
 
         const mappedData = rawData.map(item => ({
             id: item.id,
-            jenis: item.jenis.toUpperCase(), // Samakan uppercase
+            jenis: item.jenis.toUpperCase(),
             value: item.id,
             label: item.jenis.toUpperCase()
         }));
@@ -226,37 +236,58 @@ const fetchJenisProduk = async () => {
             ...mappedData
         ];
     } catch (error) {
-        toast.error("Gagal memuat Jenis Produk")
+        toast.error("Gagal memuat Jenis Produk");
     }
 };
 
-// 2. Ambil Produk Di Nampan Menggunakan Payload Jenis ID (Sama Persis Project Lama)
+// 2. Ambil Produk Di Nampan Menggunakan Payload Jenis ID
 const fetchProdukByJenis = async (jenisId = 'all') => {
     isLoadingProduk.value = true;
     try {
-        // PERBAIKAN UTAMA: Bungkus payload ke bentuk object { jenis: jenisId } sesuai kebutuhan service backend lama
         const payload = { jenis: jenisId };
         const response = await nampanprodukService.getProdukInNampanByJenis(payload);
         const data = response.data || [];
 
         produk.value = data;
 
-        // LOGIC DARI PROJECT LAMA ANDA:
-        // Simpan ke allProdukMaster jika yang dimuat pertama/sedang memuat adalah kategori 'all'
         if (jenisId === 'all') {
             allProdukMaster.value = data;
         }
     } catch (error) {
         produk.value = [];
-        toast.error("Gagal memuat data produk")
+        toast.error("Gagal memuat data produk");
     } finally {
         isLoadingProduk.value = false;
     }
 };
 
+// 3. Ambil Kode Transaksi POS Aktif di sisi Produk List
+const fetchKodeTransaksi = async () => {
+    try {
+        const response = await transaksiService.getKodeTransaksi();
+        const data = response.data || response;
+        if (data && data.kode) {
+            TransaksiID.value = data.kode;
+            await fetchTransaksiDetail();
+        }
+    } catch (error) {
+        console.error("Gagal sync kode transaksi di list produk");
+    }
+};
+
+// 4. Ambil Detail Item yang sudah ada di Keranjang
+const fetchTransaksiDetail = async () => {
+    if (!TransaksiID.value) return;
+    try {
+        const response = await transaksiService.getTransaksiDetail(TransaksiID.value);
+        TransaksiDetail.value = response.data || response || [];
+    } catch (error) {
+        console.error("Gagal sync detail transaksi di list produk", error);
+    }
+};
+
 // --- B. COMPUTED LOGIC COUNTER & SEARCH FILTER FRONTEND ---
 
-// Live Counter Badge Kategori (Memakai String() untuk pencegahan ketidakcocokan data)
 const countItemsByJenis = computed(() => {
     const counts = {};
     counts['all'] = allProdukMaster.value.length;
@@ -270,7 +301,6 @@ const countItemsByJenis = computed(() => {
     return counts;
 });
 
-// Menyaring text pencarian di frontend berdasarkan data 'produk' yang aktif dari API
 const filteredProduk = computed(() => {
     const query = searchProdukQuery.value.toLowerCase();
     return produk.value.filter(item => {
@@ -279,7 +309,6 @@ const filteredProduk = computed(() => {
     });
 });
 
-// Hitung Paginasi halaman
 const totalPagesProduk = computed(() => {
     return Math.ceil(filteredProduk.value.length / itemsPerPageProduk) || 1;
 });
@@ -291,27 +320,42 @@ const paginatedProduk = computed(() => {
 
 // --- C. INTERAKSI ACTION USER ---
 
-// Ketika Tab Kategori Diklik
 const selectCategory = async (id) => {
     selectedJenisProduk.value = id;
     currentPageProduk.value = 1;
-
-    // Tembak API ulang dengan melemparkan ID kategori terpilih
     await fetchProdukByJenis(id);
 };
 
-// Ketika Menginput Pencarian Text
 const handleInputSearch = () => {
     currentPageProduk.value = 1;
 };
 
-// Kirim ke Keranjang Belanja Kasir
-const handlePilihProduk = async (kodeproduk) => {
+// Kirim ke Keranjang Belanja Kasir dengan Barikade Validasi 1 Transaksi = 1 Produk
+const handlePilihProduk = async (item) => {
+    // 1. Validasi awal: Pastikan Kode Transaksi sudah siap
+    if (!TransaksiID.value || TransaksiID.value.includes("Memuat")) {
+        toast.error("Tunggu kode transaksi selesai dimuat");
+        return;
+    }
+
+    // 2. VALIDASI KETAT FRONTEND: Jika di keranjang sudah berisi 1 item, blokir klik selanjutnya!
+    if (TransaksiDetail.value && TransaksiDetail.value.length >= 1) {
+        toast.error("Gagal! 1 nomor transaksi hanya diperbolehkan untuk 1 produk.");
+        return;
+    }
+
     try {
-        const payload = { kodeproduk };
+        const payload = {
+            kodeproduk: item.kodeproduk,
+            kode: TransaksiID.value,
+            harga: Number(item.harga || 0),
+            berat: Number(item.berat || 0)
+        };
+
         const response = await transaksiService.storeProdukToTransaksiDetail(payload);
-        if (response.status) {
+        if (response && (response.status || response.data?.status)) {
             toast.success("Produk berhasil ditambahkan ke keranjang");
+            await fetchTransaksiDetail(); // Update status keranjang lokal
         }
     } catch (error) {
         const msg = error.response?.data?.message || "Gagal menambahkan produk";
@@ -319,7 +363,6 @@ const handlePilihProduk = async (kodeproduk) => {
     }
 };
 
-// Navigasi Paginasi
 const goToPage = (page) => {
     currentPageProduk.value = page;
 };
@@ -358,10 +401,20 @@ const onDrag = (e) => {
     sliderRef.value.scrollLeft = scrollLeft - walk;
 };
 
-// --- E. INITIAL SETUP ON LIFECYCLE LOAD ---
+// --- E. INITIAL SETUP & REALTIME LISTENER ---
+//  CARA YANG BENAR:
+
+// 1. Daftarkan listener realtime langsung di root script setup (secara sinkronus)
+useTransaksiRealtime(async (event) => {
+    console.log("[REALTIME] Mendeteksi perubahan keranjang kasir:", event);
+    await fetchTransaksiDetail();
+});
+
+// 2. Lifecycle onMounted hanya digunakan untuk mengambil data awal dari API
 onMounted(async () => {
     await fetchJenisProduk();
     await fetchProdukByJenis('all');
+    await fetchKodeTransaksi();
 });
 </script>
 

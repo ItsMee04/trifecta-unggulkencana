@@ -106,9 +106,9 @@ class TransaksiController extends Controller
     {
         $validated = $request->validate([
             'kode'            => 'required',
-            'pelanggan'       => 'required',
-            'total'           => 'required|numeric',
-            'diskon'          => 'nullable',
+            'pelanggan_id'    => 'required',
+            'grand_total'     => 'required|numeric',
+            'diskon_id'       => 'nullable',
             'point_digunakan' => 'nullable|numeric'
         ]);
 
