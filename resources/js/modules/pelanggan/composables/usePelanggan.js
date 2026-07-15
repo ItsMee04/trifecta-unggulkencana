@@ -116,6 +116,8 @@ export function usePelanggan() {
             toast.success(response?.message || 'Data pelanggan berhasil disimpan.');
             closeModal();
             await fetchPelanggan();
+            // TAMBAHKAN BARIS INI: Kirim sinyal global bahwa pelanggan baru sukses ditambahkan
+            window.dispatchEvent(new CustomEvent('pelanggan-saved'));
             return true;
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Gagal menyimpan data.';
