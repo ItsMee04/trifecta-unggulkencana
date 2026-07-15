@@ -1,7 +1,6 @@
 <template>
     <div
         class="w-full min-w-0 min-h-[640px] bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800/80 shadow-xs p-5 flex flex-col justify-between transition-all duration-300">
-
         <div class="space-y-4">
             <div class="flex flex-col sm:flex-row items-center gap-3">
                 <div class="relative w-full">
@@ -12,41 +11,23 @@
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </span>
-                    <input type="text" v-model="searchProdukQuery" @input="handleInputSearch"
+                    <input type="text" v-model="searchProdukQuery"
                         placeholder="Cari perhiasan berdasarkan nama, jenis, atau kode..."
-                        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-600 text-slate-900 dark:text-white transition-all placeholder-slate-400 dark:placeholder-slate-500 font-medium" />
+                        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs focus:outline-none text-slate-900 dark:text-white font-medium placeholder-slate-400" />
                 </div>
             </div>
 
             <div class="relative w-full min-w-0">
-                <div
-                    class="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white dark:from-slate-900 to-transparent pointer-events-none z-10">
-                </div>
-                <div
-                    class="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white dark:from-slate-900 to-transparent pointer-events-none z-10">
-                </div>
-
                 <ul ref="sliderRef" @mousedown="startDrag" @mouseleave="stopDrag" @mouseup="stopDrag"
                     @mousemove="onDrag"
-                    class="flex items-center gap-2.5 overflow-x-auto pb-2 pt-1 scrollbar-none snap-x snap-mandatory scroll-smooth w-full cursor-grab active:cursor-grabbing select-none px-2">
-
+                    class="flex items-center gap-2.5 overflow-x-auto pb-2 pt-1 scrollbar-none snap-x snap-mandatory w-full cursor-grab active:cursor-grabbing select-none px-2">
                     <li v-for="cat in jenisprodukList" :key="cat.id" @click="selectCategory(cat.id)"
                         class="snap-start shrink-0">
-
                         <button
-                            class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all duration-300 border focus:outline-hidden"
-                            :class="[
-                                String(selectedJenisProduk) === String(cat.id)
-                                    ? 'bg-blue-950 border-blue-950 text-white shadow-lg shadow-blue-950/15 scale-[1.02]'
-                                    : 'bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white'
-                            ]">
-
-                            <span class="p-1 rounded-lg flex justify-center items-center transition-all duration-300"
-                                :class="[
-                                    String(selectedJenisProduk) === String(cat.id)
-                                        ? 'bg-white/15 text-white'
-                                        : 'bg-slate-200/50 dark:bg-slate-800 text-slate-500'
-                                ]">
+                            class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all duration-300 border border-slate-100 dark:border-slate-800/80"
+                            :class="selectedJenisProduk === cat.id ? 'bg-blue-950 border-blue-950 text-white shadow-lg' : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400'">
+                            <span class="p-1 rounded-lg flex justify-center items-center"
+                                :class="selectedJenisProduk === cat.id ? 'bg-white/15 text-white' : 'bg-slate-200/50 dark:bg-slate-800'">
                                 <svg v-if="cat.id === 'all'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -57,17 +38,12 @@
                                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                 </svg>
                             </span>
-
-                            <span class="transition-colors duration-300"
-                                :class="String(selectedJenisProduk) === String(cat.id) ? 'text-white' : 'text-slate-700 dark:text-slate-300'">
-                                {{ cat.jenis }}
-                            </span>
-
                             <span
-                                class="text-[9px] px-1.5 py-0.5 rounded-full font-bold ml-1 transition-all duration-300"
-                                :class="String(selectedJenisProduk) === String(cat.id) ? 'bg-white/20 text-white' : 'bg-slate-200/60 dark:bg-slate-800 text-slate-500'">
-                                {{ countItemsByJenis[cat.id] !== undefined ? countItemsByJenis[cat.id] : 0 }} Items
-                            </span>
+                                :class="selectedJenisProduk === cat.id ? 'text-white' : 'text-slate-700 dark:text-slate-300'">{{
+                                cat.jenis }}</span>
+                            <span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold ml-1"
+                                :class="selectedJenisProduk === cat.id ? 'bg-white/20 text-white' : 'bg-slate-200/60 dark:bg-slate-800'">{{
+                                countItemsByJenis[cat.id] || 0 }}</span>
                         </button>
                     </li>
                 </ul>
@@ -75,69 +51,50 @@
         </div>
 
         <div class="mt-5 flex-grow flex flex-col justify-between min-w-0">
-
             <div v-if="isLoadingProduk"
-                class="w-full flex-grow min-h-[350px] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800/80 my-2">
+                class="w-full flex-grow min-h-[350px] flex flex-col items-center justify-center bg-slate-50 rounded-2xl border border-slate-100 dark:border-slate-800/80 my-2">
                 <div
                     class="w-9 h-9 border-3 border-blue-950/20 border-t-blue-950 dark:border-t-white rounded-full animate-spin mb-3">
                 </div>
-                <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Memuat data dari kategori...</div>
+                <div class="text-xs font-semibold text-slate-500">Memuat data dari kategori...</div>
             </div>
 
             <div v-else-if="paginatedProduk.length === 0"
-                class="w-full flex-grow min-h-[350px] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-                <svg class="w-12 h-12 text-slate-300 dark:text-slate-700 mb-2" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
+                class="w-full flex-grow min-h-[350px] flex flex-col items-center justify-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                <svg class="w-12 h-12 text-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                         d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
-                <p class="text-xs font-semibold text-slate-400 dark:text-slate-500">Tidak ada perhiasan yang ditemukan</p>
+                <p class="text-xs font-semibold text-slate-400">Tidak ada perhiasan yang ditemukan</p>
             </div>
 
             <div v-else class="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3 flex-grow content-start">
                 <div v-for="item in paginatedProduk" :key="item.id" @click="handlePilihProduk(item)"
-                    class="bg-white dark:bg-slate-950 rounded-xl border border-slate-150 dark:border-slate-800/80 overflow-hidden shadow-xs hover:shadow-lg hover:border-blue-950/40 dark:hover:border-slate-700 transition-all duration-300 cursor-pointer flex flex-col group select-none relative h-full justify-between">
-
+                    class="bg-white dark:bg-slate-950 rounded-xl border border-slate-150 dark:border-slate-800/80 overflow-hidden shadow-xs hover:shadow-lg hover:border-blue-950/40 transition-all duration-300 cursor-pointer flex flex-col justify-between">
                     <div>
                         <div
-                            class="aspect-4/3 w-full bg-slate-50 dark:bg-slate-900 relative overflow-hidden border-b border-slate-100 dark:border-slate-800">
-
-                            <img v-if="item.image && item.image !== 'default.png' && !item.hasImageError"
-                                :src="`${storageUrl}/${item.image}`" alt="Foto Produk"
-                                @error="item.hasImageError = true"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-
-                            <div v-else
-                                class="w-full h-full flex flex-col items-center justify-center text-slate-300 dark:text-slate-700">
+                            class="aspect-4/3 w-full bg-slate-50 dark:bg-slate-900 relative overflow-hidden border-b border-slate-100">
+                            <img v-if="item.image && item.image !== 'default.png'" :src="`${STORAGE_URL}/${item.image}`"
+                                alt="Foto" class="w-full h-full object-cover" />
+                            <div v-else class="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                 <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-
+                                </svg></div>
                             <span
-                                class="absolute top-2 left-2 bg-slate-900/85 backdrop-blur-md text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md tracking-wider">
-                                {{ item.kodeproduk }}
-                            </span>
+                                class="absolute top-2 left-2 bg-slate-900/85 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">{{
+                                item.kodeproduk }}</span>
                         </div>
-
                         <div class="p-3 space-y-1">
                             <div class="flex justify-between items-center">
+                                <span class="text-[9px] uppercase font-bold text-blue-950 dark:text-blue-400">{{
+                                    item.jenis_produk?.jenis || 'Umum' }}</span>
                                 <span
-                                    class="text-[9px] uppercase font-bold text-blue-950 dark:text-blue-400 tracking-wider">
-                                    {{ item.jenis_produk?.jenis || 'Umum' }}
-                                </span>
-                                <span
-                                    class="bg-blue-50 dark:bg-blue-950/40 text-blue-950 dark:text-blue-300 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md">
-                                    {{ item.berat }}g
-                                </span>
+                                    class="bg-blue-50 dark:bg-blue-950/40 text-blue-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md">{{
+                                    item.berat }}g</span>
                             </div>
-
-                            <div
-                                class="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1 group-hover:text-blue-950 dark:group-hover:text-white transition-colors">
-                                {{ item.nama }}
-                            </div>
-
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{{ item.nama
+                                }}</div>
                             <div class="flex items-center gap-1.5 text-[10px] text-slate-400">
                                 <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path
@@ -147,37 +104,30 @@
                             </div>
                         </div>
                     </div>
-
-                    <div
-                        class="p-3 pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                    <div class="p-3 pt-2 border-t border-slate-100 flex justify-between items-center">
                         <span class="text-[9px] text-slate-400 font-semibold uppercase">Harga /g</span>
-                        <span class="text-[12px] font-black text-slate-900 dark:text-white tracking-tight">
-                            Rp {{ Number(item.harga || 0).toLocaleString('id-ID') }}
-                        </span>
+                        <span class="text-[12px] font-black text-slate-900 dark:text-white">Rp {{ Number(item.harga ||
+                            0).toLocaleString('id-ID') }}</span>
                     </div>
-
                 </div>
             </div>
 
             <div v-if="totalPagesProduk > 1" class="flex justify-center items-center gap-1 pt-4 mt-auto">
-                <button @click="prevPage" :disabled="currentPageProduk === 1"
-                    class="p-1.5 border border-slate-150 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed">
+                <button @click="currentPageProduk--" :disabled="currentPageProduk === 1"
+                    class="p-1.5 border border-slate-150 rounded-lg disabled:opacity-30">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
 
-                <button v-for="page in totalPagesProduk" :key="page" @click="goToPage(page)"
-                    class="w-7 h-7 text-xs font-bold rounded-lg transition-all" :class="[
-                        currentPageProduk === page
-                            ? 'bg-blue-950 text-white'
-                            : 'bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-900'
-                    ]">
+                <button v-for="page in totalPagesProduk" :key="page" @click="currentPageProduk = page"
+                    class="w-7 h-7 text-xs font-bold rounded-lg"
+                    :class="currentPageProduk === page ? 'bg-blue-950 text-white' : 'bg-transparent text-slate-600 dark:text-slate-400'">
                     {{ page }}
                 </button>
 
-                <button @click="nextPage" :disabled="currentPageProduk === totalPagesProduk"
-                    class="p-1.5 border border-slate-150 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed">
+                <button @click="currentPageProduk++" :disabled="currentPageProduk === totalPagesProduk"
+                    class="p-1.5 border border-slate-150 rounded-lg disabled:opacity-30">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                     </svg>
@@ -188,243 +138,19 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue';
-import { useToast } from '../../../utilities/toast/toast';
+import { ref } from 'vue';
+import { usePOS } from '../composables/usePOS';
 
-// IMPORT SERVICE DATA POS
-import { jenisprodukService } from '../../jenisproduk/services/jenisprodukService';
-import { nampanprodukService } from '../../nampanproduk/services/nampanprodukService';
-import { transaksiService } from '../../transaksi/services/transaksiService';
+const {
+    jenisprodukList, selectedJenisProduk, isLoadingProduk, searchProdukQuery,
+    countItemsByJenis, totalPagesProduk, currentPageProduk, paginatedProduk, STORAGE_URL,
+    selectCategory, handlePilihProduk
+} = usePOS();
 
-// IMPORT HELPER LARAVEL ECHO REALTIME
-import { useTransaksiRealtime } from '../composables/useTransaksiRealtime';
-
-const storageUrl = import.meta.env.VITE_PRODUK_URL;
-const toast = useToast();
-
-// --- STATE INTERNAL POS ---
-const jenisprodukList = ref([]);
-const selectedJenisProduk = ref('all');
-const produk = ref([]);            // Berisi produk aktif dari kategori yang dipilih
-const allProdukMaster = ref([]);    // Backup penampung seluruh produk dari parameter 'all' (untuk counter)
-const isLoadingProduk = ref(false);
-const searchProdukQuery = ref('');
-const currentPageProduk = ref(1);
-const itemsPerPageProduk = 8;
-
-// STATE TAMBAHAN UNTUK SINKRONISASI KERANJANG AKTIF
-const TransaksiID = ref('');
-const TransaksiDetail = ref([]);
-
-// --- A. METHOD AMBIL DATA DARI API BACKEND ---
-
-// 1. Ambil Jenis Produk (Kategori)
-const fetchJenisProduk = async () => {
-    try {
-        const response = await jenisprodukService.getJenisProduk();
-        const rawData = response.data || [];
-
-        const mappedData = rawData.map(item => ({
-            id: item.id,
-            jenis: item.jenis.toUpperCase(),
-            value: item.id,
-            label: item.jenis.toUpperCase()
-        }));
-
-        jenisprodukList.value = [
-            { id: 'all', jenis: 'SEMUA', value: 'all', label: 'SEMUA' },
-            ...mappedData
-        ];
-    } catch (error) {
-        toast.error("Gagal memuat Jenis Produk");
-    }
-};
-
-// 2. Ambil Produk Di Nampan Menggunakan Payload Jenis ID
-const fetchProdukByJenis = async (jenisId = 'all') => {
-    isLoadingProduk.value = true;
-    try {
-        const payload = { jenis: jenisId };
-        const response = await nampanprodukService.getProdukInNampanByJenis(payload);
-        const data = response.data || [];
-
-        produk.value = data;
-
-        if (jenisId === 'all') {
-            allProdukMaster.value = data;
-        }
-    } catch (error) {
-        produk.value = [];
-        toast.error("Gagal memuat data produk");
-    } finally {
-        isLoadingProduk.value = false;
-    }
-};
-
-// 3. Ambil Kode Transaksi POS Aktif di sisi Produk List
-const fetchKodeTransaksi = async () => {
-    try {
-        const response = await transaksiService.getKodeTransaksi();
-        const data = response.data || response;
-        if (data && data.kode) {
-            TransaksiID.value = data.kode;
-            await fetchTransaksiDetail();
-        }
-    } catch (error) {
-        console.error("Gagal sync kode transaksi di list produk");
-    }
-};
-
-// 4. Ambil Detail Item yang sudah ada di Keranjang
-const fetchTransaksiDetail = async () => {
-    if (!TransaksiID.value) return;
-    try {
-        const response = await transaksiService.getTransaksiDetail(TransaksiID.value);
-        TransaksiDetail.value = response.data || response || [];
-    } catch (error) {
-        console.error("Gagal sync detail transaksi di list produk", error);
-    }
-};
-
-// --- B. COMPUTED LOGIC COUNTER & SEARCH FILTER FRONTEND ---
-
-const countItemsByJenis = computed(() => {
-    const counts = {};
-    counts['all'] = allProdukMaster.value.length;
-
-    allProdukMaster.value.forEach(p => {
-        if (p.jenisproduk_id !== undefined && p.jenisproduk_id !== null) {
-            const id = String(p.jenisproduk_id);
-            counts[id] = (counts[id] || 0) + 1;
-        }
-    });
-    return counts;
-});
-
-const filteredProduk = computed(() => {
-    const query = searchProdukQuery.value.toLowerCase();
-    return produk.value.filter(item => {
-        return (item.kodeproduk ?? '').toLowerCase().includes(query) ||
-            (item.nama ?? '').toLowerCase().includes(query);
-    });
-});
-
-const totalPagesProduk = computed(() => {
-    return Math.ceil(filteredProduk.value.length / itemsPerPageProduk) || 1;
-});
-
-const paginatedProduk = computed(() => {
-    const start = (currentPageProduk.value - 1) * itemsPerPageProduk;
-    return filteredProduk.value.slice(start, start + itemsPerPageProduk);
-});
-
-// --- C. INTERAKSI ACTION USER ---
-
-const selectCategory = async (id) => {
-    selectedJenisProduk.value = id;
-    currentPageProduk.value = 1;
-    await fetchProdukByJenis(id);
-};
-
-const handleInputSearch = () => {
-    currentPageProduk.value = 1;
-};
-
-// Kirim ke Keranjang Belanja Kasir dengan Barikade Validasi 1 Transaksi = 1 Produk
-const handlePilihProduk = async (item) => {
-    // 1. Validasi awal: Pastikan Kode Transaksi sudah siap
-    if (!TransaksiID.value || TransaksiID.value.includes("Memuat")) {
-        toast.error("Tunggu kode transaksi selesai dimuat");
-        return;
-    }
-
-    // 2. VALIDASI KETAT FRONTEND: Jika di keranjang sudah berisi 1 item, blokir klik selanjutnya!
-    if (TransaksiDetail.value && TransaksiDetail.value.length >= 1) {
-        toast.error("Gagal! 1 nomor transaksi hanya diperbolehkan untuk 1 produk.");
-        return;
-    }
-
-    try {
-        const payload = {
-            kodeproduk: item.kodeproduk,
-            kode: TransaksiID.value,
-            harga: Number(item.harga || 0),
-            berat: Number(item.berat || 0)
-        };
-
-        const response = await transaksiService.storeProdukToTransaksiDetail(payload);
-        if (response && (response.status || response.data?.status)) {
-            toast.success("Produk berhasil ditambahkan ke keranjang");
-            await fetchTransaksiDetail(); // Update status keranjang lokal
-        }
-    } catch (error) {
-        const msg = error.response?.data?.message || "Gagal menambahkan produk";
-        toast.error(msg);
-    }
-};
-
-const goToPage = (page) => {
-    currentPageProduk.value = page;
-};
-
-const prevPage = () => {
-    if (currentPageProduk.value > 1) {
-        currentPageProduk.value--;
-    }
-};
-
-const nextPage = () => {
-    if (currentPageProduk.value < totalPagesProduk.value) {
-        currentPageProduk.value++;
-    }
-};
-
-// --- D. LOGIKA SLIDER DRAG MOUSE SCROLL KATEGORI ---
+// Logic Slider Drag Mouse
 const sliderRef = ref(null);
-let isDown = false;
-let startX;
-let scrollLeft;
-
-const startDrag = (e) => {
-    isDown = true;
-    startX = e.pageX - sliderRef.value.offsetLeft;
-    scrollLeft = sliderRef.value.scrollLeft;
-};
-const stopDrag = () => {
-    isDown = false;
-};
-const onDrag = (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - sliderRef.value.offsetLeft;
-    const walk = (x - startX) * 2;
-    sliderRef.value.scrollLeft = scrollLeft - walk;
-};
-
-// --- E. INITIAL SETUP & REALTIME LISTENER ---
-//  CARA YANG BENAR:
-
-// 1. Daftarkan listener realtime langsung di root script setup (secara sinkronus)
-useTransaksiRealtime(async (event) => {
-    console.log("[REALTIME] Mendeteksi perubahan keranjang kasir:", event);
-    await fetchTransaksiDetail();
-});
-
-// 2. Lifecycle onMounted hanya digunakan untuk mengambil data awal dari API
-onMounted(async () => {
-    await fetchJenisProduk();
-    await fetchProdukByJenis('all');
-    await fetchKodeTransaksi();
-});
+let isDown = false, startX, scrollLeft;
+const startDrag = (e) => { isDown = true; startX = e.pageX - sliderRef.value.offsetLeft; scrollLeft = sliderRef.value.scrollLeft; };
+const stopDrag = () => { isDown = false; };
+const onDrag = (e) => { if (!isDown) return; e.preventDefault(); const walk = ((e.pageX - sliderRef.value.offsetLeft) - startX) * 2; sliderRef.value.scrollLeft = scrollLeft - walk; };
 </script>
-
-<style scoped>
-.scrollbar-none::-webkit-scrollbar {
-    display: none;
-}
-
-.scrollbar-none {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-</style>

@@ -1,17 +1,17 @@
-import { ref, computed, reactive, watch } from 'vue';
+import { ref, computed, reactive } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
+import { confirmDelete } from '../../../utilities/confirm/confirm';
 
+// SERVICE INSTANCES
 import { jenisprodukService } from '../../jenisproduk/services/jenisprodukService';
 import { nampanprodukService } from '../../nampanproduk/services/nampanprodukService';
 import { pelangganService } from '../../pelanggan/services/pelangganService';
 import { diskonService } from '../../diskon/services/diskonService';
 import { transaksiService } from '../../transaksi/services/transaksiService';
 
-// IMPORT HELPER MODAL SUKSES IMPERATIF BARU
-import { showPaymentSuccess } from '../../../utilities/confirm/PaymentsSuccessModal';
+const STORAGE_URL = import.meta.env.VITE_PRODUK_URL;
 
-const toast = useToast();
-
+// --- SHARED STATE GLOBAL (SINGLETON) ---
 const jenisprodukList = ref([]);
 const selectedJenisProduk = ref('all');
 const produk = ref([]);
@@ -19,24 +19,14 @@ const allProdukMaster = ref([]);
 const PelangganList = ref([]);
 const DiskonList = ref([]);
 const TransaksiID = ref('');
-const selectedDiskon = ref(null);
 const TransaksiDetail = ref([]);
-const lastCompletedTransactionId = ref('');
 const isLoading = ref(false);
 const isLoadingProduk = ref(false);
 const searchProdukQuery = ref('');
 const currentPageProduk = ref(1);
 const itemsPerPageProduk = 8;
 const usePoint = ref(false);
-const inputPoint = ref(0);
-const errors = ref({});
 const scanQuery = ref('');
-
-// Dropdown States untuk Custom Search Dropdown
-const isPelangganDropdownOpen = ref(false);
-const isDiskonDropdownOpen = ref(false);
-const searchPelangganQuery = ref('');
-const searchDiskonQuery = ref('');
 
 const formPOS = reactive({
     id: null,
@@ -44,321 +34,276 @@ const formPOS = reactive({
     diskon: null,
 });
 
-export function usePOS() {
+// UI Dropdowns state shared
+const isPelangganDropdownOpen = ref(false);
+const isDiskonDropdownOpen = ref(false);
+const searchPelangganQuery = ref('');
 
-    // --- LOGIKA FETCH DATA MASTER ---
+export function usePOS() {
+    const toast = useToast();
+
+    // --- A. FETCHERS (API CALLS) ---
     const fetchJenisProduk = async () => {
         try {
             const response = await jenisprodukService.getJenisProduk();
-            const data = response.data || response;
-            jenisprodukList.value = [{ id: 'all', jenis: 'Semua Produk' }, ...data];
+            const rawData = response.data || [];
+            const mappedData = rawData.map(item => ({
+                id: item.id,
+                jenis: item.jenis.toUpperCase(),
+                value: item.id,
+                label: item.jenis.toUpperCase()
+            }));
+            jenisprodukList.value = [
+                { id: 'all', jenis: 'SEMUA', value: 'all', label: 'SEMUA' },
+                ...mappedData
+            ];
         } catch (error) {
-            console.error(error);
+            toast.error("Gagal memuat Jenis Produk");
         }
     };
 
-    const fetchProduk = async (jenisId = 'all') => {
+    const fetchProdukByJenis = async (jenisId = 'all') => {
         isLoadingProduk.value = true;
         try {
-            const response = await nampanprodukService.getNampanProduk();
-            const data = response.data || response;
-
-            // 1. KUNCI UTAMA: Hanya isi allProdukMaster jika data yang ditarik adalah 'all'
-            // atau jika allProdukMaster masih kosong. Ini menjaga database master counter tetap utuh.
-            if (jenisId === 'all' || allProdukMaster.value.length === 0) {
-                allProdukMaster.value = data;
-            }
-
-            // 2. Lakukan filtering untuk ditampilkan ke user
-            if (jenisId === 'all') {
-                produk.value = data;
-            } else {
-                // Jika API mengembalikan semua data, filter di frontend:
-                produk.value = data.filter(item => item.jenisproduk_id === jenisId);
-
-                // CATATAN: Jika API backend Anda otomatis memfilter data berdasarkan parameter,
-                // gunakan baris di bawah ini alih-alih filter frontend:
-                // produk.value = data;
-            }
+            const payload = { jenis: jenisId };
+            const response = await nampanprodukService.getProdukInNampanByJenis(payload);
+            const data = response.data || [];
+            produk.value = data;
+            if (jenisId === 'all') allProdukMaster.value = data;
         } catch (error) {
-            console.error(error);
+            produk.value = [];
+            toast.error("Gagal memuat data produk");
         } finally {
             isLoadingProduk.value = false;
-        }
-    };
-
-    const fetchPelanggan = async () => {
-        try {
-            const response = await pelangganService.getPelanggan();
-            const data = response.data || response;
-            PelangganList.value = data.map(item => ({
-                value: item.id,
-                label: item.nama,
-                kontak: item.telepon || item.hp || '',
-                point: item.point || 0
-            }));
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const fetchDiskon = async () => {
-        try {
-            const response = await diskonService.getDiskon();
-            const data = response.data || response;
-            DiskonList.value = data.map(item => ({
-                value: item.id,
-                label: item.nama,
-                nilai: item.nilai || 0
-            }));
-        } catch (error) {
-            console.error(error);
         }
     };
 
     const fetchKodeTransaksi = async () => {
         try {
             const response = await transaksiService.getKodeTransaksi();
-            TransaksiID.value = response.kode || response;
+            const data = response.data || response;
+            if (data && data.kode) {
+                TransaksiID.value = data.kode;
+                await fetchTransaksiDetail();
+            }
         } catch (error) {
-            console.error(error);
+            toast.error("Gagal memuat nomor transaksi");
         }
     };
 
     const fetchTransaksiDetail = async () => {
+        if (!TransaksiID.value) return;
         try {
-            const response = await transaksiService.getTransaksiDetail();
+            const response = await transaksiService.getTransaksiDetail(TransaksiID.value);
             TransaksiDetail.value = response.data || response || [];
         } catch (error) {
-            console.error(error);
+            console.error("Gagal memuat detail transaksi", error);
         }
     };
 
-    // --- LOGIKA INTERAKSI KASIR ---
-    const handlePilihProduk = async (kodeproduk) => {
+    const fetchPelanggan = async () => {
         try {
-            const payload = { kodeproduk };
-            const response = await transaksiService.storeProdukToTransaksiDetail(payload);
-            if (response.status) {
-                toast.success("Produk berhasil ditambahkan ke keranjang");
-                await fetchTransaksiDetail();
-            }
+            const response = await pelangganService.getPelanggan();
+            const rawData = response.data || response || [];
+            PelangganList.value = rawData.map(item => ({
+                value: item.id,
+                label: item.nama.toUpperCase(),
+                point: item.point || 0
+            }));
         } catch (error) {
-            const msg = error.response?.data?.message || "Gagal menambahkan produk";
-            toast.error(msg);
+            toast.error("Gagal memuat data pelanggan");
         }
     };
 
-    const handleDelete = async (id) => {
+    const fetchDiskon = async () => {
         try {
-            const payload = { id };
-            const response = await transaksiService.batalTransaksiDetail(payload);
-            if (response.status) {
-                toast.success("Item berhasil dihapus dari daftar order");
-                await fetchTransaksiDetail();
-            }
+            const response = await diskonService.getDiskon();
+            const rawData = response.data || [];
+            DiskonList.value = rawData.map(item => ({
+                value: item.id,
+                label: `${(item.diskon || '').toUpperCase()} (${item.nilai}%)`,
+                nilai: item.nilai
+            }));
         } catch (error) {
-            toast.error("Gagal menghapus item");
+            toast.error("Gagal memuat data diskon");
         }
     };
 
-    const handleBarcodeScan = async () => {
-        if (!scanQuery.value.trim()) return;
-        await handlePilihProduk(scanQuery.value.trim());
-        scanQuery.value = '';
-    };
-
-    const handleNextOrder = () => {
-        formPOS.pelanggan = null;
-        formPOS.diskon = null;
-        usePoint.value = false;
-        inputPoint.value = 0;
-        errors.value = {};
-        searchPelangganQuery.value = '';
-        searchDiskonQuery.value = '';
-        fetchKodeTransaksi();
-        fetchTransaksiDetail();
-    };
-
-    const handlePrint = async () => {
-        try {
-            const payload = { kode: lastCompletedTransactionId.value };
-            const response = await transaksiService.CetakNotaPenjulan(payload);
-            if (response.url) {
-                window.open(response.url, '_blank');
-            }
-        } catch (error) {
-            toast.error("Gagal mencetak nota transaksi");
-        }
-    };
-
-    const openWhatsAppModal = () => {
-        console.log("Memicu integrasi WhatsApp untuk kode:", lastCompletedTransactionId.value);
-    };
-
-    // --- PROSES SIMPAN PEMBAYARAN UTAMA ---
-    const paymentTransaksi = async (grandTotal) => {
-        errors.value = {};
-
-        if (!formPOS.pelanggan) {
-            errors.value.pelanggan = "Pilih pelanggan terlebih dahulu";
-            toast.error("Pilih pelanggan terlebih dahulu");
-            return;
-        }
-
-        if (usePoint.value) {
-            if (!inputPoint.value || inputPoint.value <= 0) {
-                errors.value.point = "Masukkan jumlah poin valid";
-                return;
-            }
-            if (inputPoint.value > (formPOS.pelanggan.point || 0)) {
-                errors.value.point = "Poin tidak mencukupi";
-                return;
-            }
-            if (inputPoint.value % 10 !== 0) {
-                errors.value.point = "Poin harus kelipatan 10";
-                return;
-            }
-        }
-
-        isLoading.value = true;
-        const currentKode = TransaksiID.value;
-
-        try {
-            const payload = {
-                kode: currentKode,
-                pelanggan: formPOS.pelanggan.value,
-                diskon: formPOS.diskon ? formPOS.diskon.value : null,
-                point_digunakan: usePoint.value ? inputPoint.value : 0,
-                total: grandTotal
-            };
-
-            const response = await transaksiService.paymentTransaksi(payload);
-
-            if (response.status) {
-                lastCompletedTransactionId.value = currentKode;
-                toast.success("Pembayaran Berhasil diproses!");
-
-                // Kirim Notifikasi Telegram (Background Asynchronous)
-                transaksiService.sendTelegramNotification({
-                    pesan: `Transaksi Baru #${currentKode} Berhasil. Total: Rp ${grandTotal.toLocaleString('id-ID')}`
-                }).catch(err => console.error(err));
-
-                // TRIGGER MODAL IMPERATIF (Sama seperti confirmDelete)
-                showPaymentSuccess({
-                    kodeTransaksi: currentKode,
-                    onPrint: () => {
-                        handlePrint();
-                        handleNextOrder();
-                    },
-                    onNext: () => {
-                        handleNextOrder();
-                    },
-                    onWhatsApp: () => {
-                        openWhatsAppModal();
-                        handleNextOrder();
-                    }
-                });
-            }
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || "Gagal memproses pembayaran";
-            toast.error(errorMsg);
-        } finally {
-            isLoading.value = false;
-        }
-    };
-
-    // --- COMPUTED PROPERTIES DATA FILTERING & HITUNGAN ---
-    const filteredPelangganList = computed(() => {
-        const q = searchPelangganQuery.value.toLowerCase();
-        return PelangganList.value.filter(item =>
-            item.label.toLowerCase().includes(q) || item.kontak.toLowerCase().includes(q)
-        );
+    // --- B. COMPUTED LOGIC (FILTERS & HITUNGAN) ---
+    const selectedPelangganNama = computed(() => {
+        if (!formPOS.pelanggan) return 'Pilih Pelanggan (Umum)';
+        const found = PelangganList.value.find(p => p.value === formPOS.pelanggan);
+        return found ? found.label : 'Pilih Pelanggan (Umum)';
     });
 
-    const filteredDiskonList = computed(() => {
-        const q = searchDiskonQuery.value.toLowerCase();
-        return DiskonList.value.filter(item => item.label.toLowerCase().includes(q));
+    const filteredPelangganList = computed(() => {
+        const query = searchPelangganQuery.value.toLowerCase();
+        return PelangganList.value.filter(p => String(p.label || '').toLowerCase().includes(query));
+    });
+
+    const selectedDiskonLabel = computed(() => {
+        if (!formPOS.diskon) return 'Tanpa Diskon';
+        const found = DiskonList.value.find(d => d.value === formPOS.diskon);
+        return found ? found.label : 'Tanpa Diskon';
     });
 
     const selectedDiskonNilai = computed(() => {
-        return formPOS.diskon ? formPOS.diskon.nilai : 0;
-    });
-
-    const calculatePotonganPoint = computed(() => {
-        return usePoint.value ? Number(inputPoint.value || 0) * 1000 : 0;
+        if (!formPOS.diskon) return 0;
+        const found = DiskonList.value.find(d => d.value === formPOS.diskon);
+        return found ? Number(found.nilai || 0) : 0;
     });
 
     const countItemsByJenis = computed(() => {
-        const counts = { all: allProdukMaster.value.length };
-        allProdukMaster.value.forEach(item => {
-            if (item.jenisproduk_id) {
-                counts[item.jenisproduk_id] = (counts[item.jenisproduk_id] || 0) + 1;
+        const counts = {};
+        counts['all'] = allProdukMaster.value.length;
+        allProdukMaster.value.forEach(p => {
+            if (p.jenisproduk_id !== undefined && p.jenisproduk_id !== null) {
+                const id = String(p.jenisproduk_id);
+                counts[id] = (counts[id] || 0) + 1;
             }
         });
         return counts;
     });
 
-    const totalPagesProduk = computed(() => {
+    const filteredProduk = computed(() => {
         const query = searchProdukQuery.value.toLowerCase();
-        const filtered = produk.value.filter(item =>
+        return produk.value.filter(item =>
             (item.kodeproduk ?? '').toLowerCase().includes(query) ||
             (item.nama ?? '').toLowerCase().includes(query)
         );
-        return Math.ceil(filtered.length / itemsPerPageProduk) || 1;
     });
+
+    const totalPagesProduk = computed(() => Math.ceil(filteredProduk.value.length / itemsPerPageProduk) || 1);
 
     const paginatedProduk = computed(() => {
         const start = (currentPageProduk.value - 1) * itemsPerPageProduk;
-        const query = searchProdukQuery.value.toLowerCase();
-        const filtered = produk.value.filter(item =>
-            (item.kodeproduk ?? '').toLowerCase().includes(query) ||
-            (item.nama ?? '').toLowerCase().includes(query)
-        );
-        return filtered.slice(start, start + itemsPerPageProduk);
+        return filteredProduk.value.slice(start, start + itemsPerPageProduk);
     });
 
-    return {
-        TransaksiID,
-        PelangganList,
-        DiskonList,
-        selectedDiskonNilai,
-        TransaksiDetail,
-        isLoading,
-        isLoadingProduk,
-        errors,
-        formPOS,
-        usePoint,
-        inputPoint,
-        calculatePotonganPoint,
-        scanQuery,
-        handleBarcodeScan,
-        handleDelete,
-        paymentTransaksi,
-        fetchPelanggan,
-        fetchDiskon,
-        fetchKodeTransaksi,
-        fetchTransaksiDetail,
-        fetchJenisProduk,
-        fetchProduk,
-        jenisprodukList,
-        selectedJenisProduk,
-        countItemsByJenis,
-        searchProdukQuery,
-        currentPageProduk,
-        totalPagesProduk,
-        paginatedProduk,
-        handlePilihProduk,
-        handleNextOrder,
-        handlePrint,
-        openWhatsAppModal,
+    const calculateSubtotal = computed(() => TransaksiDetail.value.reduce((acc, item) => acc + Number(item.total || 0), 0));
+    const calculateDiskon = computed(() => (calculateSubtotal.value * Number(selectedDiskonNilai.value || 0)) / 100);
+    const calculatePotonganPoint = computed(() => {
+        if (!usePoint.value || !formPOS.pelanggan) return 0;
+        const customer = PelangganList.value.find(p => p.value === formPOS.pelanggan);
+        return customer ? Number(customer.point || 0) : 0;
+    });
+    const calculateGrandTotal = computed(() => {
+        const total = calculateSubtotal.value - calculateDiskon.value - calculatePotonganPoint.value;
+        return total < 0 ? 0 : total;
+    });
 
-        // Custom Dropdown states & filters
-        isPelangganDropdownOpen,
-        isDiskonDropdownOpen,
-        searchPelangganQuery,
-        searchDiskonQuery,
-        filteredPelangganList,
-        filteredDiskonList
+    // --- C. ACTIONS (MUTATIONS) ---
+    const selectCategory = async (id) => {
+        selectedJenisProduk.value = id;
+        currentPageProduk.value = 1;
+        await fetchProdukByJenis(id);
+    };
+
+    const handlePilihProduk = async (item) => {
+        if (!TransaksiID.value || TransaksiID.value.includes("Memuat")) {
+            toast.error("Tunggu kode transaksi selesai dimuat");
+            return;
+        }
+        await fetchTransaksiDetail();
+        if (TransaksiDetail.value && TransaksiDetail.value.length >= 1) {
+            toast.error("Gagal! 1 nomor transaksi hanya diperbolehkan untuk 1 produk.");
+            return;
+        }
+        try {
+            const payload = {
+                kodeproduk: item.kodeproduk,
+                kode: TransaksiID.value,
+                harga: Number(item.harga || 0),
+                berat: Number(item.berat || 0)
+            };
+            const response = await transaksiService.storeProdukToTransaksiDetail(payload);
+            if (response) {
+                toast.success("Produk berhasil ditambahkan ke keranjang");
+                await fetchTransaksiDetail();
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Gagal menambahkan produk");
+        }
+    };
+
+    const handleBarcodeScan = async () => {
+        if (!scanQuery.value.trim()) return;
+        await fetchTransaksiDetail();
+        if (TransaksiDetail.value && TransaksiDetail.value.length >= 1) {
+            toast.error("Gagal! 1 nomor transaksi hanya diperbolehkan untuk 1 produk.");
+            scanQuery.value = '';
+            return;
+        }
+        try {
+            const payload = { kode: TransaksiID.value, kodeproduk: scanQuery.value };
+            const response = await transaksiService.storeProdukToTransaksiDetail(payload);
+            if (response) {
+                toast.success("Produk berhasil ditambahkan");
+                await fetchTransaksiDetail();
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Gagal men-scan produk");
+        } finally {
+            scanQuery.value = '';
+        }
+    };
+
+    const handleDelete = async (item) => {
+        const confirm = await confirmDelete('Apakah Anda yakin?', `Produk akan dikeluarkan dari daftar order!`);
+        if (confirm) {
+            isLoading.value = true;
+            try {
+                await transaksiService.batalTransaksiDetail({ id: item.id });
+                toast.success('Produk berhasil dikeluarkan.');
+                await fetchTransaksiDetail();
+                await fetchKodeTransaksi();
+            } catch (error) {
+                toast.error(error.response?.data?.message || 'Gagal menghapus data.');
+            } finally {
+                isLoading.value = false;
+            }
+        }
+    };
+
+    const handleNextOrder = () => {
+        formPOS.id = null;
+        formPOS.pelanggan = null;
+        formPOS.diskon = null;
+        usePoint.value = false;
+        TransaksiDetail.value = [];
+        fetchKodeTransaksi();
+    };
+
+    const handlePayment = async () => {
+        isLoading.value = true;
+        try {
+            const payload = {
+                kode: TransaksiID.value,
+                pelanggan_id: formPOS.pelanggan,
+                diskon_id: formPOS.diskon,
+                use_point: usePoint.value,
+                grand_total: calculateGrandTotal.value
+            };
+            const response = await transaksiService.paymentTransaksi(payload);
+            if (response) {
+                toast.success("Transaksi berhasil diselesaikan");
+                handleNextOrder();
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Terjadi kesalahan pembayaran.');
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    return {
+        jenisprodukList, selectedJenisProduk, produk, allProdukMaster, PelangganList, DiskonList,
+        TransaksiID, TransaksiDetail, isLoading, isLoadingProduk, searchProdukQuery, currentPageProduk,
+        itemsPerPageProduk, usePoint, scanQuery, formPOS, STORAGE_URL, isPelangganDropdownOpen,
+        isDiskonDropdownOpen, searchPelangganQuery,
+        fetchJenisProduk, fetchProdukByJenis, fetchKodeTransaksi, fetchTransaksiDetail, fetchPelanggan, fetchDiskon,
+        selectedPelangganNama, filteredPelangganList, selectedDiskonLabel, countItemsByJenis, paginatedProduk,
+        totalPagesProduk, calculateSubtotal, calculateDiskon, calculatePotonganPoint, calculateGrandTotal,
+        selectCategory, handlePilihProduk, handleBarcodeScan, handleDelete, handleNextOrder, handlePayment
     };
 }
