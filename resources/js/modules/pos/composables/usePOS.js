@@ -33,7 +33,7 @@ const scanQuery = ref('');
 const formPOS = reactive({
     id: null,
     pelanggan: null,
-    diskon: null,
+    diskon: 1,
 });
 
 // UI Dropdowns state shared
@@ -318,18 +318,18 @@ export function usePOS() {
     const handleNextOrder = async () => {
         formPOS.id = null;
         formPOS.pelanggan = null;
-        formPOS.diskon = null;
+        formPOS.diskon = 1; // RESET KE DEFAULT ID 1 (TIDAK ADA DISKON)
         usePoint.value = false;
-        inputPoint.value = 0; // Reset inputan poin ke 0
+        inputPoint.value = 0;
         TransaksiDetail.value = [];
 
-        // 1. Ambil nomor transaksi baru
+        // Ambil nomor transaksi baru
         await fetchKodeTransaksi();
 
-        // 2. AMBIL ULANG DATA PELANGGAN TERBARU (Poin ter-update otomatis dari DB!)
+        // Ambil ulang data pelanggan untuk sinkronisasi poin terbaru
         await fetchPelanggan();
 
-        // 3. Ambil ulang list produk agar produk yang terjual otomatis hilang
+        // Ambil ulang list produk
         try {
             await fetchProdukByJenis(selectedJenisProduk.value);
         } catch (error) {
@@ -339,7 +339,19 @@ export function usePOS() {
 
     // UPDATE: Menambahkan parameter point_to_use ke backend saat checkout
     const handlePayment = async () => {
-        // Validasi Poin Minimal
+
+        if (!formPOS.pelanggan) {
+            toast.error("Transaksi Gagal! Anda harus memilih member/pelanggan terlebih dahulu untuk mendapatkan poin.");
+            return;
+        }
+
+        // 1. Validasi Wajib Memilih Diskon
+        if (!formPOS.diskon) {
+            toast.error("Silakan pilih opsi diskon terlebih dahulu (Pilih 'TIDAK ADA DISKON' jika tidak ada promo).");
+            return;
+        }
+
+        // 2. Validasi Poin Minimal
         if (usePoint.value && Number(inputPoint.value) < 10) {
             toast.error("Minimal penukaran poin adalah 10 poin!");
             return;
@@ -350,8 +362,8 @@ export function usePOS() {
             const payload = {
                 kode: TransaksiID.value,
                 pelanggan_id: formPOS.pelanggan,
-                diskon_id: formPOS.diskon,
-                point_to_use: usePoint.value ? Number(inputPoint.value) : 0, // Kirim poin dinamis ke backend
+                diskon_id: formPOS.diskon, // Nilainya dipastikan aman (misal: 1 atau 2)
+                point_to_use: usePoint.value ? Number(inputPoint.value) : 0,
                 grand_total: calculateGrandTotal.value
             };
 
@@ -360,51 +372,34 @@ export function usePOS() {
             if (response) {
                 toast.success("Transaksi berhasil diselesaikan");
 
-                // Simpan variabel penting sebelum state direset oleh handleNextOrder
                 const completedTransaksiID = TransaksiID.value;
                 const completedGrandTotal = calculateGrandTotal.value;
 
-                // Cari kontak pelanggan terpilih
                 const selectedPel = PelangganList.value.find(p => p.value === formPOS.pelanggan);
                 const pelangganContact = selectedPel ? selectedPel.kontak : '';
 
-                // Panggil Helper Modal Programmatik Anda
                 showPaymentSuccess({
                     kodeTransaksi: completedTransaksiID,
-
-                    // AKSI 1: Cetak Nota
                     onPrint: () => {
                         const printUrl = `/transaksi/cetak-nota/${completedTransaksiID}`;
                         window.open(printUrl, '_blank');
-
-                        // Setelah cetak, biasanya langsung reset form untuk order berikutnya
                         handleNextOrder();
                     },
-
-                    // AKSI 2: Kirim WhatsApp
                     onWhatsApp: () => {
                         if (!pelangganContact) {
                             toast.error("Nomor kontak pelanggan tidak ditemukan.");
-                            handleNextOrder(); // Tetap reset form agar kasir bisa lanjut
+                            handleNextOrder();
                             return;
                         }
-
-                        // Format nomor HP ke standar internasional (menghilangkan 0 di depan diganti 62)
                         let formattedPhone = pelangganContact.replace(/[^0-9]/g, '');
                         if (formattedPhone.startsWith('0')) {
                             formattedPhone = '62' + formattedPhone.slice(1);
                         }
-
                         const message = `Halo, terima kasih telah berbelanja di toko kami.\nBerikut adalah info transaksi Anda:\nNo. Transaksi: *${completedTransaksiID}*\nTotal Belanja: *Rp ${Number(completedGrandTotal).toLocaleString('id-ID')}*\nStatus: *LUNAS*\n\nSemoga hari Anda menyenangkan!`;
                         const waUrl = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(message)}`;
-
                         window.open(waUrl, '_blank');
-
-                        // Setelah mengirim WA, reset form untuk order berikutnya
                         handleNextOrder();
                     },
-
-                    // AKSI 3: Order Baru / Klik tombol close
                     onNext: () => {
                         handleNextOrder();
                     }

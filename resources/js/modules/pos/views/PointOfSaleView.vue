@@ -22,6 +22,8 @@
                 <PointOfSaleKasirList />
             </div>
         </div>
+
+        <PelanggaModal />
     </main>
 </template>
 
@@ -29,6 +31,7 @@
 import { onMounted } from 'vue';
 import PointOfSaleProdukList from '../components/PointOfSaleProdukList.vue';
 import PointOfSaleKasirList from '../components/PointOfSaleKasirList.vue';
+import PelanggaModal from '../../pelanggan/components/PelangganModal.vue'
 import { usePOS } from '../composables/usePOS.js';
 
 const { fetchPelanggan, fetchDiskon, fetchKodeTransaksi, fetchJenisProduk, fetchProdukByJenis } = usePOS();

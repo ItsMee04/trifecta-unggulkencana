@@ -8,7 +8,7 @@
                 </h5>
                 <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">
                     ID: <span class="text-blue-950 dark:text-blue-400 font-extrabold">{{ TransaksiID || 'MEMUAT...'
-                        }}</span>
+                    }}</span>
                 </p>
             </div>
 
@@ -44,6 +44,14 @@
                             </ul>
                         </div>
                     </div>
+                    <button type="button" @click="openTambahPelangganModal"
+                        class="p-2.5 bg-blue-950 hover:bg-blue-900 dark:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-xl transition-all duration-200 shadow-sm active:scale-95 focus:outline-hidden flex items-center justify-center cursor-pointer shrink-0"
+                        title="Tambah Member Baru">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -154,7 +162,7 @@
                 <div v-if="calculateDiskon > 0" class="flex justify-between items-center text-xs">
                     <span class="text-red-500 font-medium">Potongan Diskon Promo</span>
                     <span class="text-red-500 font-bold">- Rp {{ Number(calculateDiskon).toLocaleString('id-ID')
-                        }}</span>
+                    }}</span>
                 </div>
                 <div v-if="usePoint && calculatePotonganPoint > 0" class="flex justify-between items-center text-xs">
                     <span class="text-amber-600 font-medium">Potongan Tukar Poin</span>
@@ -178,25 +186,54 @@
 <script setup>
 import { onMounted, onUnmounted, nextTick, ref } from 'vue';
 import { usePOS } from '../composables/usePOS';
+import { usePelanggan } from '../../pelanggan/composables/usePelanggan';
 
 const {
     TransaksiID, TransaksiDetail, DiskonList, isLoading, scanQuery, usePoint, formPOS,
     isPelangganDropdownOpen, isDiskonDropdownOpen, searchPelangganQuery,
     selectedPelangganNama, filteredPelangganList, selectedDiskonLabel,
     calculateSubtotal, calculateDiskon, calculatePotonganPoint, calculateGrandTotal,
-    currentPelangganPoint, inputPoint, validateInputPoint, // <--- TAMBAHKAN DISINI
-    handleBarcodeScan, handleDelete, handlePayment
+    currentPelangganPoint, inputPoint, validateInputPoint,
+    handleBarcodeScan, handleDelete, handlePayment,
+    fetchPelanggan // <--- 1. AMBIL FUNGSI INI DARI usePOS
 } = usePOS();
 
+const { handleCreate, isEdit } = usePelanggan();
+
 const barcodeInput = ref(null);
-const ensureFocus = () => { if (barcodeInput.value) barcodeInput.value.focus(); };
+
+const ensureFocus = (event) => {
+    if (!barcodeInput.value) return;
+    if (event && event.target) {
+        const target = event.target;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') return;
+        if (target.closest('.fixed') || target.closest('.modal') || target.closest('[role="dialog"]')) return;
+    }
+    barcodeInput.value.focus();
+};
+
+const openTambahPelangganModal = () => {
+    isPelangganDropdownOpen.value = false;
+    if (isEdit) isEdit.value = false;
+    handleCreate();
+};
+
+// 2. FUNGSI UNTUK ME-REFRESH DROPDOWN KASIR
+const handlePelangganSaved = async () => {
+    await fetchPelanggan(); // Refresh list pelanggan milik POS
+};
 
 onMounted(() => {
-    nextTick(() => ensureFocus());
+    nextTick(() => { if (barcodeInput.value) barcodeInput.value.focus(); });
     document.addEventListener('click', ensureFocus);
+
+    // 3. SEJALKAN LISTENER: Dengarkan saat ada member baru yang disimpan
+    window.addEventListener('pelanggan-saved', handlePelangganSaved);
 });
 
 onUnmounted(() => {
     document.removeEventListener('click', ensureFocus);
+    // 4. BERSIHKAN LISTENER SAAT KOMPONEN HANCUR
+    window.removeEventListener('pelanggan-saved', handlePelangganSaved);
 });
 </script>
