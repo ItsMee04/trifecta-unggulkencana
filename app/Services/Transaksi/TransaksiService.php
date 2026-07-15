@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 
 class TransaksiService
 {
@@ -199,13 +200,13 @@ class TransaksiService
 
             // Logika Poin
             $jumlahPoinBaru = floor((float) $produk->berat);
-            $jumlahPoinPakai = $data['point_digunakan'] ?? 0;
+            $jumlahPoinPakai = $data['point_to_use'] ?? 0; // Perbaikan parameter dari Vue
 
             // Update Header
             $transaksi->update([
-                'pelanggan_id'  => $data['pelanggan_id'],
+                'pelanggan_id'  => $data['pelanggan_id'], // Menggunakan 'pelanggan_id' sesuai validasi controller
                 'diskon_id'     => $data['diskon_id'] ?? null,
-                'total'         => $data['total'],
+                'total'         => $data['grand_total'], // Perbaikan dari 'total' ke 'grand_total'
                 'point_dapat'   => $jumlahPoinBaru,
                 'point_dipakai' => $jumlahPoinPakai,
                 'status'        => 2,
@@ -241,18 +242,20 @@ class TransaksiService
                 'tanggal'    => now(),
                 'keterangan' => "Penjualan " . $produk->nama . " (" . $transaksi->kode . ")",
                 'jenis'      => 'MASUK',
-                'jumlah'     => $data['total'],
+                'jumlah'     => $data['grand_total'], // Perbaikan ke 'grand_total'
                 'oleh'       => Auth::id(),
                 'status'     => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            DB::table('saldo')->where('id', $saldoAktif->id)->increment('total', $data['total']);
+
+            // Perbaikan ke 'grand_total' dan pastikan kolom di database dibaca bertipe integer/float demi keamanan poin desimal
+            DB::table('saldo')->where('id', $saldoAktif->id)->increment('total', $data['grand_total']);
 
             // Poin Pelanggan (Masuk)
             if ($jumlahPoinBaru > 0) {
                 DB::table('poinpelanggan')->insert([
-                    'pelanggan_id' => $data['pelanggan'],
+                    'pelanggan_id' => $data['pelanggan_id'], // Perbaikan ke 'pelanggan_id'
                     'kode'         => $data['kode'],
                     'jumlah'       => $jumlahPoinBaru,
                     'oleh'         => Auth::id(),
@@ -260,18 +263,25 @@ class TransaksiService
                     'created_at'   => now(),
                     'updated_at'   => now(),
                 ]);
-                DB::table('pelanggan')->where('id', $data['pelanggan'])->increment('point', $jumlahPoinBaru);
+
+                // NOTE: Di database Anda kolomnya bernama 'poin' atau 'point'?
+                // Sesuai respons JSON yang Anda berikan sebelumnya, nama kolom database pelanggan kemungkinan adalah 'poin'.
+                // Jika di database bernama 'point', pertahankan kode ini. Jika 'poin', ganti menjadi ->decrement('poin', ...)
+                $namaKolomPoin = Schema::hasColumn('pelanggan', 'poin') ? 'poin' : 'point';
+                DB::table('pelanggan')->where('id', $data['pelanggan_id'])->increment($namaKolomPoin, $jumlahPoinBaru);
             }
 
             // Poin Pelanggan (Keluar)
             if ($jumlahPoinPakai > 0) {
-                $currentPoint = DB::table('pelanggan')->where('id', $data['pelanggan'])->value('point');
+                $namaKolomPoin = Schema::hasColumn('pelanggan', 'poin') ? 'poin' : 'point';
+                $currentPoint = DB::table('pelanggan')->where('id', $data['pelanggan_id'])->value($namaKolomPoin);
+
                 if ($currentPoint < $jumlahPoinPakai) {
                     throw new \Exception("Saldo poin pelanggan tidak mencukupi untuk ditukarkan.");
                 }
 
                 DB::table('poinpelanggan')->insert([
-                    'pelanggan_id' => $data['pelanggan'],
+                    'pelanggan_id' => $data['pelanggan_id'], // Perbaikan ke 'pelanggan_id'
                     'kode'         => $data['kode'],
                     'jumlah'       => -$jumlahPoinPakai,
                     'oleh'         => Auth::id(),
@@ -279,7 +289,8 @@ class TransaksiService
                     'created_at'   => now(),
                     'updated_at'   => now(),
                 ]);
-                DB::table('pelanggan')->where('id', $data['pelanggan'])->decrement('point', $jumlahPoinPakai);
+
+                DB::table('pelanggan')->where('id', $data['pelanggan_id'])->decrement($namaKolomPoin, $jumlahPoinPakai);
             }
 
             return true;

@@ -106,10 +106,10 @@ class TransaksiController extends Controller
     {
         $validated = $request->validate([
             'kode'            => 'required',
-            'pelanggan_id'    => 'required',
+            'pelanggan_id'    => 'required|exists:pelanggan,id',
             'grand_total'     => 'required|numeric',
             'diskon_id'       => 'nullable',
-            'point_digunakan' => 'nullable|numeric'
+            'point_to_use'    => 'nullable|numeric' // Menggunakan name parameter sesuai kiriman Vue
         ]);
 
         try {
