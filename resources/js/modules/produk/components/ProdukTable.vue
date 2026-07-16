@@ -36,7 +36,7 @@
                     <tr
                         class="bg-slate-50 dark:bg-slate-950 text-slate-400 text-xs font-semibold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                         <th class="py-3 px-4 w-[8%] text-center">No.</th>
-                        <th class="py-3 px-4 w-[42%]">Kode Produk</th>
+                        <th class="py-3 px-4 w-[42%] text-center">Kode Produk</th>
                         <th class="py-3 px-4 w-[20%]">Nama</th>
                         <th class="py-3 px-4 w-[10%]">Berat</th>
                         <th class="py-3 px-4 w-[20%]">Karat</th>
