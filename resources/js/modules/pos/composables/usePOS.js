@@ -457,10 +457,26 @@ _Notifikasi Otomatis Sistem POS_`;
                 // Tampilkan Modal Sukses (Struktur modal project baru Anda)
                 showPaymentSuccess({
                     kodeTransaksi: completedTransaksiID,
-                    onPrint: () => {
-                        const printUrl = `/transaksi/cetak-nota/${completedTransaksiID}`;
-                        window.open(printUrl, '_blank');
-                        handleNextOrder();
+                    onPrint: async () => {
+                        // Memanggil API backend untuk mendapatkan URL Cetak Nota sesuai logic handlePrint Anda
+                        const payload = {
+                            kode: completedTransaksiID,
+                        };
+
+                        try {
+                            const { url } = await transaksiService.CetakNotaPenjulan(payload);
+                            if (url) {
+                                window.open(url, '_blank');
+                            } else {
+                                toast.error('URL cetak nota tidak ditemukan');
+                            }
+                        } catch (e) {
+                            console.error(e);
+                            toast.error('Gagal mencetak nota penjualan');
+                        } finally {
+                            // Setelah proses print (atau jika gagal), lanjutkan ke pesanan berikutnya
+                            handleNextOrder();
+                        }
                     },
                     onWhatsApp: () => {
                         if (!pelangganContact) {

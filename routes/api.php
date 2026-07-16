@@ -206,3 +206,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     });
 });
+
+Route::get('/transaksi/CetakNotaPenjualan', [TransaksiController::class, 'CetakNotaPenjualan'])->name('CetakNotaPenjualan');

@@ -129,7 +129,7 @@ class TransaksiController extends Controller
 
     public function getSignedNotaPenjualanUrl(Request $request)
     {
-        $route_name = 'produk.cetak_notapenjualan';
+        $route_name = 'CetakNotaPenjualan';
         $expiration = now()->addMinutes(10);
 
         $signedUrl = URL::temporarySignedRoute(

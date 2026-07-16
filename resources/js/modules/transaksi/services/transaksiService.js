@@ -48,7 +48,7 @@ export const transaksiService = {
 
     async CetakNotaPenjulan(payload) {
         try {
-            const response = await api.post('/transaksi/transaksi/delete', payload);
+            const response = await api.post('/transaksi/transaksi/getSignedNotaPenjualanUrl', payload);
             return response.data;
         } catch (error) {
             throw error;
