@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-// use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -12,42 +10,42 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::unprepared("
-            DROP PROCEDURE IF EXISTS CetakNotaPenjualan;
-        ");
+        // 1. Hapus procedure lama jika sudah ada
+        DB::unprepared("DROP PROCEDURE IF EXISTS GetNotaTransaksi");
 
+        // 2. Buat Stored Procedure baru dengan penanganan Collation yang ketat
         DB::unprepared("
-            CREATE PROCEDURE CetakNotaPenjualan(IN KODETRANSAKSI_INPUT VARCHAR(255))
+            CREATE PROCEDURE GetNotaTransaksi(
+                -- Paksa parameter input menggunakan collation utf8mb4_unicode_ci
+                IN p_kode_transaksi VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+            )
             BEGIN
                 SELECT
-                    tr.kode,
-                    pl.nama AS namapelanggan,
-                    pl.alamat,
-                    pl.kontak,
-                    pg.nip,
-                    pg.nama AS namapegawai,
-                    pr.kodeproduk,
-                    pr.nama AS namaproduk,
-                    kr.berat,
-                    kr.karat,
-                    ds.diskon,
-                    ds.nilai,
-                    kr.hargajual,
-                    pr.image,
-                    tr.total,
-                    tr.point_dapat,
-                    tr.point_dipakai,
-                    tr.terbilang,
-                    kr.total AS keranjangtotal
-                FROM produk pr
-                JOIN transaksidetail kr ON pr.id = kr.produk_id
-                JOIN transaksi tr ON kr.kode = tr.kode
-                JOIN pelanggan pl ON tr.pelanggan_id = pl.id
-                LEFT JOIN diskon ds ON tr.diskon_id = ds.id
-                JOIN users us ON tr.oleh = us.id
-                JOIN pegawai pg ON us.pegawai_id = pg.id
-                WHERE tr.kode = KODETRANSAKSI_INPUT COLLATE utf8mb4_unicode_ci AND tr.status != 0 AND kr.status != 0;
-            END;
+                    t.tanggal,
+                    t.kode AS kode_transaksi,
+                    t.total AS grand_total,
+                    t.terbilang,
+                    p.nama AS nama_pelanggan,
+                    p.alamat AS alamat_pelanggan,
+                    p.kontak AS hp_pelanggan,
+                    peg.nama AS nama_admin,
+                    pr.image AS foto,
+                    pr.nama AS nama_produk,
+                    td.berat,
+                    td.karat,
+                    td.hargajual AS harga_per_gram,
+                    IFNULL(CONCAT(d.nilai, '%'), '0%') AS diskon,
+                    td.total AS total_harga
+                FROM transaksi t
+                LEFT JOIN pelanggan p ON t.pelanggan_id = p.id
+                LEFT JOIN diskon d ON t.diskon_id = d.id
+                INNER JOIN users u ON t.oleh = u.id
+                INNER JOIN pegawai peg ON u.pegawai_id = peg.id
+                -- Tambahkan COLLATE pada JOIN di bawah ini agar aman jika collation kedua tabel berbeda
+                INNER JOIN transaksidetail td ON t.kode = td.kode COLLATE utf8mb4_unicode_ci
+                INNER JOIN produk pr ON td.produk_id = pr.id
+                WHERE t.kode = p_kode_transaksi;
+            END
         ");
     }
 
@@ -56,6 +54,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::unprepared('DROP PROCEDURE IF EXISTS CetakNotaPenjualan');
+        // Disamakan dengan nama procedure yang dibuat di atas
+        DB::unprepared('DROP PROCEDURE IF EXISTS GetNotaTransaksi');
     }
 };

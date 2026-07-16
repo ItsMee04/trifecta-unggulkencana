@@ -7,6 +7,7 @@ use App\Models\Transaksi\Transaksi;
 use App\Models\Transaksi\TransaksiDetail;
 use App\Services\Transaksi\TransaksiService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 
 class TransaksiController extends Controller
@@ -262,6 +263,64 @@ class TransaksiController extends Controller
             return response()->json([
                 'status'  => false,
                 'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Mengambil data nota penjualan terformat menggunakan Stored Procedure
+     * untuk dikonsumsi oleh komponen cetak Vue (Print Preview)
+     */
+    public function getNotaData(Request $request)
+    {
+        $request->validate([
+            'kode' => 'required|string|exists:transaksi,kode'
+        ]);
+
+        try {
+            // 1. Eksekusi Stored Procedure dengan parameter binding yang aman
+            $data = DB::select("CALL GetNotaTransaksi(?)", [$request->kode]);
+
+            if (empty($data)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Detail transaksi tidak ditemukan.'
+                ], 404);
+            }
+
+            // 2. Format struktur data agar presisi dengan Props/State pada Vue Anda
+            $notaData = [
+                'tanggal'          => $data[0]->tanggal,
+                'kode_transaksi'   => $data[0]->kode_transaksi,
+                'nama_pelanggan'   => $data[0]->nama_pelanggan ?? 'PELANGGAN UMUM',
+                'alamat_pelanggan' => $data[0]->alamat_pelanggan ?? 'PURWOKERTO',
+                'hp_pelanggan'     => $data[0]->hp_pelanggan ?? '-',
+                'terbilang'        => $data[0]->terbilang,
+                'nama_admin'       => $data[0]->nama_admin ?? 'ADMIN',
+                'grand_total'      => $data[0]->grand_total,
+                'items' => [
+                    [
+                        // Menghasilkan URL publik untuk foto produk
+                        'foto'           => $data[0]->foto ? asset('storage/images/produk/' . $data[0]->foto) : null,
+                        'nama_produk'    => $data[0]->nama_produk,
+                        'berat'          => $data[0]->berat,
+                        'karat'          => $data[0]->karat . 'K', // Auto append satuan karat
+                        'harga_per_gram' => $data[0]->harga_per_gram,
+                        'diskon'         => $data[0]->diskon,
+                        'total_harga'    => $data[0]->total_harga,
+                    ]
+                ]
+            ];
+
+            return response()->json([
+                'status'   => true,
+                'notaData' => $notaData
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal memuat data nota: ' . $e->getMessage()
             ], 500);
         }
     }

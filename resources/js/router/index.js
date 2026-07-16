@@ -118,8 +118,17 @@ const routes = [
                 path: 'pos',
                 component: () => import('../modules/pos/views/PointOfSaleView.vue'),
                 meta: { permission: 'transaksi' }
-            }
+            },
         ]
+    },
+    {
+        path: '/cetak-nota/:kodeTransaksi',
+        name: 'CetakNota',
+        component: () => import('../modules/pos/components/CetakNotaTransaksi.vue'),
+        meta: {
+            requiresAuth: true, // 🌟 Tambahkan ini agar tidak dilempar ke dashboard
+            layout: 'blank'
+        }
     },
     {
         path: '/:pathMatch(.*)*',

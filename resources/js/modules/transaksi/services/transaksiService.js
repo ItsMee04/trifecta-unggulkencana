@@ -81,4 +81,13 @@ export const transaksiService = {
             throw error;
         }
     },
+
+    async getNotaData(payload) {
+        try {
+            const response = await api.get('/transaksi/transaksi/nota-data', payload);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 };
