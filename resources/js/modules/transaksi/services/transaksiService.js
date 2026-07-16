@@ -75,7 +75,7 @@ export const transaksiService = {
 
     async sendTelegramNotification(payload) {
         try {
-            const response = await api.post('/transaksi/transaksi/delete', payload);
+            const response = await api.post('/transaksi/transaksi/sendnotification', payload);
             return response.data;
         } catch (error) {
             throw error;

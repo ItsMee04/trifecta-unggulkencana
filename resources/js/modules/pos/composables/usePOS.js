@@ -67,11 +67,17 @@ export function usePOS() {
     const fetchProdukByJenis = async (jenisId = 'all') => {
         isLoadingProduk.value = true;
         try {
-            const payload = { jenis: jenisId };
-            const response = await nampanprodukService.getProdukInNampanByJenis(payload);
-            const data = response.data || [];
-            produk.value = data;
-            if (jenisId === 'all') allProdukMaster.value = data;
+            // 1. Selalu ambil semua produk master terlebih dahulu agar badge kategori lain ikut update
+            const responseAll = await nampanprodukService.getProdukInNampanByJenis({ jenis: 'all' });
+            allProdukMaster.value = responseAll.data || [];
+
+            // 2. Set produk yang tampil sesuai dengan jenis kategori yang dipilih saat ini
+            if (jenisId === 'all') {
+                produk.value = allProdukMaster.value;
+            } else {
+                const responseFiltered = await nampanprodukService.getProdukInNampanByJenis({ jenis: jenisId });
+                produk.value = responseFiltered.data || [];
+            }
         } catch (error) {
             produk.value = [];
             toast.error("Gagal memuat data produk");
@@ -110,7 +116,8 @@ export function usePOS() {
             PelangganList.value = rawData.map(item => ({
                 value: item.id,
                 label: item.nama.toUpperCase(),
-                point: item.poin || 0
+                point: item.poin || 0,
+                kontak: item.kontak // <-- KUNCI PERBAIKAN: Wajib sertakan ini agar dibaca fitur WhatsApp!
             }));
         } catch (error) {
             toast.error("Gagal memuat data pelanggan");
@@ -339,19 +346,16 @@ export function usePOS() {
 
     // UPDATE: Menambahkan parameter point_to_use ke backend saat checkout
     const handlePayment = async () => {
-
         if (!formPOS.pelanggan) {
             toast.error("Transaksi Gagal! Anda harus memilih member/pelanggan terlebih dahulu untuk mendapatkan poin.");
             return;
         }
 
-        // 1. Validasi Wajib Memilih Diskon
         if (!formPOS.diskon) {
             toast.error("Silakan pilih opsi diskon terlebih dahulu (Pilih 'TIDAK ADA DISKON' jika tidak ada promo).");
             return;
         }
 
-        // 2. Validasi Poin Minimal
         if (usePoint.value && Number(inputPoint.value) < 10) {
             toast.error("Minimal penukaran poin adalah 10 poin!");
             return;
@@ -362,7 +366,7 @@ export function usePOS() {
             const payload = {
                 kode: TransaksiID.value,
                 pelanggan_id: formPOS.pelanggan,
-                diskon_id: formPOS.diskon, // Nilainya dipastikan aman (misal: 1 atau 2)
+                diskon_id: formPOS.diskon,
                 point_to_use: usePoint.value ? Number(inputPoint.value) : 0,
                 grand_total: calculateGrandTotal.value
             };
@@ -377,7 +381,80 @@ export function usePOS() {
 
                 const selectedPel = PelangganList.value.find(p => p.value === formPOS.pelanggan);
                 const pelangganContact = selectedPel ? selectedPel.kontak : '';
+                const pelangganNama = selectedPel ? selectedPel.label : 'UMUM';
 
+                // =================================================================
+                // TELEGRAM NOTIFICATION (DIADOPSI DARI CONTOH PROJECT LAMA)
+                // =================================================================
+                const sekarang = new Date();
+                const waktu = sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                const tanggal = sekarang.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+
+                // Ambil & format kontak untuk Link WA me di Telegram
+                let waLinkInfo = "";
+                if (pelangganContact) {
+                    let formattedNo = pelangganContact.replace(/\D/g, '');
+                    if (formattedNo.startsWith('0')) {
+                        formattedNo = '62' + formattedNo.slice(1);
+                    } else if (formattedNo.length > 0 && !formattedNo.startsWith('62')) {
+                        formattedNo = '62' + formattedNo;
+                    }
+                    if (formattedNo) {
+                        waLinkInfo = `\n📲 [Chat WhatsApp](https://wa.me/${formattedNo}?text=)`;
+                    }
+                }
+
+                // Detail Produk (Menyesuaikan dengan struktur item transaksi kasir saat ini)
+                const daftarProduk = TransaksiDetail.value.map((item, index) => {
+                    const namaItem = item.nama || item.nama_produk || (item.produk ? item.produk.nama : 'Produk Tidak Diketahui');
+                    const beratItem = item.berat || 0;
+                    const hargaPerGram = item.hargajual || item.harga || 0;
+                    const subTotalItem = item.total || (beratItem * hargaPerGram);
+
+                    return `${index + 1}. *${namaItem}*\n` +
+                        `    Berat : ${beratItem}g\n` +
+                        `    Harga : Rp ${hargaPerGram.toLocaleString('id-ID')}/g\n` +
+                        `    Subtotal : Rp ${Number(subTotalItem).toLocaleString('id-ID')}`;
+                }).join('\n');
+
+                // Diskon & Point info tambahan
+                let infoTambahan = "";
+                if (selectedDiskonLabel.value && selectedDiskonLabel.value !== 'Tanpa Diskon') {
+                    infoTambahan += `\n🎁 *Diskon:* ${selectedDiskonLabel.value} (-Rp ${calculateDiskon.value.toLocaleString('id-ID')})`;
+                }
+                if (payload.point_to_use > 0) {
+                    infoTambahan += `\n🪙 *Poin Digunakan:* ${payload.point_to_use} (-Rp ${calculatePotonganPoint.value.toLocaleString('id-ID')})`;
+                }
+
+                // Susun Pesan Telegram
+                const pesan = `
+✅ *TRANSAKSI PENJUALAN BERHASIL*
+━━━━━━━━━━━━━━━
+📅 *Tanggal:* ${tanggal}
+🕒 *Jam:* ${waktu} WIB
+🆔 *Kode:* ${completedTransaksiID}
+👤 *Pelanggan:* ${pelangganNama}${waLinkInfo}
+
+📦 *Detail Barang:*
+${daftarProduk}
+━━━━━━━━━━━━━━━${infoTambahan}
+
+💰 *Grand Total:* Rp ${completedGrandTotal.toLocaleString('id-ID')}
+━━━━━━━━━━━━━━━
+_Notifikasi Otomatis Sistem POS_`;
+
+                // Kirim ke Backend menggunakan service instance yang tersedia
+                try {
+                    await transaksiService.sendTelegramNotification({ pesan });
+                } catch (telegramError) {
+                    console.error('Gagal mengirim notifikasi Telegram:', telegramError);
+                }
+                // =================================================================
+
+                // Refresh daftar produk agar item yang lunas langsung hilang/berkurang dari tab
+                await fetchProdukByJenis(selectedJenisProduk.value);
+
+                // Tampilkan Modal Sukses (Struktur modal project baru Anda)
                 showPaymentSuccess({
                     kodeTransaksi: completedTransaksiID,
                     onPrint: () => {

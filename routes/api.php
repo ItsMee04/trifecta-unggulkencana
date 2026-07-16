@@ -201,7 +201,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('batalTransaksiDetail', [TransaksiController::class, 'batalTransaksiDetail'])->middleware('check_permission:transaksi,update');
             Route::post('paymentTransaksi', [TransaksiController::class, 'paymentTransaksi'])->middleware('check_permission:transaksi,create');
             Route::post('getSignedNotaPenjualanUrl', [TransaksiController::class, 'getSignedNotaPenjualanUrl'])->middleware('check_permission:transaksi,read');
-            Route::post('telegram/sendnotification', [TransaksiController::class, 'sendTelegramNotification'])->middleware('check_permission:transaksi,create');
+            Route::post('sendnotification', [TransaksiController::class, 'sendTelegramNotification'])->middleware('check_permission:transaksi,create');
         });
 
     });
