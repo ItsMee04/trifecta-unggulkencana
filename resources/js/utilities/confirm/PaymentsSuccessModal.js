@@ -9,6 +9,15 @@ export const showPaymentSuccess = (options = { kodeTransaksi: '', onPrint: () =>
 
         // 2. Fungsi untuk menutup dengan efek transisi keluar (Fade Out)
         const closeAndDestroy = (actionType) => {
+            // 1. Jika aksi BUKAN 'next' dan BUKAN 'close',
+            // jangan tutup modal, cukup panggil callback aksinya saja.
+            if (actionType === 'print' || actionType === 'whatsapp') {
+                if (actionType === 'print') options.onPrint?.();
+                if (actionType === 'whatsapp') options.onWhatsApp?.();
+                return; // Hentikan fungsi di sini, modal tidak akan ditutup
+            }
+
+            // 2. Jika aksi adalah 'next' atau 'close', jalankan logika penutupan modal
             const backdrop = mountNode.querySelector('.modal-backdrop');
             const card = mountNode.querySelector('.modal-card');
 
@@ -18,15 +27,12 @@ export const showPaymentSuccess = (options = { kodeTransaksi: '', onPrint: () =>
                 card.classList.replace('scale-100', 'scale-95');
             }
 
-            // Tunggu animasi transisi keluar selesai (150ms) baru hapus dari DOM
             setTimeout(() => {
                 render(null, mountNode);
                 mountNode.remove();
 
-                // Panggil callback sesuai aksi tombol yang ditekan kasir
-                if (actionType === 'print') options.onPrint?.();
+                // Panggil callback 'next' atau handle penutupan
                 if (actionType === 'next') options.onNext?.();
-                if (actionType === 'whatsapp') options.onWhatsApp?.();
 
                 resolve(actionType);
             }, 150);

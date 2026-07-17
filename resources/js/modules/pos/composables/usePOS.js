@@ -465,9 +465,6 @@ _Notifikasi Otomatis Sistem POS_`;
                         } catch (e) {
                             console.error(e);
                             toast.error('Gagal membuka preview cetak nota');
-                        } finally {
-                            // Setelah tab baru dibuka, langsung reset POS untuk transaksi berikutnya
-                            handleNextOrder();
                         }
                     },
                     onWhatsApp: () => {
@@ -483,7 +480,6 @@ _Notifikasi Otomatis Sistem POS_`;
                         const message = `Halo, terima kasih telah berbelanja di toko kami.\nBerikut adalah info transaksi Anda:\nNo. Transaksi: *${completedTransaksiID}*\nTotal Belanja: *Rp ${Number(completedGrandTotal).toLocaleString('id-ID')}*\nStatus: *LUNAS*\n\nSemoga hari Anda menyenangkan!`;
                         const waUrl = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(message)}`;
                         window.open(waUrl, '_blank');
-                        handleNextOrder();
                     },
                     onNext: () => {
                         handleNextOrder();
