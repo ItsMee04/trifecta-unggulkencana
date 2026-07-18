@@ -26,6 +26,7 @@ return new class extends Migration
             $table->text('keterangan')->nullable();
             $table->unsignedBigInteger('kondisi_id')->nullable()->default(1);
             $table->string('image', 100)->nullable();
+            $table->unsignedBigInteger('oleh');
             $table->integer('status')->unsigned()->default(1);
             $table->timestamps();
 
@@ -34,6 +35,7 @@ return new class extends Migration
             $table->foreign('jeniskarat_id')->references('id')->on('jeniskarat')->onDelete('cascade');
             $table->foreign('harga_id')->references('id')->on('harga')->onDelete('cascade');
             $table->foreign('kondisi_id')->references('id')->on('kondisi')->onDelete('cascade');
+            $table->foreign('oleh')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

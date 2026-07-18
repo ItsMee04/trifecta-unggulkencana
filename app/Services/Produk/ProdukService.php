@@ -4,6 +4,7 @@ namespace App\Services\Produk;
 
 use App\Models\Produk\Produk;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -61,6 +62,7 @@ class ProdukService
                     'hargabeli'         => $data['hargabeli'] ?? 0,
                     'keterangan'        => isset($data['keterangan']) ? strtoupper($data['keterangan']) : null,
                     'image'             => $imageName,
+                    'oleh'              => Auth::user()->id
                 ]);
 
                 return $produk;

@@ -27,6 +27,7 @@ class Produk extends Model
         'keterangan',
         'kondisi_id',
         'image',
+        'oleh',
         'status'
     ];
 
