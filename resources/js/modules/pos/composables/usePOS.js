@@ -184,6 +184,26 @@ export function usePOS() {
 
     const totalPagesProduk = computed(() => Math.ceil(filteredProduk.value.length / itemsPerPageProduk) || 1);
 
+    const visiblePages = computed(() => {
+        const total = totalPagesProduk.value;
+        const current = currentPageProduk.value;
+        const range = 5; // Jumlah maksimal tombol halaman yang tampil
+
+        let start = Math.max(1, current - Math.floor(range / 2));
+        let end = Math.min(total, start + range - 1);
+
+        // Penyesuaian jika mendekati akhir
+        if (end - start + 1 < range && start > 1) {
+            start = Math.max(1, end - range + 1);
+        }
+
+        const pages = [];
+        for (let i = start; i <= end; i++) {
+            pages.push(i);
+        }
+        return pages;
+    });
+
     const paginatedProduk = computed(() => {
         const start = (currentPageProduk.value - 1) * itemsPerPageProduk;
         return filteredProduk.value.slice(start, start + itemsPerPageProduk);
@@ -497,11 +517,11 @@ _Notifikasi Otomatis Sistem POS_`;
         jenisprodukList, selectedJenisProduk, produk, allProdukMaster, PelangganList, DiskonList,
         TransaksiID, TransaksiDetail, isLoading, isLoadingProduk, searchProdukQuery, currentPageProduk,
         itemsPerPageProduk, usePoint, inputPoint, scanQuery, formPOS, STORAGE_URL, isPelangganDropdownOpen,
-        isDiskonDropdownOpen, searchPelangganQuery, currentPelangganPoint, // Ditambahkan ke return
+        isDiskonDropdownOpen, searchPelangganQuery, currentPelangganPoint,
         fetchJenisProduk, fetchProdukByJenis, fetchKodeTransaksi, fetchTransaksiDetail, fetchPelanggan, fetchDiskon,
         selectedPelangganNama, filteredPelangganList, selectedDiskonLabel, countItemsByJenis, paginatedProduk,
         totalPagesProduk, calculateSubtotal, calculateDiskon, calculatePotonganPoint, calculateGrandTotal,
         selectCategory, handlePilihProduk, handleBarcodeScan, handleDelete, handleNextOrder, handlePayment,
-        validateInputPoint // Ditambahkan ke return
+        validateInputPoint, visiblePages,
     };
 }

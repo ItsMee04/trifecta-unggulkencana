@@ -40,10 +40,10 @@
                             </span>
                             <span
                                 :class="selectedJenisProduk === cat.id ? 'text-white' : 'text-slate-700 dark:text-slate-300'">{{
-                                cat.jenis }}</span>
+                                    cat.jenis }}</span>
                             <span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold ml-1"
                                 :class="selectedJenisProduk === cat.id ? 'bg-white/20 text-white' : 'bg-slate-200/60 dark:bg-slate-800'">{{
-                                countItemsByJenis[cat.id] || 0 }}</span>
+                                    countItemsByJenis[cat.id] || 0 }}</span>
                         </button>
                     </li>
                 </ul>
@@ -80,10 +80,11 @@
                                 <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg></div>
+                                </svg>
+                            </div>
                             <span
                                 class="absolute top-2 left-2 bg-slate-900/85 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">{{
-                                item.kodeproduk }}</span>
+                                    item.kodeproduk }}</span>
                         </div>
                         <div class="p-3 space-y-1">
                             <div class="flex justify-between items-center">
@@ -91,10 +92,10 @@
                                     item.jenis_produk?.jenis || 'Umum' }}</span>
                                 <span
                                     class="bg-blue-50 dark:bg-blue-950/40 text-blue-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md">{{
-                                    item.berat }}g</span>
+                                        item.berat }}g</span>
                             </div>
                             <div class="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{{ item.nama
-                                }}</div>
+                            }}</div>
                             <div class="flex items-center gap-1.5 text-[10px] text-slate-400">
                                 <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path
@@ -113,6 +114,7 @@
             </div>
 
             <div v-if="totalPagesProduk > 1" class="flex justify-center items-center gap-1 pt-4 mt-auto">
+                <!-- Tombol Prev -->
                 <button @click="currentPageProduk--" :disabled="currentPageProduk === 1"
                     class="p-1.5 border border-slate-150 rounded-lg disabled:opacity-30">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,12 +122,14 @@
                     </svg>
                 </button>
 
-                <button v-for="page in totalPagesProduk" :key="page" @click="currentPageProduk = page"
-                    class="w-7 h-7 text-xs font-bold rounded-lg"
-                    :class="currentPageProduk === page ? 'bg-blue-950 text-white' : 'bg-transparent text-slate-600 dark:text-slate-400'">
+                <!-- Tombol Halaman (Menggunakan visiblePages) -->
+                <button v-for="page in visiblePages" :key="page" @click="currentPageProduk = page"
+                    class="w-7 h-7 text-xs font-bold rounded-lg transition-all"
+                    :class="currentPageProduk === page ? 'bg-blue-950 text-white' : 'bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100'">
                     {{ page }}
                 </button>
 
+                <!-- Tombol Next -->
                 <button @click="currentPageProduk++" :disabled="currentPageProduk === totalPagesProduk"
                     class="p-1.5 border border-slate-150 rounded-lg disabled:opacity-30">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -144,7 +148,7 @@ import { usePOS } from '../composables/usePOS';
 const {
     jenisprodukList, selectedJenisProduk, isLoadingProduk, searchProdukQuery,
     countItemsByJenis, totalPagesProduk, currentPageProduk, paginatedProduk, STORAGE_URL,
-    selectCategory, handlePilihProduk
+    selectCategory, handlePilihProduk, visiblePages
 } = usePOS();
 
 // Logic Slider Drag Mouse
