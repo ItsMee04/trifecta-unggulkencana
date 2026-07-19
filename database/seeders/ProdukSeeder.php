@@ -58,7 +58,7 @@ class ProdukSeeder extends Seeder
                     Produk::create([
                         'kodeproduk'     => $kodeproduk,
                         'nama'           => strtoupper($faker->word . ' ' . $faker->colorName),
-                        'berat'          => $faker->randomFloat(3, 1, 50),
+                        'berat'          => $faker->randomFloat(1, 0.5, 10),
                         'jenisproduk_id' => $faker->randomElement($jenisProdukIds),
                         'karat_id'       => $selectedHarga->karat_id,
                         'jeniskarat_id'  => $selectedHarga->jeniskarat_id,
