@@ -34,7 +34,8 @@
             <div
                 class="flex-1 overflow-y-auto px-3 py-4 space-y-5 scrollbar-thin overflow-x-hidden max-h-[calc(100dvh-140px)]">
 
-                <div v-for="(group, groupKey) in menuGroups" :key="groupKey" class="space-y-1">
+                <!-- Ubah pemanggilan menuGroups lama menjadi objek computed allowedMenuGroups -->
+                <div v-for="(group, groupKey) in allowedMenuGroups" :key="groupKey" class="space-y-1">
 
                     <span v-if="!isMiniSidebar || isMobileOpen"
                         class="px-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
@@ -55,7 +56,7 @@
                             <component :is="iconMap[menu.icon] || HelpCircle"
                                 class="w-4 h-4 shrink-0 transition-colors duration-150" />
                             <span v-if="!isMiniSidebar || isMobileOpen" class="whitespace-nowrap">{{ menu.label
-                            }}</span>
+                                }}</span>
                         </router-link>
 
                         <div v-else>
@@ -67,8 +68,9 @@
                                 ]">
                                 <div class="flex items-center gap-2.5 min-w-0">
                                     <component :is="iconMap[menu.icon] || HelpCircle" class="w-4 h-4 shrink-0" />
-                                    <span v-if="!isMiniSidebar || isMobileOpen" class="whitespace-nowrap truncate">{{
-                                        menu.label }}</span>
+                                    <span v-if="!isMiniSidebar || isMobileOpen" class="whitespace-nowrap truncate">
+                                        {{ menu.label }}
+                                    </span>
                                 </div>
                                 <ChevronDown v-if="(!isMiniSidebar || isMobileOpen)"
                                     class="w-3.5 h-3.5 transition-transform duration-200 shrink-0"
@@ -125,7 +127,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue'; // 🌟 Tambahkan computed
 import { useRoute } from 'vue-router';
 import { isMiniSidebar, isMobileOpen } from './sidebarState';
 import { useAuthentication } from '../../modules/authentication/composables/useAuthentication';
@@ -135,23 +137,19 @@ import {
     ArrowLeftCircle, ArrowRightCircle, ArrowUpCircle
 } from 'lucide-vue-next';
 
-// 🌟 TAMBAHKAN IMPORT LOGO DI SINI (Sesuaikan alias '@' project Anda)
 import LogoStatis from '@/assets/img/logo.png';
 
 const route = useRoute();
 
-// 2. Destructure Data User, Fallback Inisial, dan Fungsi Logout dari useAuth
-const { user, avatarFallback, handleLogout, isLoading } = useAuthentication();
+// 🌟 Destructure hasPermission untuk memvalidasi hak akses
+const { user, avatarFallback, handleLogout, isLoading, hasPermission } = useAuthentication();
 
-// 1. State untuk mendeteksi apakah file gambar di server corup / tidak ditemukan
 const imageError = ref(false);
 
-// 2. Fungsi helper untuk menyusun URL Asset Gambar dari Backend
 const getAvatarUrl = (avatarPath) => {
     if (!avatarPath) return '';
-    // Jika backend menggunakan default symlink laravel storage:
-    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', ''); // Mengubah http://localhost:8000/api menjadi http://localhost:8000
-    return `${baseUrl}/storage/pegawai/image/${avatarPath}`; // Sesuaikan dengan folder penyimpanan di Laravel Anda (misal: /storage/pegawai/)
+    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '');
+    return `${baseUrl}/storage/pegawai/image/${avatarPath}`;
 };
 
 const isGroupActive = (submenus) => {
@@ -174,6 +172,39 @@ const iconMap = {
     'arrow-left-circle': ArrowLeftCircle,
     'arrow-right-circle': ArrowRightCircle,
     'arrow-up-circle': ArrowUpCircle
+};
+
+// 🌟 Mapping manual nama permission dari router/index jika key objek menu berbeda
+const permissionMapping = {
+    'dashboard': 'dashboard',
+    'jabatan': 'jabatan',
+    'pegawai': 'pegawai',
+    'role': 'role',
+    'users': 'users',
+    'kondisi': 'kondisi',
+    'karat': 'karat',
+    'jeniskarat': 'jeniskarat',
+    'harga': 'harga',
+    'diskon': 'diskon',
+    'jenisproduk': 'jenisproduk',
+    'produk': 'produk',
+    'nampan': 'nampan',
+    'nampanproduk': 'nampanproduk',
+    'pelanggan': 'pelanggan',
+    'suplier': 'suplier',
+    'pesan': 'pesan',
+    'saldo': 'saldo',
+    'mutasisaldo': 'mutasisaldo',
+    'transaksi': 'transaksi', // POS menggunakan transaksi
+    'offtake': 'offtake',
+    'pembeliandaritoko': 'pembeliandaritoko',
+    'pembeliandariluartoko': 'pembeliandariluartoko',
+    'perbaikan': 'perbaikan',
+    'transaksipenjualan': 'transaksipenjualan',
+    'transaksipembelian': 'transaksipembelian',
+    'transaksiofftake': 'transaksiofftake',
+    'inventori': 'inventori',
+    'laporan': 'laporan'
 };
 
 const menuGroups = {
@@ -268,6 +299,46 @@ const menuGroups = {
     },
 };
 
+// 🌟 FILTER LOGIC BERDASARKAN PERMISSION NYATA DATA USER
+const allowedMenuGroups = computed(() => {
+    const filteredGroups = {};
+
+    Object.entries(menuGroups).forEach(([groupKey, group]) => {
+        const filteredMenus = {};
+
+        Object.entries(group.menus).forEach(([menuKey, menu]) => {
+            if (menu.submenus) {
+                // Saring data anak (submenus)
+                const validSubmenus = menu.submenus.filter(sub => {
+                    const permKey = permissionMapping[sub.path.replace('/', '')] || sub.name.toLowerCase().replace(/\s+/g, '');
+                    return hasPermission(permKey, 'read');
+                });
+
+                // Jika memiliki sub-menu yang lolos sensor, masukkan ke list render
+                if (validSubmenus.length > 0) {
+                    filteredMenus[menuKey] = { ...menu, submenus: validSubmenus };
+                }
+            } else {
+                // Cek menu tunggal tanpa sub-menu
+                const permKey = permissionMapping[menuKey] || menu.path.replace('/', '');
+                if (hasPermission(permKey, 'read')) {
+                    filteredMenus[menuKey] = menu;
+                }
+            }
+        });
+
+        // Hanya tampilkan header kelompok menu jika ada isinya
+        if (Object.keys(filteredMenus).length > 0) {
+            filteredGroups[groupKey] = {
+                ...group,
+                menus: filteredMenus
+            };
+        }
+    });
+
+    return filteredGroups;
+});
+
 const openSubmenus = ref({});
 
 const toggleSubmenu = (menuKey) => {
@@ -275,7 +346,7 @@ const toggleSubmenu = (menuKey) => {
 };
 
 watch(
-    () => route.path,
+    (() => route.path),
     () => {
         openSubmenus.value = {};
         isMobileOpen.value = false;
