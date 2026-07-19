@@ -105,11 +105,12 @@
                         <tr v-for="(item, index) in notaData.items" :key="index"
                             class="text-[9px] flex w-full items-center border-b border-slate-200 last:border-b-0 py-2 h-[140px]">
 
-                            <td class="border-r border-slate-300 w-[15%] flex justify-center items-center h-full">
-                                <img v-if="item.foto" :src="item.foto" alt="Produk"
-                                    class="w-24 h-24 object-cover rounded-md border border-slate-200 shadow" />
+                            <td class="border-r border-slate-300 w-[15%] flex items-center justify-center p-1">
+                                <!-- 🌟 Panggil fungsi helper dari script untuk menghindari error compile Vite -->
+                                <img v-if="item.foto" :src="dapatkanUrlFotoProduk(item.foto)" alt="Produk"
+                                    class="w-20 h-20 max-w-full max-h-full object-contain block rounded-md border border-slate-200 shadow mx-auto" />
                                 <div v-else
-                                    class="w-24 h-24 bg-slate-100 border border-slate-200 rounded-md flex items-center justify-center text-[9px] text-slate-400 font-bold">
+                                    class="w-20 h-20 bg-slate-100 border border-slate-200 rounded-md flex items-center justify-center text-[9px] text-slate-400 font-bold mx-auto">
                                     NO FOTO
                                 </div>
                             </td>
@@ -274,6 +275,19 @@ const fetchNotaRealData = async () => {
             }, 500);
         }
     }
+};
+
+// Tambahkan ini di dalam <script setup> bersama helper lainnya
+const dapatkanUrlFotoProduk = (fotoString) => {
+    if (!fotoString) return '';
+
+    // Mengambil nama filenya saja (misal: "1784458392.webp")
+    const namaFile = fotoString.split('/').pop();
+
+    // Ambil base URL dari VITE_PRODUK_URL yang ada di env
+    const produkUrl = import.meta.env.VITE_PRODUK_URL;
+
+    return `${produkUrl}/${namaFile}`;
 };
 
 onMounted(() => {
