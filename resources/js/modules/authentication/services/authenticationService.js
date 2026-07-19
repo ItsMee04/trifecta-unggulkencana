@@ -10,6 +10,15 @@ export const authenticationService = {
         }
     },
 
+    async checkSession() {
+        try {
+            const response = await api.get('/me');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     async logout() {
         try {
             const response = await api.post('/logout');

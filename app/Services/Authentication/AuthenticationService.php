@@ -52,20 +52,54 @@ class AuthenticationService
                 'role_name'  => $user->role->role ?? 'No Role',
                 'nama'       => $user->pegawai->nama ?? $user->username,
                 'avatar'     => $user->pegawai->image ?? null,
-                'permissions'=> $menuPermissions
+                'permissions' => $menuPermissions
             ]
+        ];
+    }
+
+    public function me(User $user): array
+    {
+        // 1. Eager load relasi yang dibutuhkan (jika belum ter-load)
+        $user->load(['pegawai', 'role.permissions']);
+
+        // 2. Strukturkan ulang Permissions (Key-Value) sama seperti logic login
+        $menuPermissions = [];
+        if ($user->role && $user->role->permissions) {
+            foreach ($user->role->permissions as $perm) {
+                $menuPermissions[$perm->menu] = [
+                    'read'   => (int)$perm->read,
+                    'create' => (int)$perm->create,
+                    'update' => (int)$perm->update,
+                    'delete' => (int)$perm->delete,
+                ];
+            }
+        }
+
+        // 3. Kembalikan dengan struktur yang identik dengan login
+        return [
+            'id'          => $user->id,
+            'username'    => $user->username,
+            'email'       => $user->email,
+            'role_name'   => $user->role->role ?? 'No Role',
+            'nama'        => $user->pegawai->nama ?? $user->username,
+            'avatar'      => $user->pegawai->image ?? null,
+            'permissions' => $menuPermissions
         ];
     }
 
     /**
      * Memproses logout dengan menghapus token aktif
      */
-    public function logout(User $user): bool
+    public function logout(): bool
     {
-        if ($user) {
-            $user->currentAccessToken()->delete();
+        $user = request()->user();
+
+        if ($user && $user->currentAccessToken()) {
+            // Gunakan pencarian token bawaan Sanctum secara eksplisit
+            $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
             return true;
         }
+
         return false;
     }
 }

@@ -57,7 +57,7 @@
                     <tr v-else v-for="(item, index) in paginatedNampan" :key="item.id"
                         class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                         <td class="py-3 px-4 text-center font-medium text-slate-400 whitespace-nowrap">
-                            {{ (currentPage - 1) * 5 + index + 1 }}
+                            {{ (currentPage - 1) * 10 + index + 1 }}
                         </td>
 
                         <td

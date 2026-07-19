@@ -34,7 +34,6 @@ class AuthenticationController extends Controller
                 'message' => 'Login berhasil!',
                 ...$result
             ], 200);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -50,22 +49,33 @@ class AuthenticationController extends Controller
         }
     }
 
+    public function me(Request $request)
+    {
+        // Panggil instance service Anda, oper user yang sedang aktif ($request->user())
+        $userData = $this->authService->me($request->user());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesi pengguna berhasil diverifikasi',
+            'user'    => $userData
+        ], 200);
+    }
+
     public function logout(Request $request)
     {
-        try {
-            $this->authService->logout($request->user());
+        // 🌟 HAPUS $request->user() dari dalam kurung ini
+        $logout = $this->authService->logout();
 
+        if ($logout) {
             return response()->json([
                 'success' => true,
-                'message' => 'Berhasil logout dari sesi aktif.'
+                'message' => 'Berhasil logout'
             ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal melakukan logout.',
-                'error'   => $e->getMessage()
-            ], 500);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal logout, sesi tidak ditemukan'
+        ], 401);
     }
 }

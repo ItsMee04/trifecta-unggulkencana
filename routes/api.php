@@ -40,6 +40,7 @@ Route::post('login', [AuthenticationController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
 
     // Route untuk logout
+    Route::get('me', [AuthenticationController::class, 'me']);
     Route::post('logout', [AuthenticationController::class, 'logout']);
 
     // Grup Route Master Data (Sekarang aman di dalam middleware)

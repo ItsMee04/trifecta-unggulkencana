@@ -126,7 +126,7 @@ const routes = [
         name: 'CetakNota',
         component: () => import('../modules/pos/components/CetakNotaTransaksi.vue'),
         meta: {
-            requiresAuth: true, // 🌟 Tambahkan ini agar tidak dilempar ke dashboard
+            requiresAuth: true,
             layout: 'blank'
         }
     },
@@ -141,34 +141,50 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach((to, from, next) => {
-    // Ambil fungsi auth dari composable
-    const { isAuthenticated, hasPermission, isAccessDeniedOpen } = useAuthentication();
+// 🌟 Buat variabel penanda (flag) tepat di luar guard untuk memantau initial load aplikasi
+let isFirstLoadCheckDone = false;
 
-    // 1. Jika halaman butuh login, tapi user belum login
+// 🌟 GLOBAL NAVIGATION GUARD (ASYNC)
+router.beforeEach(async (to, from, next) => {
+    const { isAuthenticated, hasPermission, isAccessDeniedOpen, verifyAuthSession } = useAuthentication();
+
+    // 🌟 KUNCI UTAMA: Hanya jalankan verifikasi database tepat 1 kali saat web pertama kali dibuka/load
+    if (to.meta.requiresAuth && !isFirstLoadCheckDone) {
+        if (localStorage.getItem('token')) {
+            const isSessionValid = await verifyAuthSession();
+
+            // Tandai check awal telah selesai supaya perpindahan menu internal selanjutnya tidak menembak API /me lagi
+            isFirstLoadCheckDone = true;
+
+            if (!isSessionValid) {
+                return next('/login');
+            }
+        } else {
+            isFirstLoadCheckDone = true;
+        }
+    }
+
+    // 1. Jika halaman butuh login, tapi user tidak terautentikasi
     if (to.meta.requiresAuth && !isAuthenticated.value) {
         return next('/login');
     }
 
-    // 2. Jika halaman khusus guest (seperti login), tapi user sudah login
+    // 2. Jika halaman khusus guest (Login), tapi user sudah terautentikasi
     if (to.meta.guestOnly && isAuthenticated.value) {
         return next('/dashboard');
     }
 
-    // 3. Pengecekan matriks Permission Menu
+    // 3. Pengecekan Hak Akses Menu (Permission Matrix)
     if (to.meta.permission) {
         const menuName = to.meta.permission;
 
         if (!hasPermission(menuName, 'read')) {
-            isAccessDeniedOpen.value = true; // Munculkan pop-up access denied
+            isAccessDeniedOpen.value = true;
 
-            // 🌟 PENGAMAN: Jika user asal mulanya belum dari mana-mana (buka url manual pertama kali)
             if (from.path === '/' || from.path === to.path) {
-                // Jika dia punya akses dashboard, lempar ke dashboard. Jika tidak, batalkan total (stay/blank aman)
                 return hasPermission('dashboard', 'read') ? next('/dashboard') : next(false);
             }
 
-            // Jika dia berpindah dari halaman valid sebelumnya, batalkan perpindahan (tetap di halaman asal)
             return next(false);
         }
     }
