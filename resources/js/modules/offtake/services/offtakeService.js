@@ -50,10 +50,21 @@ export const offtakeService = {
         try {
             const response = await api.get('transaksi/offtake/getOfftake');
             return response.data;
-        } catch(error) {
+        } catch (error) {
             throw error;
         }
     },
 
+    async getNotaData(payload) {
+        try {
+            // 🌟 Tambahkan { params: payload } agar Axios mengirimnya sebagai query String (?kode=...)
+            const response = await api.get('/transaksi/offtake/nota-data', {
+                params: payload
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 
 };

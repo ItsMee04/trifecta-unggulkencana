@@ -481,7 +481,7 @@ _Notifikasi Otomatis Sistem POS_`;
                     onPrint: () => {
                         try {
                             // Membuka tab baru sesuai dengan path di router.js tadi
-                            const previewUrl = `/cetak-nota/${completedTransaksiID}`;
+                            const previewUrl = `/CetakNotaTransaksi/${completedTransaksiID}`;
                             window.open(previewUrl, '_blank');
                         } catch (e) {
                             console.error(e);

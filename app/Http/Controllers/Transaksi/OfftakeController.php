@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Transaksi;
 use App\Http\Controllers\Controller;
 use App\Services\Transaksi\OfftakeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OfftakeController extends Controller
 {
@@ -58,7 +59,7 @@ class OfftakeController extends Controller
                     'status'  => false,
                     'message' => 'Semua produk yang dipilih sudah ada di daftar transaksi aktif.',
                     'errors'  => $failedItems
-                ], 400);
+                ], 200);
             }
 
             return response()->json([
@@ -77,7 +78,7 @@ class OfftakeController extends Controller
                 'status'  => false,
                 'message' => 'Data keranjang tidak ditemukan',
                 'data'    => []
-            ], 404);
+            ], 200);
         }
 
         return response()->json([
@@ -142,7 +143,7 @@ class OfftakeController extends Controller
                 'status'  => false,
                 'message' => 'Data transaksi tidak ditemukan',
                 'data'    => []
-            ], 400);
+            ], 200);
         }
 
         return response()->json([
@@ -169,6 +170,69 @@ class OfftakeController extends Controller
             return response()->json([
                 'status'  => false,
                 'message' => 'Gagal membatalkan offtake: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mengambil data nota offtake terformat menggunakan Stored Procedure
+     * untuk dikonsumsi oleh komponen cetak Vue (Print Preview)
+     */
+    public function getNotaData(Request $request)
+    {
+        $request->validate([
+            'kode' => 'required|string|exists:offtake,kode'
+        ]);
+
+        try {
+            // 1. Eksekusi Stored Procedure dengan parameter binding yang aman
+            $data = DB::select("CALL GetNotaOfftake(?)", [$request->kode]);
+
+            if (empty($data)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Detail transaksi offtake tidak ditemukan.'
+                ], 404);
+            }
+
+            // 2. Map daftar items produk
+            $items = array_map(function ($item) {
+                return [
+                    'kodeproduk'     => $item->kodeproduk,
+                    'nama_produk'    => $item->produk_nama,
+                    'foto'           => $item->foto ? asset('storage/images/produk/' . $item->foto) : null,
+                    'berat'          => (float) $item->berat,
+                    'karat'          => $item->karat . 'K',
+                    'harga_per_gram' => (float) $item->harga_per_gram,
+                    'total_harga'    => (float) $item->total_harga,
+                ];
+            }, $data);
+
+            // 3. Format struktur data agar presisi dengan Props/State pada Vue Anda
+            $notaData = [
+                'tanggal'        => $data[0]->tanggal,
+                'kode_transaksi' => $data[0]->kode_transaksi,
+                'supplier_nama'  => $data[0]->supplier_nama,
+                'kontak'         => $data[0]->kontak ?? '-',
+                'alamat'         => $data[0]->alamat ?? '-',
+                'subtotal'       => (float) $data[0]->subtotal,
+                'potongan'       => (float) $data[0]->potongan,
+                'grand_total'    => (float) $data[0]->grand_total,
+                'terbilang'      => $data[0]->terbilang,
+                'pegawai_nama'   => $data[0]->pegawai_nama,
+                'nip'            => $data[0]->nip,
+                'items'          => $items
+            ];
+
+            return response()->json([
+                'status'   => true,
+                'notaData' => $notaData
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal memuat data nota offtake: ' . $e->getMessage()
             ], 500);
         }
     }

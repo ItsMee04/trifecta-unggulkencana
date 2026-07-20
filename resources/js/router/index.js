@@ -127,9 +127,18 @@ const routes = [
         ]
     },
     {
-        path: '/cetak-nota/:kodeTransaksi',
-        name: 'CetakNota',
+        path: '/CetakNotaTransaksi/:kodeTransaksi',
+        name: 'CetakNotaTransaksi',
         component: () => import('../modules/pos/components/CetakNotaTransaksi.vue'),
+        meta: {
+            requiresAuth: true,
+            layout: 'blank'
+        }
+    },
+    {
+        path: '/CetakNotaOfftake/:kodeTransaksi',
+        name: 'CetakNotaOfftake',
+        component: () => import('../modules/offtake/components/CetakNotaOfftake.vue'),
         meta: {
             requiresAuth: true,
             layout: 'blank'
