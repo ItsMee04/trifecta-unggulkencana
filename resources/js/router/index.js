@@ -119,6 +119,11 @@ const routes = [
                 component: () => import('../modules/pos/views/PointOfSaleView.vue'),
                 meta: { permission: 'transaksi' }
             },
+            {
+                path: 'offtake',
+                component: () => import('../modules/offtake/views/OfftakeView.vue'),
+                meta: { permission: 'offtake' }
+            },
         ]
     },
     {

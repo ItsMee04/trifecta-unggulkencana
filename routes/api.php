@@ -20,6 +20,7 @@ use App\Http\Controllers\Produk\JenisProdukController;
 use App\Http\Controllers\Produk\KaratController;
 use App\Http\Controllers\Produk\KondisiController;
 use App\Http\Controllers\Produk\ProdukController;
+use App\Http\Controllers\Transaksi\OfftakeController;
 use App\Http\Controllers\Transaksi\TransaksiController;
 use Illuminate\Support\Facades\Route;
 
@@ -201,9 +202,20 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('getTransaksiDetail', [TransaksiController::class, 'getTransaksiDetail'])->middleware('check_permission:transaksi,read');
             Route::post('batalTransaksiDetail', [TransaksiController::class, 'batalTransaksiDetail'])->middleware('check_permission:transaksi,update');
             Route::post('paymentTransaksi', [TransaksiController::class, 'paymentTransaksi'])->middleware('check_permission:transaksi,create');
-            Route::post('getSignedNotaPenjualanUrl', [TransaksiController::class, 'getSignedNotaPenjualanUrl'])->middleware('check_permission:transaksi,read');
             Route::post('sendnotification', [TransaksiController::class, 'sendTelegramNotification'])->middleware('check_permission:transaksi,create');
             Route::get('nota-data', [TransaksiController::class, 'getNotaData']);
+        });
+
+        Route::prefix('offtake')->group(function () {
+            Route::get('getKodeTransaksi', [OfftakeController::class, 'getKodeTransaksi'])->middleware('check_permission:offtake,read');
+            Route::post('storeProdukToOfftakeDetail', [OfftakeController::class, 'storeProdukToOfftakeDetail'])->middleware('check_permission:offtake,create');
+            Route::get('getOfftakeDetail', [OfftakeController::class, 'getOfftakeDetail'])->middleware('check_permission:offtake,read');
+            Route::post('batalOfftakeDetail', [OfftakeController::class, 'batalOfftakeDetail'])->middleware('check_permission:offtake,update');
+            Route::post('paymentOfftake', [OfftakeController::class, 'paymentOfftake'])->middleware('check_permission:offtake,create');
+            Route::post('sendnotification', [TransaksiController::class, 'sendTelegramNotification'])->middleware('check_permission:offtake,create');
+            Route::get('nota-data', [OfftakeController::class, 'getNotaData']);
+            Route::get('getTransaksiOfftake', [OfftakeController::class, 'getTransaksiOfftake'])->middleware('check_permission:offtake,read');
+            Route::post('batalTransaksi', [OfftakeController::class, 'batalTransaksi'])->middleware('check_permission:offtake,delete');
         });
 
     });
