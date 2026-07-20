@@ -356,9 +356,10 @@ export function usePOS() {
         // Ambil ulang data pelanggan untuk sinkronisasi poin terbaru
         await fetchPelanggan();
 
-        // Ambil ulang list produk
         try {
             await fetchProdukByJenis(selectedJenisProduk.value);
+            // 🌟 TAMPILKAN TOAST INFO
+            toast.info("Siap untuk transaksi baru");
         } catch (error) {
             console.error("Gagal memperbarui daftar produk setelah transaksi:", error);
         }
