@@ -11,13 +11,14 @@ import { transaksiService } from '../../transaksi/services/transaksiService';
 
 const STORAGE_URL = import.meta.env.VITE_PRODUK_URL;
 
-// --- SHARED STATE GLOBAL (SINGLETON HASIL SAMA SEPERTI POS) ---
+// --- SHARED STATE GLOBAL (SINGLETON) ---
 const offtake = ref([]);
 const offtakeDetail = ref([]);
 const suplierList = ref([]);
 const produk = ref([]);
 
-const isLoading = ref(false);         // Digunakan untuk Overlay Submit Payment & Operasi Berat
+// 💡 UBAH / PASTIKAN STATE KONSISTEN DENGAN VIEW PARENT
+const isSubmitting = ref(false);       // Loading khusus Overlay / Process Payment
 const isLoadingTable = ref(false);    // Loading khusus area tabel
 const isLoadingProduk = ref(false);   // Loading khusus modal produk
 const isModalOpen = ref(false);
@@ -259,6 +260,9 @@ export function useOfftake() {
     };
 
     const paymentOfftake = async () => {
+        // 🔒 Mencegah double click saat sedang memproses
+        if (isSubmitting.value) return;
+
         if (!validateForm()) {
             if (errors.value.suplier) toast.error(errors.value.suplier);
             else if (errors.value.harga) toast.error(errors.value.harga);
@@ -270,7 +274,8 @@ export function useOfftake() {
             return;
         }
 
-        isLoading.value = true;
+        // 🌟 AKTIFKAN OVERLAY LOADING
+        isSubmitting.value = true;
 
         try {
             const payload = {
@@ -399,7 +404,8 @@ _Notifikasi Otomatis Sistem POS_`;
         } catch (error) {
             toast.error(error.response?.data?.message || "Gagal memproses pembayaran offtake");
         } finally {
-            isLoading.value = false;
+            // 🌟 MATIKAN OVERLAY LOADING
+            isSubmitting.value = false;
         }
     };
 
@@ -408,7 +414,7 @@ _Notifikasi Otomatis Sistem POS_`;
         offtakeDetail,
         suplierList,
         produk,
-        isLoading,
+        isSubmitting,        // 💡 Di-return sebagai isSubmitting agar sesuai dengan View Parent
         isLoadingTable,
         isLoadingProduk,
         isModalOpen,

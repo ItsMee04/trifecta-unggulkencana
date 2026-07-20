@@ -99,10 +99,10 @@
 
             <!-- Submit Button -->
             <div class="flex justify-end pt-2">
-                <button type="submit" :disabled="isLoading || offtakeDetail.length === 0"
+                <button type="submit" :disabled="isSubmitting || offtakeDetail.length === 0"
                     class="w-full sm:w-auto px-6 py-2.5 bg-blue-950 hover:bg-blue-900 text-white rounded-xl text-xs font-bold tracking-wider uppercase transition shadow-xs active:scale-98 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-900">
-                    <Loader2 v-if="isLoading" class="w-4 h-4 animate-spin" />
-                    <span>{{ isLoading ? 'Memuat data...' : 'PAYMENT (TERIMA DANA)' }}</span>
+                    <Loader2 v-if="isSubmitting" class="w-4 h-4 animate-spin" />
+                    <span>{{ isSubmitting ? 'Memproses...' : 'PAYMENT (TERIMA DANA)' }}</span>
                 </button>
             </div>
 
@@ -119,6 +119,7 @@ import OfftakeTable from './OfftakeTable.vue';
 const {
     suplierList,
     isLoading,
+    isSubmitting,
     errors,
     formOfftake,
     offtakeDetail,
