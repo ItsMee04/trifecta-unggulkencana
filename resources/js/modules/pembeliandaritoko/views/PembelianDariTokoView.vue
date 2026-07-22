@@ -47,14 +47,14 @@
 
         <!-- MAIN LAYOUT GRID -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 w-full">
-            <!-- LEFT: FORM TRANSAKSI & TABEL KERANJANG -->
-            <div class="lg:col-span-7 flex flex-col gap-4">
-                <PembelianDariTokoForm />
+            <!-- LEFT: TABEL PRODUK NOTA PELANGGAN -->
+            <div class="lg:col-span-5 flex flex-col gap-4">
+                <PembelianDariTokoTableProduk />
             </div>
 
-            <!-- RIGHT: TABEL PRODUK PELANGGAN -->
-            <div class="lg:col-span-5 flex flex-col gap-4">
-                <PelangganProdukTable />
+            <!-- RIGHT: FORM TRANSAKSI & TABEL KERANJANG -->
+            <div class="lg:col-span-7 flex flex-col gap-4">
+                <PembelianDariTokoForm />
             </div>
         </div>
 
@@ -111,7 +111,7 @@ import { Building2, CheckCircle2, Printer } from 'lucide-vue-next';
 import { usePembelianDariToko } from '../composables/usePembelianDariToko.js';
 
 import PembelianDariTokoForm from '../components/PembelianDariTokoForm.vue';
-import PelangganProdukTable from '../components/PembelianDariTokoTable.vue';
+import PembelianDariTokoTableProduk from '../components/PembelianDariTokoTableProduk.vue';
 import PembelianDariTokoModalCari from '../components/PembelianDariTokoModalCari.vue';
 import PembelianDariTokoModalEdit from '../components/PembelianDariTokoModalEdit.vue';
 

@@ -75,17 +75,19 @@ export function usePembelianDariToko() {
     };
 
     const fetchKodeTransaksi = async () => {
-        formDariToko.kode = "Memuat data...";
+        formDariToko.kode = "Memuat data..."; // Indikator loading[cite: 1]
         try {
             const response = await pembeliandaritokoService.getKodeTransaksi();
 
-            if (PembelianDariToko.value.length > 0) {
-                formDariToko.kode = PembelianDariToko.value[0].kode;
-            } else {
+            // Ambil kode dari response JSON { status, message, kode }
+            if (response && response.kode) {
                 formDariToko.kode = response.kode;
+            } else {
+                formDariToko.kode = "ERR-GENERATE";
             }
         } catch (error) {
-            formDariToko.kode = "ERR-GENERATE";
+            console.error("Composable Error [fetchKodeTransaksi]:", error);
+            formDariToko.kode = "ERR-GENERATE"; // Ditangkap jika Service melempar throw error[cite: 1]
         }
     };
 

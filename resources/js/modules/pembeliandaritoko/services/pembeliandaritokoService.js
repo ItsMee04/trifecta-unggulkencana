@@ -3,7 +3,7 @@ import api from '../../../utilities/api/apiClient';
 export const pembeliandaritokoService = {
     async getKodeTransaksi() {
         try {
-            const response = await api.get('/pembelian/pembeliandaritoko/getKodeTransaksi');
+            const response = await api.get('/transaksi/pembelian/pembeliandaritoko/getKodeTransaksi');
             return response.data;
         } catch (error) {
             throw error;
@@ -12,7 +12,7 @@ export const pembeliandaritokoService = {
 
     async getTransaksiByKode(payload) {
         try {
-            const response = await api.post('/pembelian/pembeliandaritoko/getTransaksiByKode', payload);
+            const response = await api.post('/transaksi/pembelian/pembeliandaritoko/getTransaksiByKode', payload);
             return response.data;
         } catch (error) {
             throw error;
@@ -21,7 +21,7 @@ export const pembeliandaritokoService = {
 
     async storeProdukToPembelianDetail(payload) {
         try {
-            const response = await api.post('/pembelian/pembeliandaritoko/storeProdukToPembelianDetail', payload);
+            const response = await api.post('/transaksi/pembelian/pembeliandaritoko/storeProdukToPembelianDetail', payload);
             return response.data;
         } catch (error) {
             throw error;
@@ -30,7 +30,7 @@ export const pembeliandaritokoService = {
 
     async getPembelianDetail() {
         try {
-            const response = await api.get('/pembelian/pembeliandaritoko/getPembelianDetail');
+            const response = await api.get('/transaksi/pembelian/pembeliandaritoko/getPembelianDetail');
             return response.data;
         } catch (error) {
             throw error;
@@ -39,7 +39,7 @@ export const pembeliandaritokoService = {
 
     async updatePembelianDetail(payload) {
         try {
-            const response = await api.post('/pembelian/pembeliandaritoko/updatePembelianDetail', payload);
+            const response = await api.post('/transaksi/pembelian/pembeliandaritoko/updatePembelianDetail', payload);
             return response.data;
         } catch (error) {
             throw error;
@@ -48,7 +48,7 @@ export const pembeliandaritokoService = {
 
     async batalPembelianDetail(payload) {
         try {
-            const response = await api.post('/pembelian/pembeliandaritoko/batalPembelianDetail', payload);
+            const response = await api.post('/transaksi/pembelian/pembeliandaritoko/batalPembelianDetail', payload);
             return response.data;
         } catch (error) {
             throw error;
@@ -57,7 +57,7 @@ export const pembeliandaritokoService = {
 
     async paymentPembelian(payload) {
         try {
-            const response = await api.post('/pembelian/pembeliandaritoko/paymentPembelian', payload);
+            const response = await api.post('/transaksi/pembelian/pembeliandaritoko/paymentPembelian', payload);
             return response.data;
         } catch (error) {
             throw error;
