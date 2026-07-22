@@ -40,7 +40,7 @@
                 <tbody
                     class="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs font-medium text-slate-700 dark:text-slate-300">
 
-                    <!-- 🌟 SPINNER LOADING LOKAL TABEL -->
+                    <!-- Spinner Loading Lokal Tabel -->
                     <tr v-if="isLoadingPembelianDetail">
                         <td colspan="7" class="py-10 text-center text-slate-400">
                             <div class="flex flex-col items-center justify-center gap-2">
@@ -73,19 +73,20 @@
                             {{ Number(item.berat || item.produk?.berat || 0).toFixed(2) }} g
                         </td>
                         <td class="p-3 text-right font-bold text-slate-900 dark:text-white">
-                            {{ formatRupiah(item.hargabeli || 0) }}
+                            {{ toRupiah(item.hargabeli || 0) }}
                         </td>
                         <td class="p-3 text-right font-bold text-emerald-600 dark:text-emerald-400">
-                            {{ formatRupiah(item.total || (item.berat * (item.hargabeli || 0))) }}
+                            {{ toRupiah(item.total || (item.berat * (item.hargabeli || 0))) }}
                         </td>
-                        <td class="p-3 text-center">
+                        <!-- 🌟 AKSI DISESUAIKAN PERSIS -->
+                        <td class="py-3 px-4 whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1">
-                                <button type="button" @click="handleEdit(item)" title="Edit Detail"
-                                    class="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg transition cursor-pointer">
-                                    <Edit2 class="w-4 h-4" />
+                                <button @click="handleEdit(item)" type="button" title="Edit"
+                                    class="p-1.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition active:scale-95 cursor-pointer">
+                                    <SquarePen class="w-4 h-4" />
                                 </button>
-                                <button type="button" @click="handleDelete(item)" title="Hapus Barang"
-                                    class="p-1 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition cursor-pointer">
+                                <button @click="handleDelete(item)" type="button" title="Delete"
+                                    class="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl transition active:scale-95 cursor-pointer">
                                     <Trash2 class="w-4 h-4" />
                                 </button>
                             </div>
@@ -104,7 +105,7 @@
                         </td>
                         <td></td>
                         <td class="p-3 text-right text-blue-950 dark:text-white font-extrabold">
-                            {{ formatRupiah(totalHargaSemua) }}
+                            {{ toRupiah(totalHargaSemua) }}
                         </td>
                         <td></td>
                     </tr>
@@ -113,7 +114,8 @@
         </div>
 
         <!-- Pagination Bar -->
-        <div v-if="totalPagesPembelianDetail > 1 && !isLoadingPembelianDetail" class="flex justify-between items-center pt-2">
+        <div v-if="totalPagesPembelianDetail > 1 && !isLoadingPembelianDetail"
+            class="flex justify-between items-center pt-2">
             <span class="text-xs text-slate-400">
                 Halaman {{ currentPagePembelianDetail }} dari {{ totalPagesPembelianDetail }}
             </span>
@@ -143,11 +145,9 @@
 
 <script setup>
 import { computed, onMounted } from 'vue';
-import { Search, Edit2, Trash2, Loader2, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { Search, SquarePen, Trash2, Loader2, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import { usePembelianDariToko } from '../composables/usePembelianDariToko';
 import { toRupiah } from '../../../utilities/format/toRupiah';
-
-const formatRupiah = toRupiah();
 
 const {
     filteredPembelianDetail,

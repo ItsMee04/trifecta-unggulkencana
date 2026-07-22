@@ -98,20 +98,49 @@ export function usePembelianDariToko() {
         try {
             const payload = { kode: formDariToko.kodetransaksi };
             const response = await pembeliandaritokoService.getTransaksiByKode(payload);
-            const dataRes = response.data || [];
-            transaksiPelanggan.value = dataRes;
 
-            if (dataRes.length > 0) {
-                formDariToko.pelanggan = dataRes[0].pelanggan?.nama || "";
-                formDariToko.pelanggan_id = dataRes[0].pelanggan?.id || null;
+            // 1. Ambil array list transaksi dari response backend
+            const listTransaksi = response.data || [];
+
+            if (Array.isArray(listTransaksi) && listTransaksi.length > 0) {
+                // Ambil objek transaksi utama (indeks ke-0)
+                const transaksiUtama = listTransaksi[0];
+
+                // 2. Ambil array detail produknya
+                const rawDetails = transaksiUtama.transaksidetail || [];
+
+                // 3. 🌟 FORMAT ULANG DATA UNTUK TABEL
+                // Karena template tabel membaca `item.transaksidetail.produk...`
+                transaksiPelanggan.value = rawDetails.map((detail) => ({
+                    id: detail.id,
+                    transaksidetail: detail
+                }));
+
+                // 4. Isi data Pelanggan ke Form
+                if (transaksiUtama.pelanggan) {
+                    formDariToko.pelanggan = transaksiUtama.pelanggan.nama || "";
+                    formDariToko.pelanggan_id = transaksiUtama.pelanggan.id || null;
+                }
+
+                // Reset pagination ke halaman 1
+                if (typeof currentPageTransaksiPelanggan !== 'undefined') {
+                    currentPageTransaksiPelanggan.value = 1;
+                }
+
+                toast.success(response.message || "Data berhasil ditemukan");
+
+                // 5. Tutup Modal
+                isModalCariNotaOpen.value = false;
+                return true;
+            } else {
+                toast.error("Data transaksi nota tidak ditemukan.");
+                return false;
             }
-
-            toast.success(response.message || "Data berhasil ditemukan");
-            isModalCariNotaOpen.value = false;
-            return true;
         } catch (error) {
+            console.error("Error submitTransaksiPelanggan:", error);
             const errorMessage = error.response?.data?.message || "Terjadi kesalahan saat mencari data";
             toast.error(errorMessage);
+            return false;
         } finally {
             isLoadingTransaksiPelanggan.value = false;
         }
@@ -190,11 +219,19 @@ export function usePembelianDariToko() {
         errors.value = {};
         formPembelianDetail.id = item.id;
         formPembelianDetail.kodeproduk = item.produk?.kodeproduk;
-        formPembelianDetail.hargajual = item.kodetransaksi?.transaksidetail?.hargajual || 0;
+
+        // 💡 PERBAIKAN DI SINI:
+        // Karena transaksidetail adalah Array, ambil item pertama [0] atau cari berdasarkan produk_id
+        const detailList = item.kodetransaksi?.transaksidetail || [];
+        const matchedDetail = detailList.find(td => td.produk_id === item.produk_id) || detailList[0];
+
+        formPembelianDetail.hargajual = matchedDetail?.hargajual || item.produk?.harga?.harga || 0;
+
         formPembelianDetail.hargabeli = item.hargabeli || 0;
         formPembelianDetail.jenis_hargabeli = item.jenis_hargabeli || "hargajual";
+
         formPembelianDetail.kondisi = item.kondisi_id
-            ? kondisiList.value.find(k => k.value === item.kondisi_id) || null
+            ? kondisiList.value.find(k => k.value === item.kondisi_id || k.id === item.kondisi_id) || null
             : null;
 
         isModalEditOpen.value = true;
@@ -251,6 +288,7 @@ export function usePembelianDariToko() {
                 await pembeliandaritokoService.batalPembelianDetail({ id: item.id });
                 toast.success("Data Pembelian berhasil dihapus.");
                 await fetchPembelianDetail();
+                await handleNextOrder();
             } catch (error) {
                 toast.error(error.response?.data?.message || "Gagal menghapus data.");
             }

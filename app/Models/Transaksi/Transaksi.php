@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Transaksi extends Model
 {
@@ -53,5 +54,15 @@ class Transaksi extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'oleh', 'id');
+    }
+
+    /**
+     * Get all of the transaksidetail for the Transaksi
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function transaksidetail(): HasMany
+    {
+        return $this->hasMany(TransaksiDetail::class, 'kode', 'kode');
     }
 }

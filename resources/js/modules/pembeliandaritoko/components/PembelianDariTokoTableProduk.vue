@@ -11,7 +11,7 @@
 
             <!-- 🌟 Tombol Cari Nota Pelanggan -->
             <button type="button" @click="handleCariTransaksiPelanggan"
-                class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-950 dark:text-blue-300 text-xs font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+                class="px-3 py-1.5 bg-blue-950 hover:bg-blue-700 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-white dark:text-blue-300 text-xs font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
                 <Search class="w-3.5 h-3.5" />
                 <span>Cari Nota Pelanggan</span>
             </button>
@@ -89,7 +89,7 @@
                             {{ Number(item.transaksidetail?.berat || 0).toFixed(2) }} g
                         </td>
                         <td class="p-3 text-right font-bold text-slate-900 dark:text-white">
-                            {{ formatRupiah(item.transaksidetail?.hargajual || 0) }}
+                            {{ toRupiah(item.transaksidetail?.hargajual || 0) }}
                         </td>
                         <td class="p-3 text-center">
                             <button type="button" @click="handlePilihTransaksiPelanggan(item)" title="Tambah ke Keranjang Toko"
@@ -135,8 +135,6 @@
 import { Search, ArrowRight, Loader2, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import { usePembelianDariToko } from '../composables/usePembelianDariToko';
 import { toRupiah } from '../../../utilities/format/toRupiah';
-
-const formatRupiah = toRupiah();
 
 const {
     isLoadingTransaksiPelanggan,
