@@ -53,44 +53,6 @@
         <!-- MODAL PRODUK -->
         <OfftakeModal />
 
-        <!-- MODAL SUKSES TRANSAKSI -->
-        <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 scale-95"
-            enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-150 ease-in"
-            leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-            <div v-if="isSuccessModalOpen"
-                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-                <div
-                    class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 max-w-sm w-full text-center shadow-2xl space-y-4">
-                    <div
-                        class="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto">
-                        <CheckCircle2 class="w-7 h-7" />
-                    </div>
-
-                    <div class="space-y-1">
-                        <h3 class="text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
-                            Offtake Berhasil!
-                        </h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">
-                            Transaksi dengan kode <strong class="text-slate-800 dark:text-slate-200 font-mono">{{
-                                lastCompletedOfftakeKode }}</strong> telah disimpan & lunas.
-                        </p>
-                    </div>
-
-                    <div class="flex flex-col gap-2 pt-2">
-                        <button @click="handlePrint"
-                            class="w-full py-2.5 bg-blue-950 hover:bg-blue-900 text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer">
-                            <Printer class="w-4 h-4" />
-                            <span>Cetak Nota</span>
-                        </button>
-                        <button @click="handleNextOrder"
-                            class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl transition uppercase tracking-wider cursor-pointer">
-                            Transaksi Baru
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </Transition>
-
     </main>
 </template>
 
