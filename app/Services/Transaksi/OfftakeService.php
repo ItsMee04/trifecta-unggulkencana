@@ -9,8 +9,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\URL;
-use PHPJasper\PHPJasper;
 
 class OfftakeService
 {
@@ -324,65 +322,6 @@ class OfftakeService
                 'keterangan' => "PEMBATALAN OFFTAKE: " . ($keterangan ?? $offtake->keterangan),
             ]);
         });
-    }
-
-    public function generateSignedNotaUrl(string $kode): string
-    {
-        return URL::temporarySignedRoute(
-            'produk.cetak_notaofftake',
-            now()->addMinutes(10),
-            ['kode' => $kode]
-        );
-    }
-
-    public function generateNotaPdf(string $kode): string
-    {
-        $jasper_file = resource_path('reports/CetakNotaOfftake.jasper');
-        $db = config('database.connections.mysql');
-
-        $parameters = [
-            'LOGO'                  => public_path('assets/report/LOGOTOKO.png'),
-            'LOGOTEXT'              => public_path('assets/report/LOGOTEXT.png'),
-            'PRODUK'                => public_path('storage/images/produk/'),
-            'TERIMAKASIH'           => public_path('assets/report/thanksforshopping.png'),
-            'TTD'                   => public_path('assets/ttd/'),
-            'KODETRANSAKSI_INPUT'   => $kode,
-        ];
-
-        $tempDir = storage_path('app/temp_reports');
-        if (!file_exists($tempDir)) mkdir($tempDir, 0755, true);
-
-        $outputName = 'nota-' . $kode . '-' . time();
-        $outputPath = $tempDir . '/' . $outputName;
-
-        $jasper = new PHPJasper;
-        $jasper->process(
-            $jasper_file,
-            $outputPath,
-            [
-                'format' => ['pdf'],
-                'params' => $parameters,
-                'db_connection' => [
-                    'driver'   => 'mysql',
-                    'host'     => $db['host'],
-                    'port'     => $db['port'],
-                    'database' => $db['database'],
-                    'username' => $db['username'],
-                    'password' => $db['password'],
-                ],
-            ]
-        )->execute();
-
-        $pdfPath = $outputPath . '.pdf';
-
-        if (!file_exists($pdfPath)) {
-            throw new \Exception("File PDF tidak terbentuk oleh Jasper.");
-        }
-
-        $pdfContent = file_get_contents($pdfPath);
-        unlink($pdfPath);
-
-        return $pdfContent;
     }
 
     public function sendTelegram(string $pesan)
