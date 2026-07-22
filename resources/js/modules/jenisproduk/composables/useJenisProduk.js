@@ -55,7 +55,7 @@ export function useJenisProduk() {
         }
 
         //
-        if (!formJenisProduk.urutan?.trim()) {
+        if (!formJenisProduk.urutan) {
             errors.value.urutan = 'Urutan wajib diisi.';
         }
 
