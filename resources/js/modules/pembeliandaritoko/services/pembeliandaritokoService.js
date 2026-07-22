@@ -63,4 +63,15 @@ export const pembeliandaritokoService = {
             throw error;
         }
     },
+
+    async getNotaData(payload) {
+        try {
+            const response = await api.get('/transaksi/pembelian/pembeliandaritoko/nota-data', {
+                params: payload
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 };

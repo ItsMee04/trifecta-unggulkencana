@@ -1,6 +1,7 @@
 import { ref, computed, reactive } from "vue";
 import { useToast } from "../../../utilities/toast/toast";
 import { confirmDelete } from "../../../utilities/confirm/confirm";
+import { showPaymentSuccess } from '../../../utilities/confirm/PaymentsSuccessModal';
 
 import { pembeliandaritokoService } from "../services/pembeliandaritokoService";
 import { kondisiService } from "../../../modules/kondisi/services/kondisiService";
@@ -296,6 +297,9 @@ export function usePembelianDariToko() {
     };
 
     const paymentPembelian = async () => {
+        // 🔒 Mencegah double click saat sedang memproses
+        if (isSubmitting.value) return;
+
         if (!formDariToko.pelanggan_id) {
             toast.error("Data pelanggan belum lengkap.");
             return;
@@ -306,18 +310,24 @@ export function usePembelianDariToko() {
             return;
         }
 
+        // 🌟 AKTIFKAN OVERLAY LOADING
         isSubmitting.value = true;
 
         try {
             const payload = { kode: formDariToko.kode };
             const response = await pembeliandaritokoService.paymentPembelian(payload);
 
-            if (response.status) {
-                lastCompletedPembelianKode.value = formDariToko.kode;
+            if (response && response.status) {
+                toast.success("Transaksi Pembelian Dari Toko berhasil diselesaikan");
 
+                const completedKode = formDariToko.kode;
+                const namaPelanggan = formDariToko.pelanggan || "Pelanggan";
+
+                // 1. Kalkulasi Grand Total Pembelian
                 const grandTotalPembelian = pembeliandetail.value.reduce((acc, item) => {
                     const berat = Number(item.produk?.berat || 0);
-                    const hargaJual = Number(item.kodetransaksi?.transaksidetail?.hargajual || 0);
+                    const detailNota = item.kodetransaksi?.transaksidetail?.find(td => td.produk_id === item.produk_id) || item.kodetransaksi?.transaksidetail?.[0];
+                    const hargaJual = Number(detailNota?.hargajual || item.hargajualnota || 0);
                     const totalHargaJual = hargaJual * berat;
                     let totalAkhir = totalHargaJual;
 
@@ -329,13 +339,8 @@ export function usePembelianDariToko() {
                     return acc + totalAkhir;
                 }, 0);
 
-                const sekarang = new Date();
-                const waktu = sekarang.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-                const tanggal = sekarang.toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
-
-                let waLinkInfo = "";
+                // 2. Format Kontak & WA Link
                 let noKontakRaw = "";
-
                 if (transaksiPelanggan.value && transaksiPelanggan.value.length > 0) {
                     noKontakRaw = transaksiPelanggan.value[0].pelanggan?.kontak || "";
                 } else if (pembeliandetail.value && pembeliandetail.value.length > 0) {
@@ -345,6 +350,7 @@ export function usePembelianDariToko() {
                     }
                 }
 
+                let waLinkInfo = "";
                 if (noKontakRaw) {
                     let formattedNo = String(noKontakRaw).replace(/\D/g, '');
                     if (formattedNo.startsWith('0')) {
@@ -357,11 +363,17 @@ export function usePembelianDariToko() {
                     }
                 }
 
+                // 3. Format Notifikasi Telegram
+                const sekarang = new Date();
+                const waktu = sekarang.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+                const tanggal = sekarang.toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
+
                 const daftarProduk = pembeliandetail.value
                     .map((item, index) => {
                         const namaItem = item.produk?.nama || "Produk Tidak Diketahui";
                         const beratItem = Number(item.produk?.berat || 0);
-                        const hargaJual = Number(item.kodetransaksi?.transaksidetail?.hargajual || 0);
+                        const detailNota = item.kodetransaksi?.transaksidetail?.find(td => td.produk_id === item.produk_id) || item.kodetransaksi?.transaksidetail?.[0];
+                        const hargaJual = Number(detailNota?.hargajual || item.hargajualnota || 0);
                         const totalHargaJual = hargaJual * beratItem;
                         let hargaBeli = totalHargaJual;
 
@@ -392,8 +404,8 @@ export function usePembelianDariToko() {
 ━━━━━━━━━━━━━━━
 📅 *Tanggal:* ${tanggal}
 🕒 *Jam:* ${waktu} WIB
-🆔 *Kode:* ${formDariToko.kode}
-👤 *Dari Pelanggan:* ${formDariToko.pelanggan}${waLinkInfo}
+🆔 *Kode:* ${completedKode}
+👤 *Dari Pelanggan:* ${namaPelanggan}${waLinkInfo}
 
 📦 *Detail Barang Yang Dibeli:*
 ${daftarProduk}
@@ -402,17 +414,63 @@ ${daftarProduk}
 ━━━━━━━━━━━━━━━
 _Notifikasi Otomatis Sistem Pembelian_`;
 
+                // 4. Kirim Telegram Notification
                 try {
                     await transaksiService.sendTelegramNotification({ pesan });
                 } catch (telegramError) {
                     console.error("Telegram Error:", telegramError);
                 }
 
-                isSuccessModalOpen.value = true;
+                // 🌟 SHOW PAYMENT SUCCESS MODAL
+                showPaymentSuccess({
+                    kodeTransaksi: completedKode,
+                    onPrint: () => {
+                        try {
+                            const previewUrl = `/CetakNotaPembelianDariToko/${completedKode}`;
+                            window.open(previewUrl, '_blank');
+                        } catch (e) {
+                            console.error(e);
+                            toast.error('Gagal membuka preview cetak nota pembelian');
+                        }
+                    },
+                    onWhatsApp: () => {
+                        if (!noKontakRaw) {
+                            toast.error("Nomor kontak pelanggan tidak ditemukan.");
+                            return;
+                        }
+
+                        let formattedPhone = String(noKontakRaw).replace(/[^0-9]/g, '');
+                        if (formattedPhone.startsWith('0')) {
+                            formattedPhone = '62' + formattedPhone.slice(1);
+                        } else if (formattedPhone.length > 0 && !formattedPhone.startsWith('62')) {
+                            formattedPhone = '62' + formattedPhone;
+                        }
+
+                        const message = `Halo ${namaPelanggan},\nBerikut adalah rincian transaksi Pembelian Kembali perhiasan:\nNo. Transaksi: *${completedKode}*\nTotal Pembelian: *Rp ${Number(grandTotalPembelian).toLocaleString('id-ID')}*\nStatus: *BERHASIL / LUNAS*\n\nTerima kasih atas transaksi Anda!`;
+                        const waUrl = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(message)}`;
+                        window.open(waUrl, '_blank');
+                    },
+                    onNext: () => {
+                        if (typeof handleNextOrder === 'function') {
+                            handleNextOrder();
+                        }
+                    }
+                });
+
+                // 5. Reset Form & Refresh Data
+                formDariToko.pelanggan = '';
+                formDariToko.pelanggan_id = null;
+                formDariToko.kodetransaksi = '';
+                transaksiPelanggan.value = [];
+
+                if (typeof fetchPembelianDetail === 'function') await fetchPembelianDetail();
+                if (typeof fetchKodeTransaksi === 'function') await fetchKodeTransaksi();
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "Gagal memproses pembayaran");
+            console.log(error)
         } finally {
+            // 🌟 MATIKAN OVERLAY LOADING
             isSubmitting.value = false;
         }
     };

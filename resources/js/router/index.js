@@ -150,6 +150,15 @@ const routes = [
         }
     },
     {
+        path: '/CetakNotaPembelianDariToko/:kodeTransaksi',
+        name: 'CetakNotaPembelianDariToko',
+        component: () => import('../modules/pembeliandaritoko/components/CetakNotaPembelianDariToko.vue'),
+        meta: {
+            requiresAuth: true,
+            layout: 'blank'
+        }
+    },
+    {
         path: '/:pathMatch(.*)*',
         redirect: '/dashboard'
     }

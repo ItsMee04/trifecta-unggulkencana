@@ -229,6 +229,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('updatePembelianDetail', [PembelianController::class, 'updatePembelianDetail'])->middleware('check_permission:pembeliandaritoko,update');
                 Route::post('batalPembelianDetail', [PembelianController::class, 'batalPembelianDetail'])->middleware('check_permission:pembeliandaritoko,update');
                 Route::post('paymentPembelian', [PembelianController::class, 'paymentPembelian'])->middleware('check_permission:pembeliandaritoko,read');
+                Route::get('nota-data', [PembelianController::class, 'getNotaData']);
             });
 
             Route::prefix('pembeliandariluartoko')->group(function () {

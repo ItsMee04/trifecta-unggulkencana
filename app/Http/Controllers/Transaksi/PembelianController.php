@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Transaksi\PembelianService;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\DB;
 
 class PembelianController extends Controller
 {
@@ -351,19 +351,62 @@ class PembelianController extends Controller
         }
     }
 
-    public function getSignedNotaPembelianUrl(Request $request)
+    public function getNotaData(Request $request)
     {
-        $route_name = 'produk.cetak_notapembelian';
-        $expiration = now()->addMinutes(10);
+        $request->validate([
+            'kode' => 'required|string|exists:pembelian,kode'
+        ]);
 
-        $signedUrl = URL::temporarySignedRoute(
-            $route_name,
-            $expiration,
-            [
-                'kode' => $request->kode,
-            ]
-        );
+        try {
+            // 1. Eksekusi Stored Procedure GetNotaPembelian
+            $data = DB::select("CALL GetNotaPembelian(?)", [$request->kode]);
 
-        return response()->json(['url' => $signedUrl]);
+            if (empty($data)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Detail transaksi pembelian tidak ditemukan.'
+                ], 404);
+            }
+
+            // 2. Ambil informasi header dari baris pertama
+            $header = $data[0];
+
+            // 3. Petakan seluruh item produk sesuai alias dari Stored Procedure
+            $items = array_map(function ($item) {
+                return [
+                    'kodeproduk'     => $item->kodeproduk,
+                    'namaproduk'     => $item->produk_nama, // 👈 Sesuai alias: pr.nama AS produk_nama
+                    'berat'          => $item->berat,
+                    'karat'          => str_contains($item->karat, 'K') ? $item->karat : $item->karat . 'K',
+                    'hargabeli'      => $item->harga_per_gram, // 👈 Sesuai alias: kr.hargabeli AS harga_per_gram
+                    'image'          => $item->foto, // 👈 Sesuai alias: pr.image AS foto
+                    'keranjangtotal' => $item->total_harga, // 👈 Sesuai alias: kr.total AS total_harga
+                ];
+            }, $data);
+
+            // 4. Susun struktur response notaData agar pas dengan komponen Vue
+            $notaData = [
+                'kode'          => $header->kode_transaksi, // 👈 Sesuai alias: tr.kode AS kode_transaksi
+                'namapelanggan' => $header->pelanggan_nama ?? 'PELANGGAN UMUM', // 👈 Sesuai alias: pl.nama AS pelanggan_nama
+                'alamat'        => $header->alamat ?? 'PURWOKERTO',
+                'kontak'        => $header->kontak ?? '-',
+                'nip'           => $header->nip ?? '-',
+                'namapegawai'   => $header->pegawai_nama ?? 'ADMIN', // 👈 Sesuai alias: pg.nama AS pegawai_nama
+                'total'         => $header->grand_total, // 👈 Sesuai alias: tr.total AS grand_total
+                'terbilang'     => $header->terbilang,
+                'tanggal'       => $header->tanggal ?? now()->toDateTimeString(), // 👈 Sesuai alias: tr.created_at AS tanggal
+                'items'         => $items
+            ];
+
+            return response()->json([
+                'status'   => true,
+                'notaData' => $notaData
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal memuat data nota pembelian: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
