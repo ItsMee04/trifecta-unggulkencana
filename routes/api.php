@@ -21,6 +21,7 @@ use App\Http\Controllers\Produk\KaratController;
 use App\Http\Controllers\Produk\KondisiController;
 use App\Http\Controllers\Produk\ProdukController;
 use App\Http\Controllers\Transaksi\OfftakeController;
+use App\Http\Controllers\Transaksi\PembelianController;
 use App\Http\Controllers\Transaksi\TransaksiController;
 use Illuminate\Support\Facades\Route;
 
@@ -218,6 +219,26 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('batalTransaksi', [OfftakeController::class, 'batalTransaksi'])->middleware('check_permission:offtake,delete');
         });
 
+        Route::prefix('pembelian')->group(function () {
+
+            Route::prefix('pembeliandaritoko')->group(function () {
+                Route::get('getKodeTransaksi', [PembelianController::class, 'getKodeTransaksi'])->middleware('check_permission:pembeliandaritoko,read');
+                Route::post('getTransaksiByKode', [PembelianController::class, 'getTransaksiByKode'])->middleware('check_permission:pembeliandaritoko,read');
+                Route::post('storeProdukToPembelianDetail', [PembelianController::class, 'storeProdukToPembelianDetail'])->middleware('check_permission:pembeliandaritoko,create');
+                Route::get('getPembelianDetail', [PembelianController::class, 'getPembelianDetail'])->middleware('check_permission:pembeliandaritoko,read');
+                Route::post('updatePembelianDetail', [PembelianController::class, 'updatePembelianDetail'])->middleware('check_permission:pembeliandaritoko,update');
+                Route::post('batalPembelianDetail', [PembelianController::class, 'batalPembelianDetail'])->middleware('check_permission:pembeliandaritoko,update');
+                Route::post('paymentPembelian', [PembelianController::class, 'paymentPembelian'])->middleware('check_permission:pembeliandaritoko,read');
+            });
+
+            Route::prefix('pembeliandariluartoko')->group(function () {
+                Route::get('getPembelianDetailDariLuar', [PembelianController::class, 'getPembelianDetailDariLuar'])->middleware('check_permission:pembeliandaritoko,read');
+                Route::post('storeProdukToPembelianDetailDariLuar', [PembelianController::class, 'storeProdukToPembelianDetailDariLuar'])->middleware('check_permission:pembeliandaritoko,create');
+                Route::post('updatePembelianDetailDariLuar', [PembelianController::class, 'updatePembelianDetailDariLuar'])->middleware('check_permission:pembeliandaritoko,update');
+                Route::post('batalPembelianDetailDariLuar', [PembelianController::class, 'batalPembelianDetailDariLuar'])->middleware('check_permission:pembeliandaritoko,update');
+                Route::post('paymentPembelianDariLuar', [PembelianController::class, 'paymentPembelianDariLuar'])->middleware('check_permission:pembeliandaritoko,create');
+            });
+        });
     });
 });
 

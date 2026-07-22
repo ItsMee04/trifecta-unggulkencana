@@ -124,6 +124,11 @@ const routes = [
                 component: () => import('../modules/offtake/views/OfftakeView.vue'),
                 meta: { permission: 'offtake' }
             },
+            {
+                path: 'pembeliandaritoko',
+                component: () => import('../modules/pembeliandaritoko/views/PembelianDariTokoView.vue'),
+                meta: { permission: 'pembeliandaritoko' }
+            },
         ]
     },
     {
