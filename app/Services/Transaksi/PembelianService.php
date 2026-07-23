@@ -355,6 +355,7 @@ class PembelianService
                 'harga_id'       => $data['hargajual'] ?? null,
                 'hargabeli'      => $data['hargabeli'],
                 'keterangan'     => strtoupper($data['keterangan'] ?? ''),
+                'oleh'           => Auth::id(),
                 'status'         => 0,
             ]);
 

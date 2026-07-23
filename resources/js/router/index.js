@@ -129,6 +129,11 @@ const routes = [
                 component: () => import('../modules/pembeliandaritoko/views/PembelianDariTokoView.vue'),
                 meta: { permission: 'pembeliandaritoko' }
             },
+            {
+                path: 'pembeliandariluartoko',
+                component: () => import('../modules/pembeliandariluartoko/views/PembelianDariLuarTokoView.vue'),
+                meta: { permission: 'pembeliandaritoko' }
+            },
         ]
     },
     {
