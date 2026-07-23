@@ -134,6 +134,11 @@ const routes = [
                 component: () => import('../modules/pembeliandariluartoko/views/PembelianDariLuarTokoView.vue'),
                 meta: { permission: 'pembeliandaritoko' }
             },
+            {
+                path: 'perbaikan',
+                component: () => import('../modules/perbaikan/views/PerbaikanView.vue'),
+                meta: { permission: 'perbaikan' }
+            },
         ]
     },
     {
