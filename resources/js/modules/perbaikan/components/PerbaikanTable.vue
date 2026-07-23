@@ -101,13 +101,14 @@
                                 ACTIVE
                             </span>
                             <span v-else
-                                class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                                INACTIVE
+                                class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold text-white dark:text-slate-400 bg-blue-600 dark:bg-slate-800 rounded-lg">
+                                SELESAI
                             </span>
                         </td>
 
                         <td class="py-3 px-4">
-                            <div class="flex items-center justify-center gap-1">
+                            <!-- Tampil jika status BUKAN 2 -->
+                            <div v-if="item.status !== 2" class="flex items-center justify-center gap-1">
                                 <!-- Button Final / Selesai -->
                                 <button @click="handleFinal(item)" title="Final / Selesai"
                                     class="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 rounded-xl transition active:scale-95">
@@ -120,6 +121,12 @@
                                     <Trash2 class="w-4 h-4" />
                                 </button>
                             </div>
+
+                            <!-- Tanda strip atau keterangan jika status === 2 -->
+                            <span v-else
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
+                                Selesai
+                            </span>
                         </td>
                     </tr>
 
