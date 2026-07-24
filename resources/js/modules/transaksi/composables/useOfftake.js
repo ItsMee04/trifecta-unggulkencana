@@ -1,10 +1,10 @@
 import { ref, computed } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
-import { transaksiService } from '../services/transaksiService';
+import { offtakeService } from '../services/offtakeService';
 
 const toast = useToast();
-const transaksi = ref([]);
+const offtake = ref([]);
 
 const isLoading = ref(false);
 const isLoadingNota = ref(false);
@@ -20,23 +20,23 @@ const selectedNotaData = ref(null);
 
 const errors = ref({});
 
-export function useTransaksi() {
+export function useOfftake() {
 
-    const fetchTransaksi = async () => {
+    const fetchOfftake = async () => {
         isLoading.value = true;
         try {
-            const response = await transaksiService.getTransaksiPenjualan();
+            const response = await offtakeService.getTransaksiOfftake();
 
             if (response && Array.isArray(response.data)) {
-                transaksi.value = response.data;
+                offtake.value = response.data;
             } else if (Array.isArray(response)) {
-                transaksi.value = response;
+                offtake.value = response;
             } else {
-                transaksi.value = [];
+                offtake.value = [];
             }
         } catch (error) {
-            transaksi.value = [];
-            toast.error('Gagal mengambil data transaksi.');
+            offtake.value = [];
+            toast.error('Gagal mengambil data transaksi offtake.');
         } finally {
             isLoading.value = false;
         }
@@ -57,9 +57,18 @@ export function useTransaksi() {
         isNotaModalOpen.value = true;
 
         try {
-            const kodeTransaksi = item.kode || item.kode_transaksi;
-            const response = await transaksiService.getNotaData({
-                params: { kode: kodeTransaksi }
+            // 1. Ambil kode transaksi dari item
+            const kodeTransaksi = item.kode || item.kode_transaksi || item.kode_offtake;
+
+            if (!kodeTransaksi) {
+                toast.error('Kode transaksi tidak ditemukan.');
+                closeNotaModal();
+                return;
+            }
+
+            // 2. Kirim objek { kode: kodeTransaksi } LANGSUNG tanpa dibungkus 'params:'
+            const response = await offtakeService.getNotaData({
+                kode: kodeTransaksi
             });
 
             if (response && response.status) {
@@ -69,6 +78,7 @@ export function useTransaksi() {
                 closeNotaModal();
             }
         } catch (error) {
+            console.error('Error fetching nota:', error);
             toast.error('Gagal memuat data nota.');
             closeNotaModal();
         } finally {
@@ -85,7 +95,7 @@ export function useTransaksi() {
         if (confirm) {
             isLoading.value = true;
             try {
-                await transaksiService.batalTransaksi({ kode: item.id });
+                await offtakeService.batalTransaksiOfftake({ kode: item.id });
                 toast.success('Perbaikan berhasil dihapus.');
                 await fetchTransaksi();
             } catch (error) {
@@ -97,25 +107,25 @@ export function useTransaksi() {
         }
     };
 
-    const filteredTransaksi = computed(() => {
+    const filteredOfftake = computed(() => {
         const query = searchQuery.value.toLowerCase();
-        return transaksi.value.filter(item =>
+        return offtake.value.filter(item =>
             (item.kode || '').toLowerCase().includes(query) ||
             (item.produk?.kodeproduk || '').toLowerCase().includes(query)
         );
     });
 
-    const paginatedTransaksi = computed(() => {
+    const paginatedOfftake = computed(() => {
         const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredTransaksi.value.slice(start, start + itemsPerPage.value);
+        return filteredOfftake.value.slice(start, start + itemsPerPage.value);
     });
 
     const totalPages = computed(() => {
-        return Math.ceil(filteredTransaksi.value.length / itemsPerPage.value) || 1;
+        return Math.ceil(filteredOfftake.value.length / itemsPerPage.value) || 1;
     });
 
     return {
-        transaksi,
+        offtake,
         isLoading,
         isLoadingNota,
         searchQuery,
@@ -131,8 +141,8 @@ export function useTransaksi() {
         closeNotaModal,
         errors,
 
-        fetchTransaksi,
-        paginatedTransaksi,
+        fetchOfftake,
+        paginatedOfftake,
         totalPages,
     };
 }

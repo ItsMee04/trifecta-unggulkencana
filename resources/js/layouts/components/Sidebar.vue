@@ -134,7 +134,7 @@ import { useAuthentication } from '../../modules/authentication/composables/useA
 import {
     Layers, LogOut, X, ChevronDown, HelpCircle,
     LayoutGrid, Users, Archive, Info, HardDrive, Pocket, ShoppingBag, Repeat, Server, Book,
-    ArrowLeftCircle, ArrowRightCircle, ArrowUpCircle, BanknoteArrowDown,
+    ArrowLeftCircle, ArrowRightCircle, ArrowUpCircle, BanknoteArrowDown, BanknoteArrowUp
 } from 'lucide-vue-next';
 
 import LogoStatis from '@/assets/img/logo.png';
@@ -288,7 +288,7 @@ const menuGroups = {
         menus: {
             transaksipenjualan: { label: 'Transaksi Penjualan', icon: 'banknote-arrow-down', path: '/transaksipenjualan' },
             transaksipembelian: { label: 'Transaksi Pembelian', icon: 'arrow-right-circle', path: '/transaksipembelian' },
-            transaksiofftake: { label: 'Transaksi Offtake', icon: 'arrow-up-circle', path: '/transaksiofftake' },
+            transaksiofftake: { label: 'Transaksi Offtake', icon: 'banknote-arrow-down', path: '/transaksiofftake' },
         }
     },
     Laporan: {

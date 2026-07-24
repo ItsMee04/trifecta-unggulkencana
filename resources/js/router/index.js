@@ -144,6 +144,11 @@ const routes = [
                 component: () => import('../modules/transaksi/views/TransaksiView.vue'),
                 meta: { permission: 'transaksipenjualan' }
             },
+            {
+                path: 'transaksiofftake',
+                component: () => import('../modules/transaksi/views/OfftakeView.vue'),
+                meta: { permission: 'transaksiofftake' }
+            },
         ]
     },
     {
