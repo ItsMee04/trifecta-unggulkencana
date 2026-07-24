@@ -55,9 +55,9 @@ export const transaksiService = {
         }
     },
 
-    async getTransaksiPenjualan(payload) {
+    async getTransaksiPenjualan() {
         try {
-            const response = await api.get('/transaksi/transaksi/delete', payload);
+            const response = await api.get('/transaksi/transaksi');
             return response.data;
         } catch (error) {
             throw error;

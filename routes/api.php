@@ -179,6 +179,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('transaksi')->group(function () {
         Route::prefix('transaksi')->group(function () {
+            Route::get('/', [TransaksiController::class, 'getTransaksiPenjualan'])->middleware('check_permission:transaksipenjualan,read');
             Route::get('getKodeTransaksi', [TransaksiController::class, 'getKodeTransaksi'])->middleware('check_permission:transaksi,read');
             Route::post('storeProdukToTransaksiDetail', [TransaksiController::class, 'storeProdukToTransaksiDetail'])->middleware('check_permission:transaksi,create');
             Route::get('getTransaksiDetail', [TransaksiController::class, 'getTransaksiDetail'])->middleware('check_permission:transaksi,read');

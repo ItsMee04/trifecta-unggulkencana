@@ -134,7 +134,7 @@ import { useAuthentication } from '../../modules/authentication/composables/useA
 import {
     Layers, LogOut, X, ChevronDown, HelpCircle,
     LayoutGrid, Users, Archive, Info, HardDrive, Pocket, ShoppingBag, Repeat, Server, Book,
-    ArrowLeftCircle, ArrowRightCircle, ArrowUpCircle
+    ArrowLeftCircle, ArrowRightCircle, ArrowUpCircle, BanknoteArrowDown,
 } from 'lucide-vue-next';
 
 import LogoStatis from '@/assets/img/logo.png';
@@ -171,7 +171,8 @@ const iconMap = {
     'book': Book,
     'arrow-left-circle': ArrowLeftCircle,
     'arrow-right-circle': ArrowRightCircle,
-    'arrow-up-circle': ArrowUpCircle
+    'arrow-up-circle': ArrowUpCircle,
+    'banknote-arrow-down': BanknoteArrowDown,
 };
 
 // 🌟 Mapping manual nama permission dari router/index jika key objek menu berbeda
@@ -285,7 +286,7 @@ const menuGroups = {
     sales: {
         header: 'Sales',
         menus: {
-            transaksipenjualan: { label: 'Transaksi Penjualan', icon: 'arrow-left-circle', path: '/transaksipenjualan' },
+            transaksipenjualan: { label: 'Transaksi Penjualan', icon: 'banknote-arrow-down', path: '/transaksipenjualan' },
             transaksipembelian: { label: 'Transaksi Pembelian', icon: 'arrow-right-circle', path: '/transaksipembelian' },
             transaksiofftake: { label: 'Transaksi Offtake', icon: 'arrow-up-circle', path: '/transaksiofftake' },
         }

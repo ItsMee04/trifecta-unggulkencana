@@ -129,7 +129,7 @@ class TransaksiController extends Controller
 
     public function getTransaksiPenjualan()
     {
-        $data = Transaksi::with(['transaksidetail', 'transaksidetail.produk', 'pelanggan', 'diskon', 'oleh'])
+        $data = Transaksi::with(['transaksidetail', 'transaksidetail.produk', 'pelanggan', 'diskon', 'user'])
             ->where('status', '!=', 0)
             ->get();
 
@@ -138,7 +138,7 @@ class TransaksiController extends Controller
                 'status'    => false,
                 'message'   => 'Data transaksi tidak ditemukan',
                 'data'      => []
-            ], 400);
+            ], 200);
         }
 
         return response()->json([

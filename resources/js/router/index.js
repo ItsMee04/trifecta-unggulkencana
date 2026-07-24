@@ -139,6 +139,11 @@ const routes = [
                 component: () => import('../modules/perbaikan/views/PerbaikanView.vue'),
                 meta: { permission: 'perbaikan' }
             },
+            {
+                path: 'transaksipenjualan',
+                component: () => import('../modules/transaksi/views/TransaksiView.vue'),
+                meta: { permission: 'transaksipenjualan' }
+            },
         ]
     },
     {
