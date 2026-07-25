@@ -134,7 +134,7 @@ import { useAuthentication } from '../../modules/authentication/composables/useA
 import {
     Layers, LogOut, X, ChevronDown, HelpCircle,
     LayoutGrid, Users, Archive, Info, HardDrive, Pocket, ShoppingBag, Repeat, Server, Book,
-    ArrowLeftCircle, ArrowRightCircle, ArrowUpCircle, BanknoteArrowDown, BanknoteArrowUp
+    ArrowLeftCircle, ArrowRightCircle, ArrowUpCircle, BanknoteArrowDown, BanknoteArrowUp, Landmark, Database
 } from 'lucide-vue-next';
 
 import LogoStatis from '@/assets/img/logo.png';
@@ -173,6 +173,9 @@ const iconMap = {
     'arrow-right-circle': ArrowRightCircle,
     'arrow-up-circle': ArrowUpCircle,
     'banknote-arrow-down': BanknoteArrowDown,
+    'banknote-arrow-up': BanknoteArrowUp,
+    'landmark': Landmark,
+    'database': Database
 };
 
 // 🌟 Mapping manual nama permission dari router/index jika key objek menu berbeda
@@ -204,7 +207,7 @@ const permissionMapping = {
     'transaksipenjualan': 'transaksipenjualan',
     'transaksipembelian': 'transaksipembelian',
     'transaksiofftake': 'transaksiofftake',
-    'inventori': 'inventori',
+    'inventory': 'inventory',
     'laporan': 'laporan'
 };
 
@@ -263,8 +266,8 @@ const menuGroups = {
     keuangan: {
         header: 'Keuangan',
         menus: {
-            saldo: { label: 'Saldo', icon: 'info', path: '/saldo' },
-            mutasisaldo: { label: 'Mutasi Saldo', icon: 'info', path: '/mutasisaldo' },
+            saldo: { label: 'Saldo', icon: 'landmark', path: '/saldo' },
+            mutasisaldo: { label: 'Mutasi Saldo', icon: 'database', path: '/mutasisaldo' },
         }
     },
     transaksi: {
@@ -291,10 +294,15 @@ const menuGroups = {
             transaksiofftake: { label: 'Transaksi Offtake', icon: 'banknote-arrow-down', path: '/transaksiofftake' },
         }
     },
+    Inventory: {
+        header: 'Inventory',
+        menus: {
+            inventory: { label: 'Inventori', icon: 'server', path: '/inventory' },
+        }
+    },
     Laporan: {
         header: 'Laporan',
         menus: {
-            inventory: { label: 'Inventori', icon: 'server', path: '/inventori' },
             laporantransaksi: { label: 'Laporan Transaksi', icon: 'book', path: '/laporan' },
         }
     },

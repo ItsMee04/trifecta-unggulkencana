@@ -228,11 +228,16 @@ const structuredMenus = computed(() => {
                 { key: 'transaksiofftake', label: 'Transaksi Offtake' },
             ]
         },
+        inventory:{
+            header: 'Inventory',
+            items:[
+                { key: 'inventory', label: 'Inventory'}
+            ]
+        },
         laporan: {
             header: 'Laporan',
             items: [
-                { key: 'inventory', label: 'Inventori' },
-                { key: 'laporantransaksi', label: 'Laporan Transaksi' },
+                { key: 'laporan', label: 'Laporan Transaksi' },
             ]
         }
     };

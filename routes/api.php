@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Authentication\AuthenticationController;
+use App\Http\Controllers\Inventory\StokController;
 use App\Http\Controllers\Keuangan\MutasiSaldoController;
 use App\Http\Controllers\Keuangan\SaldoController;
 use App\Http\Controllers\Master\JabatanController;
@@ -200,7 +201,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('batalTransaksi', [OfftakeController::class, 'batalTransaksi'])->middleware('check_permission:offtake,delete');
         });
         Route::prefix('pembelian')->group(function () {
-            Route::get('getTransaksiPembelian',[PembelianController::class, 'getTransaksiPembelian'])->middleware('check_permission:transaksipembelian,read');
+            Route::get('getTransaksiPembelian', [PembelianController::class, 'getTransaksiPembelian'])->middleware('check_permission:transaksipembelian,read');
             Route::post('batalTransaksiPembelian', [PembelianController::class, 'batalTransaksi'])->middleware('check_permission:transaksipembelian,delete');
             Route::prefix('pembeliandaritoko')->group(function () {
                 Route::get('getKodeTransaksi', [PembelianController::class, 'getKodeTransaksi'])->middleware('check_permission:pembeliandaritoko,read');
@@ -225,6 +226,14 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('final', [PerbaikanController::class, 'finalPerbaikan'])->middleware('check_permission:perbaikan,update');
             Route::post('batal', [PerbaikanController::class, 'batalPerbaikan'])->middleware('check_permission:perbaikan,update');
         });
+    });
+
+    Route::prefix('inventory')->group(function () {
+        Route::get('/', [StokController::class, 'getPeriodeStok'])->middleware('check_permission:inventory,read');
+        Route::post('store', [StokController::class, 'storePeriodeStok'])->middleware('check_permission:inventory,create');
+        Route::post('getNampanProdukByPeriodeStok', [StokController::class, 'getNampanProdukByPeriodeStok'])->middleware('check_permission:inventory,read');
+        Route::post('getRekapStokByPeriode',[StokController::class, 'getRekapStokByPeriode'])->middleware('check_permission:inventory,read');
+        Route::post('finalPeriodeStok', [StokController::class, 'finalPeriodeStok'])->middleware('check_permission:inventory,read');
     });
 });
 

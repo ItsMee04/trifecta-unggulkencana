@@ -154,6 +154,11 @@ const routes = [
                 component: () => import('../modules/transaksi/views/PembelianView.vue'),
                 meta: { permission: 'transaksipembelian' }
             },
+            {
+                path: 'inventory',
+                component: () => import('../modules/inventory/views/InventoryView.vue'),
+                meta: { permission: 'inventory' }
+            },
         ]
     },
     {
