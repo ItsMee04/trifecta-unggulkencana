@@ -287,7 +287,7 @@ const menuGroups = {
         header: 'Sales',
         menus: {
             transaksipenjualan: { label: 'Transaksi Penjualan', icon: 'banknote-arrow-down', path: '/transaksipenjualan' },
-            transaksipembelian: { label: 'Transaksi Pembelian', icon: 'arrow-right-circle', path: '/transaksipembelian' },
+            transaksipembelian: { label: 'Transaksi Pembelian', icon: 'banknote-arrow-up', path: '/transaksipembelian' },
             transaksiofftake: { label: 'Transaksi Offtake', icon: 'banknote-arrow-down', path: '/transaksiofftake' },
         }
     },

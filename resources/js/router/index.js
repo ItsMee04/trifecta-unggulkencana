@@ -149,6 +149,11 @@ const routes = [
                 component: () => import('../modules/transaksi/views/OfftakeView.vue'),
                 meta: { permission: 'transaksiofftake' }
             },
+            {
+                path: 'transaksipembelian',
+                component: () => import('../modules/transaksi/views/PembelianView.vue'),
+                meta: { permission: 'transaksipembelian' }
+            },
         ]
     },
     {
