@@ -131,7 +131,7 @@
                     </tr>
 
                     <tr v-if="!isLoading && paginatedPerbaikan.length === 0">
-                        <td colspan="4" class="py-10 text-center text-slate-400 dark:text-slate-500 text-xs">
+                        <td colspan="9" class="py-10 text-center text-slate-400 dark:text-slate-500 text-xs">
                             No data available.
                         </td>
                     </tr>
