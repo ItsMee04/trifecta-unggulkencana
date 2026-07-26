@@ -93,7 +93,7 @@
                         class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-600 text-slate-900 dark:text-white transition dark:[color-scheme:dark] cursor-pointer" />
                 </div>
                 <button @click="handleCreatePeriode" :disabled="isLoadingPeriodeStok"
-                    class="p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center justify-center transition disabled:opacity-50 shrink-0">
+                    class="p-2.5 bg-blue-950 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center transition disabled:opacity-50 shrink-0">
                     <Plus class="w-5 h-5" />
                 </button>
             </div>
