@@ -22,9 +22,6 @@
             </div>
         </div>
 
-        <!-- <NampanProdukModal />
-        <NampanProdukPindah /> -->
-
     </main>
 </template>
 
@@ -32,8 +29,6 @@
 import { Plus } from 'lucide-vue-next';
 import IventoryPeriodeList from '../components/IventoryPeriodeList.vue';
 import InventoryTable from '../components/InventoryTable.vue';
-// import NampanProdukModal from '../components/NampanProdukModal.vue';
-// import NampanProdukPindah from '../components/NampanProdukPindah.vue';
 import { useInventory } from '../composables/useInventory.js';
 
 // PERBAIKAN: Ambil juga fungsi handleCreate dari composable
