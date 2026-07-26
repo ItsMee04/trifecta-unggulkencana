@@ -4,6 +4,7 @@ use App\Http\Controllers\Authentication\AuthenticationController;
 use App\Http\Controllers\Inventory\StokController;
 use App\Http\Controllers\Keuangan\MutasiSaldoController;
 use App\Http\Controllers\Keuangan\SaldoController;
+use App\Http\Controllers\Laporan\LaporanController;
 use App\Http\Controllers\Master\JabatanController;
 use App\Http\Controllers\Master\PegawaiController;
 use App\Http\Controllers\Master\PermissionController;
@@ -235,6 +236,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('getRekapStokByPeriode',[StokController::class, 'getRekapStokByPeriode'])->middleware('check_permission:inventory,read');
         Route::post('finalPeriodeStok', [StokController::class, 'finalPeriodeStok'])->middleware('check_permission:inventory,read');
     });
-});
 
-Route::get('/transaksi/CetakNotaPenjualan', [TransaksiController::class, 'CetakNotaPenjualan'])->name('CetakNotaPenjualan');
+    Route::prefix('laporan')->group(function(){
+        Route::post('getLaporanPenjualan', [LaporanController::class, 'getLaporanPenjualan'])->middleware('check_permission:laporan,read');
+    });
+});

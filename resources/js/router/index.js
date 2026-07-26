@@ -159,6 +159,11 @@ const routes = [
                 component: () => import('../modules/inventory/views/InventoryView.vue'),
                 meta: { permission: 'inventory' }
             },
+            {
+                path: 'laporan',
+                component: () => import('../modules/laporan/views/LaporanView.vue'),
+                meta: { permission: 'laporan' }
+            },
         ]
     },
     {
@@ -183,6 +188,15 @@ const routes = [
         path: '/CetakNotaPembelianDariToko/:kodeTransaksi',
         name: 'CetakNotaPembelianDariToko',
         component: () => import('../modules/pembeliandaritoko/components/CetakNotaPembelianDariToko.vue'),
+        meta: {
+            requiresAuth: true,
+            layout: 'blank'
+        }
+    },
+    {
+        path: '/CetakLaporanPenjualan',
+        name: 'CetakLaporanPenjualan',
+        component: () => import('../modules/laporan/components/CetakLaporanPenjualan.vue'),
         meta: {
             requiresAuth: true,
             layout: 'blank'
