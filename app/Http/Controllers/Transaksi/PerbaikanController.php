@@ -41,7 +41,7 @@ class PerbaikanController extends Controller
                     'status'  => false,
                     'message' => 'Data perbaikan tidak ditemukan',
                     'data'    => []
-                ], 400);
+                ], 200);
             }
 
             return response()->json([
