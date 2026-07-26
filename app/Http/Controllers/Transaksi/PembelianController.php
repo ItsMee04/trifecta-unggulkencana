@@ -46,7 +46,7 @@ class PembelianController extends Controller
                     'status'  => false,
                     'message' => 'Data transaksi tidak ditemukan',
                     'data'    => []
-                ], 404);
+                ], 200);
             }
 
             return response()->json([
@@ -317,7 +317,7 @@ class PembelianController extends Controller
                     'status'  => false,
                     'message' => 'Data transaksi tidak ditemukan',
                     'data'    => []
-                ], 400);
+                ], 200);
             }
 
             return response()->json([
