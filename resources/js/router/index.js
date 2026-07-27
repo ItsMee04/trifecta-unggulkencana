@@ -203,6 +203,33 @@ const routes = [
         }
     },
     {
+        path: '/CetakLaporanPembelian',
+        name: 'CetakLaporanPembelian',
+        component: () => import('../modules/laporan/components/CetakLaporanPembelian.vue'),
+        meta: {
+            requiresAuth: true,
+            layout: 'blank'
+        }
+    },
+    {
+        path: '/CetakLaporanOfftake',
+        name: 'CetakLaporanOfftake',
+        component: () => import('../modules/laporan/components/CetakLaporanOfftake.vue'),
+        meta: {
+            requiresAuth: true,
+            layout: 'blank'
+        }
+    },
+    {
+        path: '/CetakLaporanPerbaikan',
+        name: 'CetakLaporanPerbaikan',
+        component: () => import('../modules/laporan/components/CetakLaporanPerbaikan.vue'),
+        meta: {
+            requiresAuth: true,
+            layout: 'blank'
+        }
+    },
+    {
         path: '/:pathMatch(.*)*',
         redirect: '/dashboard'
     }

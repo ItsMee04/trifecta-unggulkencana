@@ -58,51 +58,81 @@ export function useLaporan() {
     const cetakLaporanPembelian = async () => {
         if (!validateForm()) return false;
 
-        const payload = {
-            periodedari: formLaporan.tanggaldari,
-            periodesampai: formLaporan.tanggalsampai
-        }
-
         try {
-            const { url } = await laporanService.cetakLaporanPembelian(payload)
-            window.open(url, '_blank')
+            // 1. Ambil nilai tanggal dari reactive form
+            const tanggalAwal = formLaporan.tanggaldari;
+            const tanggalAkhir = formLaporan.tanggalsampai;
+
+            // 2. Susun Query Parameters
+            const params = new URLSearchParams({
+                tanggal_awal: tanggalAwal,
+                tanggal_akhir: tanggalAkhir
+            });
+
+            // 3. Buat URL dengan query string
+            // Contoh hasil: /CetakLaporanPembelian?tanggal_awal=2026-04-01&tanggal_akhir=2026-07-26
+            const previewUrl = `/CetakLaporanPembelian?${params.toString()}`;
+
+            // 4. Buka di tab baru
+            window.open(previewUrl, '_blank');
+
         } catch (e) {
-            console.log(e)
-            toast.error('Gagal mencetak laporan pembelian')
+            console.error(e);
+            toast.error('Gagal mencetak laporan pembelian');
         }
     }
 
     const cetakLaporanOfftake = async () => {
         if (!validateForm()) return false;
 
-        const payload = {
-            periodedari: formLaporan.tanggaldari,
-            periodesampai: formLaporan.tanggalsampai
-        }
-
         try {
-            const { url } = await laporanService.cetakLaporanOfftake(payload)
-            window.open(url, '_blank')
+            // 1. Ambil nilai tanggal dari reactive form
+            const tanggalAwal = formLaporan.tanggaldari;
+            const tanggalAkhir = formLaporan.tanggalsampai;
+
+            // 2. Susun Query Parameters
+            const params = new URLSearchParams({
+                tanggal_awal: tanggalAwal,
+                tanggal_akhir: tanggalAkhir
+            });
+
+            // 3. Buat URL dengan query string
+            // Contoh hasil: /CetakLaporanOfftake?tanggal_awal=2026-04-01&tanggal_akhir=2026-07-26
+            const previewUrl = `/CetakLaporanOfftake?${params.toString()}`;
+
+            // 4. Buka di tab baru
+            window.open(previewUrl, '_blank');
+
         } catch (e) {
-            console.log(e)
-            toast.error('Gagal mencetak laporan offtake')
+            console.error(e);
+            toast.error('Gagal mencetak laporan offtake');
         }
     }
 
     const cetakLaporanPerbaikan = async () => {
         if (!validateForm()) return false;
 
-        const payload = {
-            periodedari: formLaporan.tanggaldari,
-            periodesampai: formLaporan.tanggalsampai
-        }
-
         try {
-            const { url } = await laporanService.cetakLaporanPerbaikan(payload)
-            window.open(url, '_blank')
+            // 1. Ambil nilai tanggal dari reactive form
+            const tanggalAwal = formLaporan.tanggaldari;
+            const tanggalAkhir = formLaporan.tanggalsampai;
+
+            // 2. Susun Query Parameters
+            const params = new URLSearchParams({
+                tanggal_awal: tanggalAwal,
+                tanggal_akhir: tanggalAkhir
+            });
+
+            // 3. Buat URL dengan query string
+            // Contoh hasil: /CetakLaporanPerbaikan?tanggal_awal=2026-04-01&tanggal_akhir=2026-07-26
+            const previewUrl = `/CetakLaporanPerbaikan?${params.toString()}`;
+
+            // 4. Buka di tab baru
+            window.open(previewUrl, '_blank');
+
         } catch (e) {
-            console.log(e)
-            toast.error('Gagal mencetak laporan perbaikan')
+            console.error(e);
+            toast.error('Gagal mencetak laporan perbaikan');
         }
     }
 
