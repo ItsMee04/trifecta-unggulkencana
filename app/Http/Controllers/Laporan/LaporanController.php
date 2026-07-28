@@ -367,4 +367,160 @@ class LaporanController extends Controller
             ], 500);
         }
     }
+
+
+
+    /**
+     * Mengambil data laporan nampan menggunakan Stored Procedure
+     * berdasarkan rentang tanggal.
+     */
+    public function getLaporanNampan(Request $request)
+    {
+        // 1. Validasi input
+        $request->validate([
+            'tanggal_awal'  => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_awal',
+        ]);
+
+        try {
+
+            // 2. Eksekusi Stored Procedure
+            $data = DB::select("CALL GetLaporanNampan(?, ?)", [
+                $request->tanggal_awal,
+                $request->tanggal_akhir
+            ]);
+
+            if (empty($data)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Data laporan nampan tidak ditemukan pada periode ini.'
+                ], 404);
+            }
+
+            // 3. Mapping data
+            $items = array_map(function ($row) {
+
+                return [
+
+                    'tanggal'      => $row->tanggal,
+                    'nampan'       => $row->nampan,
+
+                    'kode_produk'  => $row->kodeproduk,
+                    'nama_produk'  => $row->nama,
+
+                    'berat'        => (float) $row->berat,
+                    'karat'        => $row->karat . 'K',
+
+                    'jenis'        => $row->jenis,
+                    'status'       => (int) $row->status,
+
+                    'total_item'   => (int) $row->TOTALITEM,
+                    'total_berat'  => (float) $row->TOTALBERAT,
+
+                ];
+            }, $data);
+
+            // 4. Susun response
+            $laporanData = [
+
+                'periode' => [
+                    'tanggal_awal'  => $request->tanggal_awal,
+                    'tanggal_akhir' => $request->tanggal_akhir,
+                ],
+
+                'summary' => [
+                    'total_produk' => (int) $data[0]->TOTALPRODUK,
+                    'total_berat'  => (float) $data[0]->GRANDTOTALBERAT,
+                ],
+
+                'items' => $items
+
+            ];
+
+            return response()->json([
+                'status'      => true,
+                'laporanData' => $laporanData
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal memuat data laporan nampan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mengambil data laporan produk menggunakan Stored Procedure.
+     */
+    public function getLaporanProduk(Request $request)
+    {
+        try {
+
+            // 1. Eksekusi Stored Procedure
+            $data = DB::select("CALL GetLaporanProduk()");
+
+            if (empty($data)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Data laporan produk tidak ditemukan.'
+                ], 404);
+            }
+
+            // 2. Mapping data produk
+            $items = array_map(function ($row) {
+
+                return [
+
+                    'kode_produk'     => $row->kodeproduk,
+                    'nama_produk'     => $row->nama,
+
+                    'jenis_produk'    => $row->jenisproduk,
+
+                    'berat'           => (float) $row->berat,
+                    'karat'           => $row->karat . 'K',
+                    'jenis_karat'     => $row->jeniskarat,
+
+                    'lingkar'         => (float) $row->lingkar,
+                    'panjang'         => (float) $row->panjang,
+
+                    'harga_per_gram'  => (float) $row->hargapergram,
+
+                    'kondisi'         => $row->kondisi,
+                    'keterangan'      => $row->keterangan,
+
+                    'status_nampan'   => (int) $row->status_nampan,
+
+                ];
+            }, $data);
+
+            // 3. Susun response
+            $laporanData = [
+
+                'summary' => [
+
+                    'total_potong'        => (int) $data[0]->TOTALPOTONG,
+                    'total_berat'         => (float) $data[0]->TOTALBERAT,
+
+                    'total_sudah_masuk'   => (int) $data[0]->TOTALSUDAHMASUK,
+                    'total_belum_masuk'   => (int) $data[0]->TOTALBELUMMASUK,
+
+                ],
+
+                'items' => $items
+
+            ];
+
+            return response()->json([
+                'status'      => true,
+                'laporanData' => $laporanData
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal memuat data laporan produk: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

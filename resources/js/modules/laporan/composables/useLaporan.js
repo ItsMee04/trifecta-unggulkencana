@@ -166,28 +166,37 @@ export function useLaporan() {
     const cetakLaporanNampan = async () => {
         if (!validateForm()) return false;
 
-        const payload = {
-            periodedari: formLaporan.tanggaldari,
-            periodesampai: formLaporan.tanggalsampai
-        }
-
         try {
-            const { url } = await laporanService.cetakLaporanNampan(payload)
-            window.open(url, '_blank')
+            // 1. Ambil nilai tanggal dari reactive form
+            const tanggalAwal = formLaporan.tanggaldari;
+            const tanggalAkhir = formLaporan.tanggalsampai;
+
+            // 2. Susun Query Parameters
+            const params = new URLSearchParams({
+                tanggal_awal: tanggalAwal,
+                tanggal_akhir: tanggalAkhir
+            });
+
+            // 3. Buat URL dengan query string
+            // Contoh hasil: /CetakLaporanNampan?tanggal_awal=2026-04-01&tanggal_akhir=2026-07-26
+            const previewUrl = `/CetakLaporanNampan?${params.toString()}`;
+
+            // 4. Buka di tab baru
+            window.open(previewUrl, '_blank');
+
         } catch (e) {
-            console.log(e)
-            toast.error('Gagal mencetak laporan nampan')
+            console.error(e);
+            toast.error('Gagal mencetak laporan nampan');
         }
     }
 
     const cetakLaporanProduk = async () => {
-
         try {
-            const { url } = await laporanService.cetakLaporanProduk()
-            window.open(url, '_blank')
+            const previewUrl = `/CetakLaporanProduk`;
+            window.open(previewUrl, '_blank');
         } catch (e) {
-            console.log(e)
-            toast.error('Gagal mencetak laporan produk')
+            console.error(e);
+            toast.error('Gagal mencetak laporan produk');
         }
     }
 

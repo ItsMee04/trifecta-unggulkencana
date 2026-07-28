@@ -243,5 +243,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('getLaporanOfftake', [LaporanController::class, 'getLaporanOfftake'])->middleware('check_permission:laporan,read');
         Route::post('getLaporanPerbaikan', [LaporanController::class, 'getLaporanPerbaikan'])->middleware('check_permission:laporan,read');
         Route::post('getLaporanMutasiSaldo', [LaporanController::class, 'getLaporanMutasiSaldo'])->middleware('check_permission:laporan,read');
+        Route::post('getLaporanNampan', [LaporanController::class, 'getLaporanNampan'])->middleware('check_permission:laporan,read');
+        Route::get('getLaporanProduk', [LaporanController::class, 'getLaporanProduk'])->middleware('check_permission:laporan,read');
     });
 });

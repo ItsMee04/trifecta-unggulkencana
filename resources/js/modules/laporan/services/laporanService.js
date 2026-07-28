@@ -45,4 +45,22 @@ export const laporanService = {
             throw error;
         }
     },
+
+    async getLaporanNampan(payload) {
+        try {
+            const response = await api.post('/laporan/getLaporanNampan', payload);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async getLaporanProduk(payload) {
+        try {
+            const response = await api.get('/laporan/getLaporanProduk');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 };

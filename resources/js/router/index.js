@@ -239,6 +239,24 @@ const routes = [
         }
     },
     {
+        path: '/CetakLaporanNampan',
+        name: 'CetakLaporanNampan',
+        component: () => import('../modules/laporan/components/CetakLaporanNampan.vue'),
+        meta: {
+            requiresAuth: true,
+            layout: 'blank'
+        }
+    },
+    {
+        path: '/CetakLaporanProduk',
+        name: 'CetakLaporanProduk',
+        component: () => import('../modules/laporan/components/CetakLaporanProduk.vue'),
+        meta: {
+            requiresAuth: true,
+            layout: 'blank'
+        }
+    },
+    {
         path: '/:pathMatch(.*)*',
         redirect: '/dashboard'
     }
