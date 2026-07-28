@@ -293,4 +293,78 @@ class LaporanController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Mengambil data laporan mutasi saldo terformat menggunakan Stored Procedure
+     * berdasarkan rentang tanggal.
+     */
+    public function getLaporanMutasiSaldo(Request $request)
+    {
+        // 1. Validasi input rentang tanggal
+        $request->validate([
+            'tanggal_awal'  => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_awal',
+        ]);
+
+        try {
+
+            // 2. Eksekusi Stored Procedure GetLaporanMutasiSaldo
+            $data = DB::select("CALL GetLaporanMutasiSaldo(?, ?)", [
+                $request->tanggal_awal,
+                $request->tanggal_akhir
+            ]);
+
+            if (empty($data)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Data laporan mutasi saldo tidak ditemukan pada periode ini.'
+                ], 404);
+            }
+
+            // 3. Mapping data item
+            $items = array_map(function ($row) {
+                return [
+                    'tanggal'    => $row->tanggal,
+                    'rekening'   => $row->rekening,
+                    'keterangan' => $row->keterangan,
+                    'jenis'      => $row->jenis,
+                    'jumlah'     => (float) $row->jumlah,
+                    'debit'      => (float) $row->debit,
+                    'kredit'     => (float) $row->kredit,
+                    'saldo'      => (float) $row->saldo,
+                    'pegawai'    => $row->pegawai,
+                ];
+            }, $data);
+
+            // 4. Susun struktur data untuk Vue
+            $saldoAkhir = !empty($data)
+                ? (float) end($data)->saldo
+                : 0;
+
+            $laporanData = [
+                'periode' => [
+                    'tanggal_awal' => $request->tanggal_awal,
+                    'tanggal_akhir' => $request->tanggal_akhir,
+                ],
+
+                'summary' => [
+                    'total_transaksi' => (int) $data[0]->TOTALTRANSAKSI,
+                    'saldo_akhir'     => $saldoAkhir,
+                ],
+
+                'items' => $items
+            ];
+
+            return response()->json([
+                'status'      => true,
+                'laporanData' => $laporanData
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal memuat data laporan mutasi saldo: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

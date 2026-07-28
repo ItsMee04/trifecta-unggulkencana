@@ -230,6 +230,15 @@ const routes = [
         }
     },
     {
+        path: '/CetakLaporanMutasiSaldo',
+        name: 'CetakLaporanMutasiSaldo',
+        component: () => import('../modules/laporan/components/CetakLaporanMutasiSaldo.vue'),
+        meta: {
+            requiresAuth: true,
+            layout: 'blank'
+        }
+    },
+    {
         path: '/:pathMatch(.*)*',
         redirect: '/dashboard'
     }

@@ -36,4 +36,13 @@ export const laporanService = {
             throw error;
         }
     },
+
+    async getLaporanMutasiSaldo(payload) {
+        try {
+            const response = await api.post('/laporan/getLaporanMutasiSaldo', payload);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 };
