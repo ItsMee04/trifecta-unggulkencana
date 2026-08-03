@@ -147,6 +147,27 @@ export function useKondisi() {
         return Math.ceil(filteredKondisi.value.length / itemsPerPage.value) || 1;
     });
 
+    const totalItems = computed(() => filteredKondisi.value.length);
+
+    const startItem = computed(() => {
+        if (totalItems.value === 0) return 0;
+        return (currentPage.value - 1) * itemsPerPage.value + 1;
+    });
+
+    const endItem = computed(() => {
+        return Math.min(currentPage.value * itemsPerPage.value, totalItems.value);
+    });
+
+    const visiblePages = computed(() => {
+        const pages = [];
+        for (let i = 1; i <= totalPages.value; i++) {
+            pages.push(i);
+        }
+        return pages;
+    });
+
+    const showingItems = computed(() => paginatedKondisi.value.length);
+
     return {
         kondisi,
         isLoading,
@@ -166,5 +187,10 @@ export function useKondisi() {
         handleDelete,
         paginatedKondisi,
         totalPages,
+        totalItems,
+        startItem,
+        endItem,
+        visiblePages,
+        showingItems
     }
 }

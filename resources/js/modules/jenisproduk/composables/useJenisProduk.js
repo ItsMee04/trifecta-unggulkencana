@@ -203,6 +203,30 @@ export function useJenisProduk() {
         return Math.ceil(filteredJenisProduk.value.length / itemsPerPage.value) || 1;
     })
 
+    const totalItems = computed(() => filteredJenisProduk.value.length);
+
+    const startItem = computed(() => {
+        if (totalItems.value === 0) return 0;
+        return (currentPage.value - 1) * itemsPerPage.value + 1;
+    })
+
+    const endItem = computed(() => {
+        return Math.min(
+            currentPage.value * itemsPerPage.value,
+            totalItems.value
+        );
+    })
+
+    const visiblePages = computed(() => {
+        const pages = [];
+        for (let i = 1; i <= totalPages.value; i++) {
+            pages.push(i);
+        }
+        return pages;
+    });
+
+    const showingItems = computed(() => paginatedJenisProduk.value.length);
+
     return {
         jenisproduk,
         formJenisProduk,
@@ -222,5 +246,10 @@ export function useJenisProduk() {
         submitJenisProduk,
         imagePreview,
         errors,
+        totalItems,
+        startItem,
+        endItem,
+        visiblePages,
+        showingItems
     }
 }

@@ -190,6 +190,30 @@ export function useUser() {
         return Math.ceil(filteredUser.value.length / itemsPerPage.value) || 1;
     })
 
+    const totalItems = computed(() => filteredUser.value.length);
+
+    const startItem = computed(() => {
+        if (filteredUser.value.length === 0) return 0;
+        return (currentPage.value - 1) * itemsPerPage.value + 1;
+    });
+
+    const endItem = computed(() => {
+        return Math.min(
+            currentPage.value * itemsPerPage.value,
+            totalItems.value
+        );
+    });
+
+    const visiblePages = computed(() => {
+        const pages = [];
+        for (let i = 1; i <= totalPages.value; i++) {
+            pages.push(i);
+        }
+        return pages;
+    });
+
+    const showingItems = computed(() => paginatedUser.value.length);
+
     return {
         user,
         formUser,
@@ -207,5 +231,10 @@ export function useUser() {
         handleDelete,
         submitUser,
         errors,
+        totalItems,
+        startItem,
+        endItem,
+        visiblePages,
+        showingItems
     }
 }

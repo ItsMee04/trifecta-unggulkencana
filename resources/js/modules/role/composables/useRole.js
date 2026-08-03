@@ -156,6 +156,29 @@ export function useRole() {
         return Math.ceil(filteredRole.value.length / itemsPerPage.value) || 1;
     });
 
+    const totalItems = computed(() => filteredRole.value.length);
+
+    const startItem = computed(() => {
+        if (totalItems.value === 0) return 0;
+        return (currentPage.value - 1) * itemsPerPage.value + 1;
+    });
+
+    const endItem = computed(() => {
+        if (totalItems.value === 0) return 0;
+        const end = currentPage.value * itemsPerPage.value;
+        return end > totalItems.value ? totalItems.value : end;
+    });
+
+    const visiblePages = computed(() => {
+        const pages = [];
+        for (let i = 1; i <= totalPages.value; i++) {
+            pages.push(i);
+        }
+        return pages;
+    });
+
+    const showingItems = computed(() => paginatedRole.value.length);
+
     return {
         role,
         isLoading,
@@ -177,5 +200,10 @@ export function useRole() {
         handlePermission,
         paginatedRole,
         totalPages,
+        totalItems,
+        startItem,
+        endItem,
+        visiblePages,
+        showingItems
     }
 }

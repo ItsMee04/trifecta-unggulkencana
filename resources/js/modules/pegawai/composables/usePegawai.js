@@ -253,6 +253,30 @@ export function usePegawai() {
         return Math.ceil(filteredPegawai.value.length / itemsPerPage.value) || 1;
     })
 
+    const totalItems = computed(() => filteredPegawai.value.length);
+
+    const startItem = computed(() => {
+        if(totalItems.value === 0) return 0;
+        return (currentPage.value - 1) * itemsPerPage.value + 1;
+    })
+
+    const endItem = computed(() => {
+        return Math.min(
+            currentPage.value * itemsPerPage.value,
+            totalItems.value
+        );
+    })
+
+    const visiblePages = computed(() => {
+        const pages = [];
+        for (let i = 1; i <= totalPages.value; i++) {
+            pages.push(i);
+        }
+        return pages;
+    });
+
+    const showingItems = computed(() => paginatedPegawai.value.length);
+
     return {
         pegawai,
         formPegawai,
@@ -272,5 +296,10 @@ export function usePegawai() {
         submitPegawai,
         imagePreview,
         errors,
+        totalItems,
+        startItem,
+        endItem,
+        visiblePages,
+        showingItems
     }
 }

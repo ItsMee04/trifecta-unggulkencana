@@ -164,6 +164,30 @@ export function useJenisKarat() {
         return Math.ceil(filteredJenisKarat.value.length / itemsPerPage.value) || 1;
     });
 
+    const totalItems = computed(() => filteredJenisKarat.value.length);
+
+        const startItem = computed(() => {
+            if(totalItems.value === 0) return 0;
+            return (currentPage.value - 1) * itemsPerPage.value + 1;
+        })
+
+        const endItem = computed(() => {
+            return Math.min(
+                currentPage.value * itemsPerPage.value,
+                totalItems.value
+            );
+        })
+
+        const visiblePages = computed(() => {
+            const pages = [];
+            for (let i = 1; i <= totalPages.value; i++) {
+                pages.push(i);
+            }
+            return pages;
+        });
+
+        const showingItems = computed(() => paginatedJenisKarat.value.length);
+
     return {
         jeniskarat,
         isLoading,
@@ -183,5 +207,10 @@ export function useJenisKarat() {
         handleDelete,
         paginatedJenisKarat,
         totalPages,
+        totalItems,
+        startItem,
+        endItem,
+        visiblePages,
+        showingItems
     }
 }

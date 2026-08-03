@@ -191,6 +191,30 @@ export function useHarga() {
         return Math.ceil(filteredHarga.value.length / itemsPerPage.value) || 1;
     });
 
+    const totalItems = computed(() => filteredHarga.value.length);
+
+    const startItem = computed(() => {
+        if (totalItems.value === 0) return 0;
+        return (currentPage.value - 1) * itemsPerPage.value + 1;
+    })
+
+    const endItem = computed(() => {
+        return Math.min(
+            currentPage.value * itemsPerPage.value,
+            totalItems.value
+        );
+    })
+
+    const visiblePages = computed(() => {
+        const pages = [];
+        for (let i = 1; i <= totalPages.value; i++) {
+            pages.push(i);
+        }
+        return pages;
+    });
+
+    const showingItems = computed(() => paginatedHarga.value.length);
+
     return {
         harga,
         isLoading,
@@ -210,5 +234,10 @@ export function useHarga() {
         handleDelete,
         paginatedHarga,
         totalPages,
+        totalItems,
+        startItem,
+        endItem,
+        visiblePages,
+        showingItems
     }
 }

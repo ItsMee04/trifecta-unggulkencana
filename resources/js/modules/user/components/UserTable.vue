@@ -78,10 +78,10 @@
                                 <div class="flex flex-col min-w-0">
                                     <span class="truncate font-semibold text-slate-800 dark:text-slate-200">{{
                                         item.pegawai.nama
-                                    }}</span>
+                                        }}</span>
                                     <span class="text-xs text-slate-400 normal-case tracking-wide font-normal">{{
                                         item.pegawai.nip
-                                    }}</span>
+                                        }}</span>
                                 </div>
                             </div>
                         </td>
@@ -145,15 +145,35 @@
         </div>
 
         <div
-            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between text-xs text-slate-400">
-            <span>Page {{ currentPage }} of {{ totalPages }}</span>
+            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+                Menampilkan
+                <span class="font-semibold">
+                    {{ showingItems }}
+                </span>
+                dari
+                <span class="font-semibold">
+                    {{ totalItems }}
+                </span>
+                data
+            </div>
+
             <div class="flex items-center gap-1">
                 <button @click="currentPage--" :disabled="currentPage === 1"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronLeft class="w-4 h-4" />
                 </button>
+                <button v-for="page in visiblePages" :key="page" @click="currentPage = page" :class="[
+                    'w-8 h-8 rounded-lg text-xs font-semibold transition',
+                    currentPage === page
+                        ? 'bg-blue-950 text-white'
+                        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ]">
+                    {{ page }}
+                </button>
+
                 <button @click="currentPage++" :disabled="currentPage === totalPages"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronRight class="w-4 h-4" />
                 </button>
             </div>
@@ -174,7 +194,12 @@ const {
     isLoading,
     fetchUser,
     handleEdit,
-    handleDelete
+    handleDelete,
+    totalItems,
+    startItem,
+    endItem,
+    visiblePages,
+    showingItems
 } = useUser();
 
 const handleRefresh = async () => {

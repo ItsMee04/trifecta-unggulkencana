@@ -101,8 +101,8 @@
                                 ACTIVE
                             </span>
                             <span v-else
-                                class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold text-white dark:text-slate-400 bg-blue-600 dark:bg-slate-800 rounded-lg">
-                                SELESAI
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50">
+                                Selesai
                             </span>
                         </td>
 

@@ -15,12 +15,16 @@ class PegawaiService
         return Pegawai::with(['jabatan'])->where('status', 1)->get();
     }
 
-    public function createPegawai(array $data, UploadedFile $imageFile)
+    public function createPegawai(array $data, ?UploadedFile $imageFile = null)
     {
         return DB::transaction(function () use ($data, $imageFile) {
 
             // 1. Proses kompresi gambar langsung di sini
-            $imageName = $this->uploadAndCompressNative($imageFile);
+            $imageName = null;
+
+            if ($imageFile) {
+                $imageName = $this->uploadAndCompressNative($imageFile);
+            }
 
             // 2. Simpan data pegawai ke Database
             $pegawai = Pegawai::create([
