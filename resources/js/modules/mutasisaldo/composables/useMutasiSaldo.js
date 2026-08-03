@@ -1,6 +1,7 @@
 import { ref, computed, reactive } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
 
 import { mutasisaldoService } from '../services/mutasisaldoService';
 
@@ -180,23 +181,25 @@ export function useMutasiSaldo() {
         );
     });
 
-    const paginatedMutasiSaldo = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredMutasiSaldo.value.slice(start, start + itemsPerPage.value);
-    });
-
-    const totalPages = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        return Math.ceil(filteredMutasiSaldo.value.length / itemsPerPage.value) || 1;
-    });
+    const {
+        currentPage: currentPageMutasiSaldo,
+        totalItems: totalItemsMutasiSaldo,
+        totalPages: totalPagesMutasiSaldo,
+        paginatedData: paginatedMutasiSaldo,
+        showingItems: showingItemsMutasiSaldo,
+        startItem: startItemMutasiSaldo,
+        endItem: endItemMutasiSaldo,
+        visiblePages: visiblePagesMutasiSaldo,
+        goFirst: goFirstMutasiSaldo,
+        goLast: goLastMutasiSaldo,
+        nextPage: nextPageMutasiSaldo,
+        prevPage: prevPageMutasiSaldo
+    } = usePagination(filteredMutasiSaldo, 10);
 
     return {
         mutasisaldo,
         isLoading,
         searchQuery,
-        currentPage,
-        itemsPerPage,
         isEdit,
         isModalOpen,
         closeModal,
@@ -208,7 +211,18 @@ export function useMutasiSaldo() {
         handleCreate,
         handleEdit,
         handleDelete,
+
+        currentPageMutasiSaldo,
+        totalItemsMutasiSaldo,
+        totalPagesMutasiSaldo,
         paginatedMutasiSaldo,
-        totalPages,
+        showingItemsMutasiSaldo,
+        startItemMutasiSaldo,
+        endItemMutasiSaldo,
+        visiblePagesMutasiSaldo,
+        goFirstMutasiSaldo,
+        goLastMutasiSaldo,
+        nextPageMutasiSaldo,
+        prevPageMutasiSaldo
     }
 }

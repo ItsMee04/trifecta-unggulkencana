@@ -256,7 +256,7 @@ export function usePegawai() {
     const totalItems = computed(() => filteredPegawai.value.length);
 
     const startItem = computed(() => {
-        if(totalItems.value === 0) return 0;
+        if (totalItems.value === 0) return 0;
         return (currentPage.value - 1) * itemsPerPage.value + 1;
     })
 
@@ -268,11 +268,29 @@ export function usePegawai() {
     })
 
     const visiblePages = computed(() => {
-        const pages = [];
-        for (let i = 1; i <= totalPages.value; i++) {
-            pages.push(i);
+        const maxVisible = 5;
+
+        if (totalPages.value <= maxVisible) {
+            return Array.from({ length: totalPages.value }, (_, i) => i + 1);
         }
-        return pages;
+
+        let start = currentPage.value - Math.floor(maxVisible / 2);
+        let end = currentPage.value + Math.floor(maxVisible / 2);
+
+        if (start < 1) {
+            start = 1;
+            end = maxVisible;
+        }
+
+        if (end > totalPages.value) {
+            end = totalPages.value;
+            start = end - maxVisible + 1;
+        }
+
+        return Array.from(
+            { length: end - start + 1 },
+            (_, i) => start + i
+        );
     });
 
     const showingItems = computed(() => paginatedPegawai.value.length);

@@ -91,7 +91,7 @@
                         <tr v-else v-for="(item, index) in paginatedNampanProduk" :key="item.id"
                             class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                             <td class="py-3 px-4 text-center font-medium text-slate-400 whitespace-nowrap">
-                                {{ (currentPageNampanProduk - 1) * itemsPerPageNampanProduk + index + 1 }}
+                                {{ startItemNampanProduk + index }}
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-200 whitespace-nowrap">
                                 {{ item.produk?.kodeproduk || '-' }}
@@ -103,7 +103,7 @@
                             <td class="py-3 px-4 whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
                                     <button @click="handlePindah(item)" title="Pindah Nampan"
-                                        class="p-1.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition active:scale-95">
+                                        class="p-1.5 text-blue-950 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition active:scale-95">
                                         <ArrowLeftRight class="w-4 h-4" />
                                     </button>
                                     <button @click="handleDelete(item)" title="Hapus dari Nampan"
@@ -118,18 +118,55 @@
             </div>
 
             <div v-if="filteredNampanProduk.length > 0"
-                class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between text-xs text-slate-400">
-                <span>Page {{ currentPageNampanProduk }} of {{ totalPagesNampanProduk }}</span>
+                class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between">
+
+                <div class="text-xs text-slate-500">
+                    Menampilkan
+                    <span class="font-semibold">{{ showingItemsNampanProduk }}</span>
+                    dari
+                    <span class="font-semibold">{{ totalItemsNampanProduk }}</span>
+                    data
+                </div>
+
                 <div class="flex items-center gap-1">
-                    <button @click="currentPageNampanProduk--" :disabled="currentPageNampanProduk === 1"
-                        class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40 transition hover:bg-slate-50 dark:hover:bg-slate-800">
+
+                    <!-- First -->
+                    <button @click="goFirstNampanProduk" :disabled="currentPageNampanProduk === 1"
+                        class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                        <ChevronsLeft class="w-4 h-4" />
+                    </button>
+
+                    <!-- Prev -->
+                    <button @click="prevPageNampanProduk" :disabled="currentPageNampanProduk === 1"
+                        class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                         <ChevronLeft class="w-4 h-4" />
                     </button>
-                    <button @click="currentPageNampanProduk++"
-                        :disabled="currentPageNampanProduk === totalPagesNampanProduk"
-                        class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40 transition hover:bg-slate-50 dark:hover:bg-slate-800">
+
+                    <!-- Number -->
+                    <button v-for="page in visiblePagesNampanProduk" :key="page" @click="currentPageNampanProduk = page"
+                        :class="[
+                            'w-8 h-8 rounded-lg text-xs font-semibold transition',
+                            currentPageNampanProduk === page
+                                ? 'bg-blue-950 text-white'
+                                : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        ]">
+
+                        {{ page }}
+
+                    </button>
+
+                    <!-- Next -->
+                    <button @click="nextPageNampanProduk" :disabled="currentPageNampanProduk === totalPagesNampanProduk"
+                        class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                         <ChevronRight class="w-4 h-4" />
                     </button>
+
+                    <!-- Last -->
+                    <button @click="goLastNampanProduk" :disabled="currentPageNampanProduk === totalPagesNampanProduk"
+                        class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                        <ChevronsRight class="w-4 h-4" />
+                    </button>
+
                 </div>
             </div>
         </div>
@@ -137,7 +174,7 @@
 </template>
 
 <script setup>
-import { Search, ChevronLeft, ChevronRight, Trash2, ArrowLeftRight, RotateCw } from 'lucide-vue-next';
+import { Search, ChevronLeft, ChevronRight, Trash2, ArrowLeftRight, RotateCw, ChevronsLeft, ChevronsRight } from 'lucide-vue-next';
 import { useNampanProduk } from '../composables/useNampanProduk';
 
 const {
@@ -150,6 +187,15 @@ const {
     paginatedNampanProduk,
     totalPagesNampanProduk,
     selectedNampanData,
-    searchNampanProdukQuery
+    searchNampanProdukQuery,
+    goFirstNampanProduk,
+    goLastNampanProduk,
+    nextPageNampanProduk,
+    prevPageNampanProduk,
+    totalItemsNampanProduk,
+    showingItemsNampanProduk,
+    visiblePagesNampanProduk,
+    startItemNampanProduk,
+    endItemNampanProduk,
 } = useNampanProduk();
 </script>

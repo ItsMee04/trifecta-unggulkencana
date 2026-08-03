@@ -99,23 +99,27 @@
 
         <div
             class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between">
+
             <div class="text-xs text-slate-500">
                 Menampilkan
-                <span class="font-semibold">
-                    {{ showingItems }}
-                </span>
+                <span class="font-semibold">{{ showingItems }}</span>
                 dari
-                <span class="font-semibold">
-                    {{ totalItems }}
-                </span>
+                <span class="font-semibold">{{ totalItems }}</span>
                 data
             </div>
 
             <div class="flex items-center gap-1">
+                <!-- First -->
+                <button @click="currentPage = 1" :disabled="currentPage === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <ChevronsLeft class="w-4 h-4" />
+                </button>
+                <!-- Prev -->
                 <button @click="currentPage--" :disabled="currentPage === 1"
-                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">
                     <ChevronLeft class="w-4 h-4" />
                 </button>
+                <!-- Nomor Halaman -->
                 <button v-for="page in visiblePages" :key="page" @click="currentPage = page" :class="[
                     'w-8 h-8 rounded-lg text-xs font-semibold transition',
                     currentPage === page
@@ -124,10 +128,15 @@
                 ]">
                     {{ page }}
                 </button>
-
+                <!-- Next -->
                 <button @click="currentPage++" :disabled="currentPage === totalPages"
-                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">
                     <ChevronRight class="w-4 h-4" />
+                </button>
+                <!-- Last -->
+                <button @click="currentPage = totalPages" :disabled="currentPage === totalPages"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <ChevronsRight class="w-4 h-4" />
                 </button>
             </div>
         </div>
@@ -136,7 +145,7 @@
 </template>
 
 <script setup>
-import { Search, ChevronLeft, ChevronRight, SquarePen, Trash2, RotateCw } from 'lucide-vue-next';
+import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, SquarePen, Trash2, RotateCw } from 'lucide-vue-next';
 import { useKondisi } from '../composables/useKondisi';
 
 const {

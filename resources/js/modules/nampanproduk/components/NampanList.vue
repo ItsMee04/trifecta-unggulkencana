@@ -1,5 +1,6 @@
 <template>
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs overflow-hidden relative">
+    <div
+        class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs overflow-hidden relative">
         <!-- Header & Search -->
         <div class="p-4 border-b border-slate-100 dark:border-slate-800">
             <h2 class="font-bold text-slate-900 dark:text-white text-base mb-3">Daftar Nampan</h2>
@@ -19,7 +20,8 @@
         </div>
 
         <!-- Empty State -->
-        <div v-else-if="paginatedNampan.length === 0" class="py-10 text-center text-slate-400 dark:text-slate-500 text-xs italic">
+        <div v-else-if="paginatedNampan.length === 0"
+            class="py-10 text-center text-slate-400 dark:text-slate-500 text-xs italic">
             Tidak ada data nampan.
         </div>
 
@@ -51,17 +53,54 @@
 
         <!-- Pagination -->
         <div v-if="filteredNampan.length > 0"
-            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between text-xs text-slate-400">
-            <span>Page {{ currentPage }} of {{ totalPagesNampan }}</span>
+            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between">
+
+            <div class="text-xs text-slate-500">
+                Menampilkan
+                <span class="font-semibold">{{ showingItemsNampan }}</span>
+                dari
+                <span class="font-semibold">{{ totalItemsNampan }}</span>
+                data
+            </div>
+
             <div class="flex items-center gap-1">
-                <button @click="currentPage--" :disabled="currentPage === 1"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40 transition hover:bg-slate-50 dark:hover:bg-slate-800">
+
+                <!-- First -->
+                <button @click="goFirstNampan" :disabled="currentPageNampan === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsLeft class="w-4 h-4" />
+                </button>
+
+                <!-- Prev -->
+                <button @click="prevPageNampan" :disabled="currentPageNampan === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronLeft class="w-4 h-4" />
                 </button>
-                <button @click="currentPage++" :disabled="currentPage === totalPagesNampan"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40 transition hover:bg-slate-50 dark:hover:bg-slate-800">
+
+                <!-- Number -->
+                <button v-for="page in visiblePagesNampan" :key="page" @click="currentPageNampan = page" :class="[
+                    'w-8 h-8 rounded-lg text-xs font-semibold transition',
+                    currentPageNampan === page
+                        ? 'bg-blue-950 text-white'
+                        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ]">
+
+                    {{ page }}
+
+                </button>
+
+                <!-- Next -->
+                <button @click="nextPageNampan" :disabled="currentPageNampan === totalPagesNampan"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronRight class="w-4 h-4" />
                 </button>
+
+                <!-- Last -->
+                <button @click="goLastNampan" :disabled="currentPageNampan === totalPagesNampan"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsRight class="w-4 h-4" />
+                </button>
+
             </div>
         </div>
     </div>
@@ -69,17 +108,28 @@
 
 <script setup>
 import { onMounted } from 'vue';
-import { Search, ChevronLeft, ChevronRight, RotateCw, Box } from 'lucide-vue-next'; // Ditambahkan impor Box di sini
+import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, RotateCw, Box } from 'lucide-vue-next'; // Ditambahkan impor Box di sini
 import { useNampanProduk } from '../composables/useNampanProduk';
 
 const {
     selectedNampanId,
     searchNampanQuery,
     isLoading,
-    currentPage,
-    totalPagesNampan,
+
     filteredNampan,
     paginatedNampan,
+
+    currentPageNampan,
+    totalPagesNampan,
+    totalItemsNampan,
+    showingItemsNampan,
+    visiblePagesNampan,
+
+    goFirstNampan,
+    goLastNampan,
+    nextPageNampan,
+    prevPageNampan,
+
     handlePilihNampan,
     fetchNampan,
 } = useNampanProduk();

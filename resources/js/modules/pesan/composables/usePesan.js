@@ -1,6 +1,7 @@
 import { ref, computed, reactive } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
 
 import { pesanService } from '../services/pesanService';
 
@@ -146,23 +147,25 @@ export function usePesan() {
         );
     });
 
-    const paginatedPesan = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredPesan.value.slice(start, start + itemsPerPage.value);
-    });
-
-    const totalPages = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        return Math.ceil(filteredPesan.value.length / itemsPerPage.value) || 1;
-    });
+    const {
+        currentPage: currentPagePesan,
+        totalItems: totalItemsPesan,
+        totalPages: totalPagesPesan,
+        paginatedData: paginatedPesan,
+        showingItems: showingItemsPesan,
+        startItem: startItemPesan,
+        endItem: endItemPesan,
+        visiblePages: visiblePagesPesan,
+        goFirst: goFirstPesan,
+        goLast: goLastPesan,
+        nextPage: nextPagePesan,
+        prevPage: prevPagePesan
+    } = usePagination(filteredPesan, 10);
 
     return {
         pesan,
         isLoading,
         searchQuery,
-        currentPage,
-        itemsPerPage,
         isEdit,
         isModalOpen,
         closeModal,
@@ -174,7 +177,17 @@ export function usePesan() {
         handleCreate,
         handleEdit,
         handleDelete,
+        currentPagePesan,
+        totalItemsPesan,
+        totalPagesPesan,
         paginatedPesan,
-        totalPages,
+        showingItemsPesan,
+        startItemPesan,
+        endItemPesan,
+        visiblePagesPesan,
+        goFirstPesan,
+        goLastPesan,
+        nextPagePesan,
+        prevPagePesan
     }
 }

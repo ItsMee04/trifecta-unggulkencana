@@ -1,6 +1,7 @@
 import { ref, computed, reactive } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
 
 import { saldoService } from '../services/saldoService';
 
@@ -138,23 +139,25 @@ export function useSaldo() {
         );
     });
 
-    const paginatedRekening = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredRekening.value.slice(start, start + itemsPerPage.value);
-    });
-
-    const totalPages = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        return Math.ceil(filteredRekening.value.length / itemsPerPage.value) || 1;
-    });
+    const {
+        currentPage: currentPageSaldo,
+        totalItems: totalItemsSaldo,
+        totalPages: totalPagesSaldo,
+        paginatedData: paginatedRekening,
+        showingItems: showingItemsSaldo,
+        startItem: startItemSaldo,
+        endItem: endItemSaldo,
+        visiblePages: visiblePagesSaldo,
+        goFirst: goFirstSaldo,
+        goLast: goLastSaldo,
+        nextPage: nextPageSaldo,
+        prevPage: prevPageSaldo
+    }  = usePagination(filteredRekening, 10);
 
     return {
         saldo,
         isLoading,
         searchQuery,
-        currentPage,
-        itemsPerPage,
         isEdit,
         isModalOpen,
         closeModal,
@@ -166,7 +169,18 @@ export function useSaldo() {
         handleCreate,
         handleEdit,
         handleDelete,
+
+        currentPageSaldo,
+        totalItemsSaldo,
+        totalPagesSaldo,
         paginatedRekening,
-        totalPages,
+        showingItemsSaldo,
+        startItemSaldo,
+        endItemSaldo,
+        visiblePagesSaldo,
+        goFirstSaldo,
+        goLastSaldo,
+        nextPageSaldo,
+        prevPageSaldo
     }
 }

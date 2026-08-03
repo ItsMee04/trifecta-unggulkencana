@@ -48,7 +48,7 @@
                     <tr v-if="isLoading && paginatedSuplier.length === 0">
                         <td colspan="7" class="py-10 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <RotateCw class="w-4 h-4 text-indigo-600 dark:text-indigo-400 animate-spin" />
+                                <RotateCw class="w-4 h-4 text-blue-950 dark:text-indigo-400 animate-spin" />
                                 <span class="text-xs font-medium text-slate-400 dark:text-slate-500">Memuat
                                     data...</span>
                             </div>
@@ -58,7 +58,7 @@
                     <tr v-else v-for="(item, index) in paginatedSuplier" :key="item.id"
                         class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                         <td class="py-3 px-4 text-center font-medium text-slate-400">
-                            {{ (currentPage - 1) * 5 + index + 1 }}
+                            {{ (currentPageSuplier - 1) * 10 + index + 1 }}
                         </td>
 
                         <td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-200 uppercase truncate">
@@ -87,7 +87,7 @@
                         <td class="py-3 px-4">
                             <div class="flex items-center justify-center gap-1">
                                 <button @click="handleEdit(item)" title="Edit"
-                                    class="p-1.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition active:scale-95">
+                                    class="p-1.5 text-blue-950 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition active:scale-95">
                                     <SquarePen class="w-4 h-4" />
                                 </button>
                                 <button @click="handleDelete(item)" title="Delete"
@@ -108,17 +108,45 @@
         </div>
 
         <div
-            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between text-xs text-slate-400">
-            <span>Page {{ currentPage }} of {{ totalPages }}</span>
+            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+                Menampilkan
+                <span class="font-semibold">{{ showingItemsSuplier }}</span>
+                dari
+                <span class="font-semibold">{{ totalItemsSuplier }}</span>
+                data
+            </div>
             <div class="flex items-center gap-1">
-                <button @click="currentPage--" :disabled="currentPage === 1"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                <!-- First -->
+                <button @click="goFirstSuplier" :disabled="currentPageSuplier === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsLeft class="w-4 h-4" />
+                </button>
+                <!-- Prev -->
+                <button @click="prevPageSuplier" :disabled="currentPageSuplier === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronLeft class="w-4 h-4" />
                 </button>
-                <button @click="currentPage++" :disabled="currentPage === totalPages"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                <!-- Nomor Halaman -->
+                <button v-for="page in visiblePagesSuplier" :key="page" @click="currentPageSuplier = page" :class="[
+                    'w-8 h-8 rounded-lg text-xs font-semibold transition',
+                    currentPageSuplier === page
+                        ? 'bg-blue-950 text-white'
+                        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ]">
+                    {{ page }}
+                </button>
+                <!-- Next -->
+                <button @click="nextPageSuplier" :disabled="currentPageSuplier === totalPagesSuplier"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronRight class="w-4 h-4" />
                 </button>
+                <!-- Last -->
+                <button @click="goLastSuplier" :disabled="currentPageSuplier === totalPagesSuplier"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsRight class="w-4 h-4" />
+                </button>
+
             </div>
         </div>
 
@@ -126,18 +154,26 @@
 </template>
 
 <script setup>
-import { Search, ChevronLeft, ChevronRight, SquarePen, Trash2, RotateCw } from 'lucide-vue-next';
+import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, SquarePen, Trash2, RotateCw } from 'lucide-vue-next';
 import { useSuplier } from '../composables/useSuplier';
 
 const {
-    paginatedSuplier,
     searchQuery,
-    currentPage,
-    totalPages,
     isLoading,
     fetchSuplier,
     handleEdit,
-    handleDelete
+    handleDelete,
+
+    currentPageSuplier,
+    paginatedSuplier,
+    totalPagesSuplier,
+    visiblePagesSuplier,
+    nextPageSuplier,
+    prevPageSuplier,
+    goFirstSuplier,
+    goLastSuplier,
+    showingItemsSuplier,
+    totalItemsSuplier,
 } = useSuplier();
 
 const handleRefresh = async () => {

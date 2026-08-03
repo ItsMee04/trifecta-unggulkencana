@@ -157,6 +157,48 @@ export function useDiskon() {
         return Math.ceil(filteredDiskon.value.length / itemsPerPage.value) || 1;
     });
 
+    const totalItems = computed(() => filteredDiskon.value.length);
+
+    const startItem = computed(() => {
+        if (totalItems.value === 0) return 0;
+        return (currentPage.value - 1) * itemsPerPage.value + 1;
+    })
+
+    const endItem = computed(() => {
+        return Math.min(
+            currentPage.value * itemsPerPage.value,
+            totalItems.value
+        );
+    })
+
+    const visiblePages = computed(() => {
+        const maxVisible = 5;
+
+        if (totalPages.value <= maxVisible) {
+            return Array.from({ length: totalPages.value }, (_, i) => i + 1);
+        }
+
+        let start = currentPage.value - Math.floor(maxVisible / 2);
+        let end = currentPage.value + Math.floor(maxVisible / 2);
+
+        if (start < 1) {
+            start = 1;
+            end = maxVisible;
+        }
+
+        if (end > totalPages.value) {
+            end = totalPages.value;
+            start = end - maxVisible + 1;
+        }
+
+        return Array.from(
+            { length: end - start + 1 },
+            (_, i) => start + i
+        );
+    });
+
+    const showingItems = computed(() => paginatedDiskon.value.length);
+
     return {
         diskon,
         isLoading,
@@ -176,5 +218,10 @@ export function useDiskon() {
         handleDelete,
         paginatedDiskon,
         totalPages,
+        totalItems,
+        startItem,
+        endItem,
+        visiblePages,
+        showingItems
     }
 }

@@ -1,6 +1,7 @@
 import { ref, computed, reactive } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
 
 import { pelangganService } from '../services/pelangganService';
 
@@ -162,23 +163,26 @@ export function usePelanggan() {
         );
     });
 
-    const paginatedPelanggan = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredPelanggan.value.slice(start, start + itemsPerPage.value);
-    });
+    const {
+        currentPage: currentPagePelanggan,
+        totalItems: totalItemsPelanggan,
+        totalPages: totalPagesPelanggan,
+        paginatedData: paginatedPelanggan,
+        showingItems: showingItemsPelanggan,
+        startItem: startItemPelanggan,
+        endItem: endItemPelanggan,
+        visiblePages: visiblePagesPelanggan,
+        goFirst: goFirstPelanggan,
+        goLast: goLastPelanggan,
+        nextPage: nextPagePelanggan,
+        prevPage: prevPagePelanggan
 
-    const totalPages = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        return Math.ceil(filteredPelanggan.value.length / itemsPerPage.value) || 1;
-    });
+    } = usePagination(filteredPelanggan, 10);
 
     return {
         pelanggan,
         isLoading,
         searchQuery,
-        currentPage,
-        itemsPerPage,
         isEdit,
         isModalOpen,
         closeModal,
@@ -191,6 +195,17 @@ export function usePelanggan() {
         handleEdit,
         handleDelete,
         paginatedPelanggan,
-        totalPages,
+
+        currentPagePelanggan,
+        totalItemsPelanggan,
+        totalPagesPelanggan,
+        showingItemsPelanggan,
+        startItemPelanggan,
+        endItemPelanggan,
+        visiblePagesPelanggan,
+        goFirstPelanggan,
+        goLastPelanggan,
+        nextPagePelanggan,
+        prevPagePelanggan
     }
 }

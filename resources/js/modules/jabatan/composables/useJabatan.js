@@ -164,11 +164,29 @@ export function useJabatan() {
     });
 
     const visiblePages = computed(() => {
-        const pages = [];
-        for (let i = 1; i <= totalPages.value; i++) {
-            pages.push(i);
+        const maxVisible = 5;
+
+        if (totalPages.value <= maxVisible) {
+            return Array.from({ length: totalPages.value }, (_, i) => i + 1);
         }
-        return pages;
+
+        let start = currentPage.value - Math.floor(maxVisible / 2);
+        let end = currentPage.value + Math.floor(maxVisible / 2);
+
+        if (start < 1) {
+            start = 1;
+            end = maxVisible;
+        }
+
+        if (end > totalPages.value) {
+            end = totalPages.value;
+            start = end - maxVisible + 1;
+        }
+
+        return Array.from(
+            { length: end - start + 1 },
+            (_, i) => start + i
+        );
     });
 
     const showingItems = computed(() => paginatedJabatan.value.length);

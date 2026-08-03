@@ -1,6 +1,7 @@
 import { ref, computed, reactive, watch } from "vue";
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
 
 import { nampanprodukService } from '../services/nampanprodukService';
 import { nampanService } from "../../nampan/services/nampanService";
@@ -268,31 +269,22 @@ export function useNampanProduk() {
         );
     });
 
-    const paginatedNampan = computed(() => {
-        const start = (currentPage.value - 1) * itemsPerPageNampan.value;
-        return filteredNampan.value.slice(start, start + itemsPerPageNampan.value);
-    });
-
-    const totalPagesNampan = computed(() => {
-        return Math.ceil(filteredNampan.value.length / itemsPerPageNampan.value) || 1;
-    });
-
-    const displayedPagesNampan = computed(() => {
-        const total = totalPagesNampan.value;
-        const current = currentPage.value;
-        const maxVisible = 3;
-
-        let start = Math.max(current - Math.floor(maxVisible / 2), 1);
-        let end = start + maxVisible - 1;
-        if (end > total) {
-            end = total;
-            start = Math.max(end - maxVisible + 1, 1);
-        }
-
-        const pages = [];
-        for (let i = start; i <= end; i++) pages.push(i);
-        return pages;
-    });
+    const {
+        currentPage: currentPageNampan,
+        totalItems: totalItemsNampan,
+        totalPages: totalPagesNampan,
+        paginatedData: paginatedNampan,
+        showingItems: showingItemsNampan,
+        startItem: startItemNampan,
+        endItem: endItemNampan,
+        visiblePages: visiblePagesNampan,
+        goFirst: goFirstNampan,
+        goLast: goLastNampan,
+        nextPage: nextPageNampan,
+        prevPage: prevPageNampan
+    } = usePagination(
+        filteredNampan, 5
+    );
 
     // ─── FILTER & PAGINATION: NAMPAN PRODUK (TABLE DETAIL) ───
     const filteredNampanProduk = computed(() => {
@@ -305,31 +297,22 @@ export function useNampanProduk() {
         );
     });
 
-    const paginatedNampanProduk = computed(() => {
-        const start = (currentPageNampanProduk.value - 1) * itemsPerPageNampanProduk.value;
-        return filteredNampanProduk.value.slice(start, start + itemsPerPageNampanProduk.value);
-    });
-
-    const totalPagesNampanProduk = computed(() => {
-        return Math.ceil(filteredNampanProduk.value.length / itemsPerPageNampanProduk.value) || 1;
-    });
-
-    const displayedPagesNampanProduk = computed(() => {
-        const total = totalPagesNampanProduk.value;
-        const current = currentPageNampanProduk.value;
-        const maxVisible = 5;
-
-        let start = Math.max(current - Math.floor(maxVisible / 2), 1);
-        let end = start + maxVisible - 1;
-        if (end > total) {
-            end = total;
-            start = Math.max(end - maxVisible + 1, 1);
-        }
-
-        const pages = [];
-        for (let i = start; i <= end; i++) pages.push(i);
-        return pages;
-    });
+    const {
+        currentPage: currentPageNampanProduk,
+        totalItems: totalItemsNampanProduk,
+        totalPages: totalPagesNampanProduk,
+        paginatedData: paginatedNampanProduk,
+        showingItems: showingItemsNampanProduk,
+        startItem: startItemNampanProduk,
+        endItem: endItemNampanProduk,
+        visiblePages: visiblePagesNampanProduk,
+        goFirst: goFirstNampanProduk,
+        goLast: goLastNampanProduk,
+        nextPage: nextPageNampanProduk,
+        prevPage: prevPageNampanProduk
+    } = usePagination(
+        filteredNampanProduk, 10
+    );
 
     // ─── FILTER & PAGINATION: PRODUK MASTER (MODAL) ───
     const filteredProduk = computed(() => {
@@ -340,31 +323,22 @@ export function useNampanProduk() {
         );
     });
 
-    const paginatedProduk = computed(() => {
-        const start = (currentPageProduk.value - 1) * itemsPerPageProduk.value;
-        return filteredProduk.value.slice(start, start + itemsPerPageProduk.value);
-    });
-
-    const totalPagesProduk = computed(() => {
-        return Math.ceil(filteredProduk.value.length / itemsPerPageProduk.value) || 1;
-    });
-
-    const displayedPagesProduk = computed(() => {
-        const total = totalPagesProduk.value;
-        const current = currentPageProduk.value;
-        const maxVisible = 5;
-
-        let start = Math.max(current - Math.floor(maxVisible / 2), 1);
-        let end = start + maxVisible - 1;
-        if (end > total) {
-            end = total;
-            start = Math.max(end - maxVisible + 1, 1);
-        }
-
-        const pages = [];
-        for (let i = start; i <= end; i++) pages.push(i);
-        return pages;
-    });
+    const {
+        currentPage: currentPageProduk,
+        totalItems: totalItemsProduk,
+        totalPages: totalPagesProduk,
+        paginatedData: paginatedProduk,
+        showingItems: showingItemsProduk,
+        startItem: startItemProduk,
+        endItem: endItemProduk,
+        visiblePages: visiblePagesProduk,
+        goFirst: goFirstProduk,
+        goLast: goLastProduk,
+        nextPage: nextPageProduk,
+        prevPage: prevPageProduk
+    } = usePagination(
+        filteredProduk, 10
+    );
 
     return {
         // State & Query
@@ -384,33 +358,54 @@ export function useNampanProduk() {
         isLoadingNampanProduk,
         isLoadingProduk,
 
-        // Pagination State
-        currentPage,
-        currentPageNampanProduk,
-        currentPageProduk,
-        itemsPerPageNampan,
-        itemsPerPageNampanProduk,
-        itemsPerPageProduk,
-
-        // Computed Pagination List Nampan
-        filteredNampan,
+        // Pagination Nampan
+        currentPageNampan,
         paginatedNampan,
         totalPagesNampan,
-        displayedPagesNampan,
+        totalItemsNampan,
+        showingItemsNampan,
+        startItemNampan,
+        endItemNampan,
+        visiblePagesNampan,
+        goFirstNampan,
+        goLastNampan,
+        nextPageNampan,
+        prevPageNampan,
 
-        // Computed Pagination Table Nampan Produk
-        filteredNampanProduk,
+        // Pagination Nampan Produk
+        currentPageNampanProduk,
         paginatedNampanProduk,
         totalPagesNampanProduk,
-        displayedPagesNampanProduk,
+        totalItemsNampanProduk,
+        showingItemsNampanProduk,
+        startItemNampanProduk,
+        endItemNampanProduk,
+        visiblePagesNampanProduk,
+        goFirstNampanProduk,
+        goLastNampanProduk,
+        nextPageNampanProduk,
+        prevPageNampanProduk,
 
-        // Computed Pagination Modal Tambah Produk
-        filteredProduk,
+        // Pagination Produk
+        currentPageProduk,
         paginatedProduk,
         totalPagesProduk,
-        displayedPagesProduk,
+        totalItemsProduk,
+        showingItemsProduk,
+        startItemProduk,
+        endItemProduk,
+        visiblePagesProduk,
+        goFirstProduk,
+        goLastProduk,
+        nextPageProduk,
+        prevPageProduk,
 
-        // Pindah Nampan Form & Computed
+        // Filter
+        filteredNampan,
+        filteredNampanProduk,
+        filteredProduk,
+
+        // Form
         isEdit,
         errors,
         formNampanProduk,
@@ -418,7 +413,7 @@ export function useNampanProduk() {
         availableNampanTujuan,
         selectedProdukIds,
 
-        // Actions / Methods
+        // Actions
         fetchNampan,
         fetchNampanProduk,
         handlePilihNampan,

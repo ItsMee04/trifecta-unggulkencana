@@ -1,6 +1,7 @@
 import { ref, computed, reactive } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
 
 import { suplierService } from '../services/suplierService';
 
@@ -149,23 +150,25 @@ export function useSuplier() {
         );
     });
 
-    const paginatedSuplier = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredSuplier.value.slice(start, start + itemsPerPage.value);
-    });
-
-    const totalPages = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        return Math.ceil(filteredSuplier.value.length / itemsPerPage.value) || 1;
-    });
+    const {
+        currentPage: currentPageSuplier,
+        totalItems: totalItemsSuplier,
+        totalPages: totalPagesSuplier,
+        paginatedData: paginatedSuplier,
+        showingItems: showingItemsSuplier,
+        startItem: startItemSuplier,
+        endItem: endItemSuplier,
+        visiblePages: visiblePagesSuplier,
+        goFirst: goFirstSuplier,
+        goLast: goLastSuplier,
+        nextPage: nextPageSuplier,
+        prevPage: prevPageSuplier
+    } = usePagination(filteredSuplier, 10);
 
     return {
         suplier,
         isLoading,
         searchQuery,
-        currentPage,
-        itemsPerPage,
         isEdit,
         isModalOpen,
         closeModal,
@@ -177,7 +180,18 @@ export function useSuplier() {
         handleCreate,
         handleEdit,
         handleDelete,
+
+        currentPageSuplier,
+        totalItemsSuplier,
+        totalPagesSuplier,
         paginatedSuplier,
-        totalPages,
+        showingItemsSuplier,
+        startItemSuplier,
+        endItemSuplier,
+        visiblePagesSuplier,
+        goFirstSuplier,
+        goLastSuplier,
+        nextPageSuplier,
+        prevPageSuplier
     }
 }
