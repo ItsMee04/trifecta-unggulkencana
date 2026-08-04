@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
 import { pembelianService } from '../services/pembelianService';
 
 const toast = useToast();
@@ -105,22 +106,26 @@ export function usePembelian() {
         );
     });
 
-    const paginatedPembelian = computed(() => {
-        const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredPembelian.value.slice(start, start + itemsPerPage.value);
-    });
-
-    const totalPages = computed(() => {
-        return Math.ceil(filteredPembelian.value.length / itemsPerPage.value) || 1;
-    });
+    const {
+        currentPage: currentPagePembelian,
+        totalItems: totalItemsPembelian,
+        totalPages: totalPagesPembelian,
+        paginatedData: paginatedPembelian,
+        showingItems: showingItemsPembelian,
+        startItem: startItemPembelian,
+        endItem: endItemPembelian,
+        visiblePages: visiblePagesPembelian,
+        goFirst: goFirstPembelian,
+        goLast: goLastPembelian,
+        nextPage: nextPagePembelian,
+        prevPage: prevPagePembelian
+    } = usePagination(filteredPembelian, 10);
 
     return {
         pembelian,
         isLoading,
         isLoadingNota,
         searchQuery,
-        currentPage,
-        itemsPerPage,
         isEdit,
         isModalOpen,
         isNotaModalOpen,
@@ -132,7 +137,18 @@ export function usePembelian() {
         errors,
 
         fetchPembelian,
+
+        currentPagePembelian,
+        totalItemsPembelian,
+        totalPagesPembelian,
         paginatedPembelian,
-        totalPages,
+        showingItemsPembelian,
+        startItemPembelian,
+        endItemPembelian,
+        visiblePagesPembelian,
+        goFirstPembelian,
+        goLastPembelian,
+        nextPagePembelian,
+        prevPagePembelian
     };
 }

@@ -1,6 +1,8 @@
 import { ref, computed, reactive } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete, confirmFinal } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
+
 import { perbaikanService } from '../services/perbaikanService';
 
 const toast = useToast();
@@ -100,22 +102,26 @@ export function usePerbaikan() {
         );
     });
 
-    const paginatedPerbaikan = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredPerbaikan.value.slice(start, start + itemsPerPage.value);
-    });
+    const {
+        currentPage: currentPagePerbaikan,
+        totalItems: totalItemsPerbaikan,
+        totalPages: totalPagesPerbaikan,
+        paginatedData: paginatedPerbaikan,
+        showingItems: showingItemsPerbaikan,
+        startItem: startItemPerbaikan,
+        endItem: endItemPerbaikan,
+        visiblePages: visiblePagesPerbaikan,
+        goFirst: goFirstPerbaikan,
+        goLast: goLastPerbaikan,
+        nextPage: nextPagePerbaikan,
+        prevPage: prevPagePerbaikan,
+    } = usePagination(filteredPerbaikan, 10);
 
-    const totalPages = computed(() => {
-        // KUNCI: Tambahkan .value pada itemsPerPage
-        return Math.ceil(filteredPerbaikan.value.length / itemsPerPage.value) || 1;
-    });
+
 
     return {
         perbaikan,
         isLoading,
-        searchQuery,
-        currentPage,
         itemsPerPage,
         isEdit,
         isModalOpen,
@@ -125,7 +131,17 @@ export function usePerbaikan() {
         fetchPerbaikan,
         handleFinal,
         handleBatal,
+        currentPagePerbaikan,
+        totalItemsPerbaikan,
+        totalPagesPerbaikan,
         paginatedPerbaikan,
-        totalPages,
+        showingItemsPerbaikan,
+        startItemPerbaikan,
+        endItemPerbaikan,
+        visiblePagesPerbaikan,
+        goFirstPerbaikan,
+        goLastPerbaikan,
+        nextPagePerbaikan,
+        prevPagePerbaikan
     }
 }

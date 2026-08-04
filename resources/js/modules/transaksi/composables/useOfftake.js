@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
 import { offtakeService } from '../services/offtakeService';
 
 const toast = useToast();
@@ -115,22 +116,26 @@ export function useOfftake() {
         );
     });
 
-    const paginatedOfftake = computed(() => {
-        const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredOfftake.value.slice(start, start + itemsPerPage.value);
-    });
-
-    const totalPages = computed(() => {
-        return Math.ceil(filteredOfftake.value.length / itemsPerPage.value) || 1;
-    });
+    const {
+        currentPage: currentPageOfftake,
+        totalItems: totalItemsOfftake,
+        totalPages: totalPagesOfftake,
+        paginatedData: paginatedOfftake,
+        showingItems: showingItemsOfftake,
+        startItem: startItemOfftake,
+        endItem: endItemOfftake,
+        visiblePages: visiblePagesOfftake,
+        goFirst: goFirstOfftake,
+        goLast: goLastOfftake,
+        nextPage: nextPageOfftake,
+        prevPage: prevPageOfftake
+    } = usePagination(filteredOfftake, 10);
 
     return {
         offtake,
         isLoading,
         isLoadingNota,
         searchQuery,
-        currentPage,
-        itemsPerPage,
         isEdit,
         isModalOpen,
         isNotaModalOpen,
@@ -142,7 +147,18 @@ export function useOfftake() {
         errors,
 
         fetchOfftake,
+
+        currentPageOfftake,
+        totalItemsOfftake,
+        totalPagesOfftake,
         paginatedOfftake,
-        totalPages,
+        showingItemsOfftake,
+        startItemOfftake,
+        endItemOfftake,
+        visiblePagesOfftake,
+        goFirstOfftake,
+        goLastOfftake,
+        nextPageOfftake,
+        prevPageOfftake
     };
 }

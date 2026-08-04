@@ -51,7 +51,7 @@
                     <tr v-if="isLoading && paginatedPerbaikan.length === 0">
                         <td colspan="9" class="py-10 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <RotateCw class="w-4 h-4 text-indigo-600 dark:text-indigo-400 animate-spin" />
+                                <RotateCw class="w-4 h-4 text-blue-950 dark:text-indigo-400 animate-spin" />
                                 <span class="text-xs font-medium text-slate-400 dark:text-slate-500">Memuat
                                     data...</span>
                             </div>
@@ -61,7 +61,7 @@
                     <tr v-else v-for="(item, index) in paginatedPerbaikan" :key="item.id"
                         class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                         <td class="py-3 px-4 text-center font-medium text-slate-400">
-                            {{ (currentPage - 1) * 10 + index + 1 }}
+                            {{ (currentPagePerbaikan - 1) * 10 + index + 1 }}
                         </td>
 
                         <td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-200 uppercase truncate">
@@ -114,14 +114,12 @@
                                     class="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 rounded-xl transition active:scale-95">
                                     <CheckCircle2 class="w-4 h-4" />
                                 </button>
-
                                 <!-- Button Delete -->
                                 <button @click="handleBatal(item)" title="Delete"
                                     class="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl transition active:scale-95">
                                     <Trash2 class="w-4 h-4" />
                                 </button>
                             </div>
-
                             <!-- Tanda strip atau keterangan jika status === 2 -->
                             <span v-else
                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
@@ -140,17 +138,45 @@
         </div>
 
         <div
-            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between text-xs text-slate-400">
-            <span>Page {{ currentPage }} of {{ totalPages }}</span>
+            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+                Menampilkan
+                <span class="font-semibold">{{ showingItemsPerbaikan }}</span>
+                dari
+                <span class="font-semibold">{{ totalItemsPerbaikan }}</span>
+                data
+            </div>
             <div class="flex items-center gap-1">
-                <button @click="currentPage--" :disabled="currentPage === 1"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                <!-- First -->
+                <button @click="goFirstPerbaikan" :disabled="currentPagePerbaikan === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsLeft class="w-4 h-4" />
+                </button>
+                <!-- Prev -->
+                <button @click="prevPagePerbaikan" :disabled="currentPagePerbaikan === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronLeft class="w-4 h-4" />
                 </button>
-                <button @click="currentPage++" :disabled="currentPage === totalPages"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                <!-- Nomor Halaman -->
+                <button v-for="page in visiblePagesPerbaikan" :key="page" @click="currentPagePerbaikan = page" :class="[
+                    'w-8 h-8 rounded-lg text-xs font-semibold transition',
+                    currentPagePerbaikan === page
+                        ? 'bg-blue-950 text-white'
+                        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ]">
+                    {{ page }}
+                </button>
+                <!-- Next -->
+                <button @click="nextPagePerbaikan" :disabled="currentPagePerbaikan === totalPagesPerbaikan"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronRight class="w-4 h-4" />
                 </button>
+                <!-- Last -->
+                <button @click="goLastPerbaikan" :disabled="currentPagePerbaikan === totalPagesPerbaikan"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsRight class="w-4 h-4" />
+                </button>
+
             </div>
         </div>
 
@@ -158,18 +184,25 @@
 </template>
 
 <script setup>
-import { Search, ChevronLeft, ChevronRight, CheckCircle2, Trash2, RotateCw } from 'lucide-vue-next';
+import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CheckCircle2, Trash2, RotateCw } from 'lucide-vue-next';
 import { usePerbaikan } from '../composables/usePerbaikan';
 
 const {
-    paginatedPerbaikan,
     searchQuery,
-    currentPage,
-    totalPages,
     isLoading,
     fetchPerbaikan,
     handleFinal, // Ganti handleEdit menjadi handleFinal jika ada di composable
-    handleBatal
+    handleBatal,
+    currentPagePerbaikan,
+    totalPagesPerbaikan,
+    paginatedPerbaikan,
+    showingItemsPerbaikan,
+    totalItemsPerbaikan,
+    visiblePagesPerbaikan,
+    nextPagePerbaikan,
+    prevPagePerbaikan,
+    goFirstPerbaikan,
+    goLastPerbaikan
 } = usePerbaikan();
 
 const handleRefresh = async () => {

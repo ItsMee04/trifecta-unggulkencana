@@ -1,6 +1,8 @@
 import { ref, computed } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
 import { confirmDelete } from '../../../utilities/confirm/confirm';
+import { usePagination } from '../../../utilities/pagination/usePagination';
+
 import { transaksiService } from '../services/transaksiService';
 
 const toast = useToast();
@@ -105,14 +107,20 @@ export function useTransaksi() {
         );
     });
 
-    const paginatedTransaksi = computed(() => {
-        const start = (currentPage.value - 1) * itemsPerPage.value;
-        return filteredTransaksi.value.slice(start, start + itemsPerPage.value);
-    });
-
-    const totalPages = computed(() => {
-        return Math.ceil(filteredTransaksi.value.length / itemsPerPage.value) || 1;
-    });
+    const {
+        currentPage: currentPageTransaksi,
+        totalItems: totalItemsTransaksi,
+        totalPages: totalPagesTransaksi,
+        paginatedData: paginatedTransaksi,
+        showingItems: showingItemsTransaksi,
+        startItem: startItemTransaksi,
+        endItem: endItemTransaksi,
+        visiblePages: visiblePagesTransaksi,
+        goFirst: goFirstTransaksi,
+        goLast: goLastTransaksi,
+        nextPage: nextPageTransaksi,
+        prevPage: prevPageTransaksi
+    } = usePagination(filteredTransaksi, 10);
 
     return {
         transaksi,
@@ -132,7 +140,18 @@ export function useTransaksi() {
         errors,
 
         fetchTransaksi,
+
+        currentPageTransaksi,
+        totalItemsTransaksi,
+        totalPagesTransaksi,
         paginatedTransaksi,
-        totalPages,
+        showingItemsTransaksi,
+        startItemTransaksi,
+        endItemTransaksi,
+        visiblePagesTransaksi,
+        goFirstTransaksi,
+        goLastTransaksi,
+        nextPageTransaksi,
+        prevPageTransaksi
     };
 }

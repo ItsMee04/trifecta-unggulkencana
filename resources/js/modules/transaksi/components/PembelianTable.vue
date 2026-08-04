@@ -49,7 +49,7 @@
                     <tr v-if="isLoading && paginatedPembelian.length === 0">
                         <td colspan="7" class="py-10 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <RotateCw class="w-4 h-4 text-indigo-600 dark:text-indigo-400 animate-spin" />
+                                <RotateCw class="w-4 h-4 text-blue-950 dark:text-indigo-400 animate-spin" />
                                 <span class="text-xs font-medium text-slate-400 dark:text-slate-500">Memuat
                                     data...</span>
                             </div>
@@ -59,7 +59,7 @@
                     <tr v-else v-for="(item, index) in paginatedPembelian" :key="item.id"
                         class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                         <td class="py-3 px-4 text-center font-medium text-slate-400">
-                            {{ (currentPage - 1) * 10 + index + 1 }}
+                            {{ (currentPagePembelian - 1) * 10 + index + 1 }}
                         </td>
 
                         <td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-200 uppercase truncate">
@@ -94,7 +94,7 @@
                         <td class="py-3 px-4">
                             <div class="flex items-center justify-center gap-1">
                                 <button @click="handleView(item)" title="Lihat Detail"
-                                    class="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-xl transition active:scale-95">
+                                    class="p-1.5 text-blue-950 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-xl transition active:scale-95">
                                     <Eye class="w-4 h-4" />
                                 </button>
 
@@ -117,17 +117,45 @@
         </div>
 
         <div
-            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between text-xs text-slate-400">
-            <span>Page {{ currentPage }} of {{ totalPages }}</span>
+            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+                Menampilkan
+                <span class="font-semibold">{{ showingItemsPembelian }}</span>
+                dari
+                <span class="font-semibold">{{ totalItemsPembelian }}</span>
+                data
+            </div>
             <div class="flex items-center gap-1">
-                <button @click="currentPage--" :disabled="currentPage === 1"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                <!-- First -->
+                <button @click="goFirstPembelian" :disabled="currentPagePembelian === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsLeft class="w-4 h-4" />
+                </button>
+                <!-- Prev -->
+                <button @click="prevPagePembelian" :disabled="currentPagePembelian === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronLeft class="w-4 h-4" />
                 </button>
-                <button @click="currentPage++" :disabled="currentPage === totalPages"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                <!-- Nomor Halaman -->
+                <button v-for="page in visiblePagesPembelian" :key="page" @click="currentPagePembelian = page" :class="[
+                    'w-8 h-8 rounded-lg text-xs font-semibold transition',
+                    currentPagePembelian === page
+                        ? 'bg-blue-950 text-white'
+                        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ]">
+                    {{ page }}
+                </button>
+                <!-- Next -->
+                <button @click="nextPagePembelian" :disabled="currentPagePembelian === totalPagesPembelian"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronRight class="w-4 h-4" />
                 </button>
+                <!-- Last -->
+                <button @click="goLastPembelian" :disabled="currentPagePembelian === totalPagesPembelian"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsRight class="w-4 h-4" />
+                </button>
+
             </div>
         </div>
 
@@ -139,6 +167,8 @@ import {
     Search,
     ChevronLeft,
     ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
     CheckCircle2,
     Trash2,
     RotateCw,
@@ -149,14 +179,22 @@ import { usePembelian } from '../composables/usePembelian';
 import { toRupiah } from '../../../utilities/format/toRupiah';
 
 const {
-    paginatedPembelian,
     searchQuery,
-    currentPage,
-    totalPages,
     isLoading,
     fetchPembelian,
     handleView,
-    handleBatal
+    handleBatal,
+
+    currentPagePembelian,
+    totalPagesPembelian,
+    paginatedPembelian,
+    showingItemsPembelian,
+    totalItemsPembelian,
+    visiblePagesPembelian,
+    goFirstPembelian,
+    goLastPembelian,
+    nextPagePembelian,
+    prevPagePembelian
 } = usePembelian();
 
 const handleRefresh = async () => {

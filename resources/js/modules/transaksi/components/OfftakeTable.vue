@@ -58,7 +58,7 @@
                     <tr v-else v-for="(item, index) in paginatedOfftake" :key="item.id"
                         class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                         <td class="py-3 px-4 text-center font-medium text-slate-400">
-                            {{ (currentPage - 1) * 10 + index + 1 }}
+                            {{ (currentPageOfftake - 1) * 10 + index + 1 }}
                         </td>
 
                         <td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-200 uppercase truncate">
@@ -80,7 +80,7 @@
                         <td class="py-3 px-4">
                             <div class="flex items-center justify-center gap-1">
                                 <button @click="handleView(item)" title="Lihat Detail"
-                                    class="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-xl transition active:scale-95">
+                                    class="p-1.5 text-blue-950 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-xl transition active:scale-95">
                                     <Eye class="w-4 h-4" />
                                 </button>
 
@@ -103,17 +103,45 @@
         </div>
 
         <div
-            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between text-xs text-slate-400">
-            <span>Page {{ currentPage }} of {{ totalPages }}</span>
+            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+                Menampilkan
+                <span class="font-semibold">{{ showingItemsOfftake }}</span>
+                dari
+                <span class="font-semibold">{{ totalItemsOfftake }}</span>
+                data
+            </div>
             <div class="flex items-center gap-1">
-                <button @click="currentPage--" :disabled="currentPage === 1"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                <!-- First -->
+                <button @click="goFirstOfftake" :disabled="currentPageOfftake === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsLeft class="w-4 h-4" />
+                </button>
+                <!-- Prev -->
+                <button @click="prevPageOfftake" :disabled="currentPageOfftake === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronLeft class="w-4 h-4" />
                 </button>
-                <button @click="currentPage++" :disabled="currentPage === totalPages"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40">
+                <!-- Nomor Halaman -->
+                <button v-for="page in visiblePagesOfftake" :key="page" @click="currentPageOfftake = page" :class="[
+                    'w-8 h-8 rounded-lg text-xs font-semibold transition',
+                    currentPageOfftake === page
+                        ? 'bg-blue-950 text-white'
+                        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ]">
+                    {{ page }}
+                </button>
+                <!-- Next -->
+                <button @click="nextPageOfftake" :disabled="currentPageOfftake === totalPagesOfftake"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                     <ChevronRight class="w-4 h-4" />
                 </button>
+                <!-- Last -->
+                <button @click="goLastOfftake" :disabled="currentPageOfftake === totalPagesOfftake"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsRight class="w-4 h-4" />
+                </button>
+
             </div>
         </div>
 
@@ -125,6 +153,8 @@ import {
     Search,
     ChevronLeft,
     ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
     CheckCircle2,
     Trash2,
     RotateCw,
@@ -135,14 +165,22 @@ import { useOfftake } from '../composables/useOfftake';
 import { toRupiah } from '../../../utilities/format/toRupiah';
 
 const {
-    paginatedOfftake,
     searchQuery,
-    currentPage,
-    totalPages,
     isLoading,
     fetchOfftake,
     handleView,
-    handleBatal
+    handleBatal,
+
+    currentPageOfftake,
+    totalPagesOfftake,
+    paginatedOfftake,
+    showingItemsOfftake,
+    totalItemsOfftake,
+    visiblePagesOfftake,
+    goFirstOfftake,
+    goLastOfftake,
+    nextPageOfftake,
+    prevPageOfftake
 } = useOfftake();
 
 const handleRefresh = async () => {
