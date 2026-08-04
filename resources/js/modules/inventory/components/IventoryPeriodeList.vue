@@ -1,6 +1,7 @@
 <template>
     <!-- Card Utama: Daftar Periode -->
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs overflow-hidden relative mb-3">
+    <div
+        class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs overflow-hidden relative mb-3">
         <!-- Header & Search -->
         <div class="p-4 border-b border-slate-100 dark:border-slate-800">
             <h2 class="font-bold text-slate-900 dark:text-white text-base mb-3">Daftar Periode</h2>
@@ -20,7 +21,8 @@
         </div>
 
         <!-- Empty State -->
-        <div v-else-if="paginatedPeriodeStok.length === 0" class="py-10 text-center text-slate-400 dark:text-slate-500 text-xs italic">
+        <div v-else-if="paginatedPeriodeStok.length === 0"
+            class="py-10 text-center text-slate-400 dark:text-slate-500 text-xs italic">
             Tidak ada data periode.
         </div>
 
@@ -55,7 +57,8 @@
                     </button>
 
                     <!-- Badge Final -->
-                    <div v-else class="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full px-3 py-1 text-xs font-semibold flex items-center gap-1.5">
+                    <div v-else
+                        class="bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full px-3 py-1 text-xs font-semibold flex items-center gap-1.5">
                         <CheckCircle class="w-3 h-3" />
                         <span>Final</span>
                     </div>
@@ -65,17 +68,49 @@
 
         <!-- Pagination -->
         <div v-if="filteredPeriodeStok.length > 0"
-            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between text-xs text-slate-400">
-            <span>Page {{ currentPagePeriodeStok }} of {{ totalPagesPeriodeStok }}</span>
-            <div class="flex items-center gap-1">
-                <button @click="currentPagePeriodeStok--" :disabled="currentPagePeriodeStok === 1"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40 transition hover:bg-slate-50 dark:hover:bg-slate-800">
-                    <ChevronLeft class="w-4 h-4" />
-                </button>
-                <button @click="currentPagePeriodeStok++" :disabled="currentPagePeriodeStok === totalPagesPeriodeStok"
-                    class="p-1 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 disabled:opacity-40 transition hover:bg-slate-50 dark:hover:bg-slate-800">
-                    <ChevronRight class="w-4 h-4" />
-                </button>
+            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="w-full sm:w-auto text-xs text-slate-500 text-center sm:text-left">
+                Menampilkan
+                <span class="font-semibold">{{ showingItemsPeriodeStok }}</span>
+                dari
+                <span class="font-semibold">{{ totalItemsPeriodeStok }}</span>
+                data
+            </div>
+            <div class="w-full sm:w-auto overflow-x-auto flex justify-center sm:justify-end">
+                <div class="flex items-center gap-1 min-w-max">
+                    <!-- First -->
+                    <button @click="goFirstPeriodeStok" :disabled="currentPagePeriodeStok === 1"
+                        class="w-6 h-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                        <ChevronsLeft class="w-4 h-4" />
+                    </button>
+                    <!-- Prev -->
+                    <button @click="prevPagePeriodeStok" :disabled="currentPagePeriodeStok === 1"
+                        class="w-6 h-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                        <ChevronLeft class="w-4 h-4" />
+                    </button>
+                    <!-- Number -->
+                    <button v-for="page in visiblePagesPeriodeStok" :key="page" @click="currentPagePeriodeStok = page"
+                        :class="[
+                            'w-6 h-6 rounded-lg text-xs font-semibold transition',
+                            currentPagePeriodeStok === page
+                                ? 'bg-blue-950 text-white'
+                                : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        ]">
+
+                        {{ page }}
+                    </button>
+                    <!-- Next -->
+                    <button @click="nextPagePeriodeStok" :disabled="currentPagePeriodeStok === totalPagesPeriodeStok"
+                        class="w-6 h-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                        <ChevronRight class="w-4 h-4" />
+                    </button>
+                    <!-- Last -->
+                    <button @click="goLastPeriodeStok" :disabled="currentPagePeriodeStok === totalPagesPeriodeStok"
+                        class="w-6 h-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                        <ChevronsRight class="w-4 h-4" />
+                    </button>
+
+                </div>
             </div>
         </div>
     </div>
@@ -88,8 +123,7 @@
             </label>
             <div class="flex items-center gap-2">
                 <div class="flex-1">
-                    <input type="date" id="periode" v-model="formPeriode.periode"
-                        @click="$event.target.showPicker()"
+                    <input type="date" id="periode" v-model="formPeriode.periode" @click="$event.target.showPicker()"
                         class="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-600 text-slate-900 dark:text-white transition dark:[color-scheme:dark] cursor-pointer" />
                 </div>
                 <button @click="handleCreatePeriode" :disabled="isLoadingPeriodeStok"
@@ -110,6 +144,8 @@ import {
     Search,
     ChevronLeft,
     ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
     RotateCw,
     Calendar,
     Lock,
@@ -124,14 +160,24 @@ const {
     selectedPeriodeStokID,
     searchPeriodeStok,
     isLoadingPeriodeStok,
-    currentPagePeriodeStok,
-    totalPagesPeriodeStok,
     filteredPeriodeStok,
-    paginatedPeriodeStok,
     fetchPeriodeStok,
     handleCreatePeriode,
     handlePilihPeriodeStok,
-    handleFinalisasiPeriode
+    handleFinalisasiPeriode,
+
+    currentPagePeriodeStok,
+    totalItemsPeriodeStok,
+    totalPagesPeriodeStok,
+    paginatedPeriodeStok,
+    showingItemsPeriodeStok,
+    startItemPeriodeStok,
+    endItemPeriodeStok,
+    visiblePagesPeriodeStok,
+    goFirstPeriodeStok,
+    goLastPeriodeStok,
+    nextPagePeriodeStok,
+    prevPagePeriodeStok,
 } = useInventory();
 
 onMounted(() => {

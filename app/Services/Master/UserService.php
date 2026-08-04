@@ -11,7 +11,7 @@ class UserService
 {
     public function getUserAktif()
     {
-        $data = User::with(['pegawai', 'role'])->where('status', 1)->get();
+        $data = User::with(['pegawai', 'role'])->get();
 
         return $data;
     }
@@ -44,6 +44,7 @@ class UserService
 
             // Eksekusi update jika ada data yang diubah
             if (!empty($updateData)) {
+                $updateData['status'] = 1;
                 $user->update($updateData);
             }
 

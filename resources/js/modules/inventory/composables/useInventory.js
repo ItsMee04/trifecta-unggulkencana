@@ -1,6 +1,7 @@
 import { ref, computed, reactive, watch } from "vue";
 import { useToast } from "../../../utilities/toast/toast";
 import { confirmDelete, confirmFinal} from "../../../utilities/confirm/confirm";
+import { usePagination } from "../../../utilities/pagination/usePagination";
 import { inventoryService } from "../services/inventoryService";
 
 const toast = useToast();
@@ -210,34 +211,49 @@ export function useInventory() {
         );
     });
 
-    const paginatedPeriodeStok = computed(() => {
-        const start = (currentPagePeriodeStok.value - 1) * itemsPerPagePeriodeStok;
-        return filteredPeriodeStok.value.slice(start, start + itemsPerPagePeriodeStok);
-    });
+    const {
+        currentPage: currentPagePeriodeStok,
+        totalItems: totalItemsPeriodeStok,
+        totalPages: totalPagesPeriodeStok,
+        paginatedData: paginatedPeriodeStok,
+        showingItems: showingItemsPeriodeStok,
+        startItem: startItemPeriodeStok,
+        endItem: endItemPeriodeStok,
+        visiblePages: visiblePagesPeriodeStok,
+        goFirst: goFirstPeriodeStok,
+        goLast: goLastPeriodeStok,
+        nextPage: nextPagePeriodeStok,
+        prevPage: prevPagePeriodeStok
+    } = usePagination(filteredPeriodeStok, 5);
 
-    const totalPagesPeriodeStok = computed(() => {
-        return Math.ceil(filteredPeriodeStok.value.length / itemsPerPagePeriodeStok) || 1;
-    });
+    // const paginatedPeriodeStok = computed(() => {
+    //     const start = (currentPagePeriodeStok.value - 1) * itemsPerPagePeriodeStok;
+    //     return filteredPeriodeStok.value.slice(start, start + itemsPerPagePeriodeStok);
+    // });
 
-    const displayedPagesPeriodeStok = computed(() => {
-        const total = totalPagesPeriodeStok.value;
-        const current = currentPagePeriodeStok.value;
-        const maxVisible = 3;
+    // const totalPagesPeriodeStok = computed(() => {
+    //     return Math.ceil(filteredPeriodeStok.value.length / itemsPerPagePeriodeStok) || 1;
+    // });
 
-        let start = Math.max(current - Math.floor(maxVisible / 2), 1);
-        let end = start + maxVisible - 1;
+    // const displayedPagesPeriodeStok = computed(() => {
+    //     const total = totalPagesPeriodeStok.value;
+    //     const current = currentPagePeriodeStok.value;
+    //     const maxVisible = 3;
 
-        if (end > total) {
-            end = total;
-            start = Math.max(end - maxVisible + 1, 1);
-        }
+    //     let start = Math.max(current - Math.floor(maxVisible / 2), 1);
+    //     let end = start + maxVisible - 1;
 
-        const pages = [];
-        for (let i = start; i <= end; i++) {
-            pages.push(i);
-        }
-        return pages;
-    });
+    //     if (end > total) {
+    //         end = total;
+    //         start = Math.max(end - maxVisible + 1, 1);
+    //     }
+
+    //     const pages = [];
+    //     for (let i = start; i <= end; i++) {
+    //         pages.push(i);
+    //     }
+    //     return pages;
+    // });
 
     const filteredNampanProduk = computed(() => {
         const query = String(searchNampanProduk.value || '').toLowerCase();
@@ -249,34 +265,49 @@ export function useInventory() {
         );
     });
 
-    const paginatedNampanProduk = computed(() => {
-        const start = (currentPageNampanProduk.value - 1) * itemsPerPageNampanProduk;
-        return filteredNampanProduk.value.slice(start, start + itemsPerPageNampanProduk);
-    });
+    // const paginatedNampanProduk = computed(() => {
+    //     const start = (currentPageNampanProduk.value - 1) * itemsPerPageNampanProduk;
+    //     return filteredNampanProduk.value.slice(start, start + itemsPerPageNampanProduk);
+    // });
 
-    const totalPagesNampanProduk = computed(() => {
-        return Math.ceil(filteredNampanProduk.value.length / itemsPerPageNampanProduk) || 1;
-    });
+    // const totalPagesNampanProduk = computed(() => {
+    //     return Math.ceil(filteredNampanProduk.value.length / itemsPerPageNampanProduk) || 1;
+    // });
 
-    const displayedPagesNampanProduk = computed(() => {
-        const total = totalPagesNampanProduk.value;
-        const current = currentPageNampanProduk.value;
-        const maxVisible = 5;
+    // const displayedPagesNampanProduk = computed(() => {
+    //     const total = totalPagesNampanProduk.value;
+    //     const current = currentPageNampanProduk.value;
+    //     const maxVisible = 5;
 
-        let start = Math.max(current - Math.floor(maxVisible / 2), 1);
-        let end = start + maxVisible - 1;
+    //     let start = Math.max(current - Math.floor(maxVisible / 2), 1);
+    //     let end = start + maxVisible - 1;
 
-        if (end > total) {
-            end = total;
-            start = Math.max(end - maxVisible + 1, 1);
-        }
+    //     if (end > total) {
+    //         end = total;
+    //         start = Math.max(end - maxVisible + 1, 1);
+    //     }
 
-        const pages = [];
-        for (let i = start; i <= end; i++) {
-            pages.push(i);
-        }
-        return pages;
-    });
+    //     const pages = [];
+    //     for (let i = start; i <= end; i++) {
+    //         pages.push(i);
+    //     }
+    //     return pages;
+    // });
+
+    const {
+        currentPage: currentPageNampanProduk,
+        totalItems: totalItemsNampanProduk,
+        totalPages: totalPagesNampanProduk,
+        paginatedData: paginatedNampanProduk,
+        showingItems: showingItemsNampanProduk,
+        startItem: startItemNampanProduk,
+        endItem: endItemNampanProduk,
+        visiblePages: visiblePagesNampanProduk,
+        goFirst: goFirstNampanProduk,
+        goLast: goLastNampanProduk,
+        nextPage: nextPageNampanProduk,
+        prevPage: prevPageNampanProduk
+    } = usePagination(filteredNampanProduk, 10);
 
     return {
         formPeriode,
@@ -287,10 +318,6 @@ export function useInventory() {
         searchPeriodeStok,
         isLoadingPeriodeStok,
         PeriodeStok,
-        currentPagePeriodeStok,
-        itemsPerPagePeriodeStok,
-        totalPagesPeriodeStok,
-        displayedPagesPeriodeStok,
         fetchPeriodeStok,
         selectedPeriodeStokID,
         selectPeriodeStok,
@@ -298,19 +325,39 @@ export function useInventory() {
         handlePilihPeriodeStok,
         handleFinalisasiPeriode,
         filteredPeriodeStok,
+
+        currentPagePeriodeStok,
+        totalItemsPeriodeStok,
+        totalPagesPeriodeStok,
         paginatedPeriodeStok,
+        showingItemsPeriodeStok,
+        startItemPeriodeStok,
+        endItemPeriodeStok,
+        visiblePagesPeriodeStok,
+        goFirstPeriodeStok,
+        goLastPeriodeStok,
+        nextPagePeriodeStok,
+        prevPagePeriodeStok,
 
         searchNampanProduk,
         isLoadingNampanProduk,
         nampanproduk,
-        currentPageNampanProduk,
-        itemsPerPageNampanProduk,
-        totalPagesNampanProduk,
-        displayedPagesNampanProduk,
         fetchNampanProduk,
         rekapstok,
         handlePrint,
         filteredNampanProduk,
+
+        currentPageNampanProduk,
+        totalItemsNampanProduk,
+        totalPagesNampanProduk,
         paginatedNampanProduk,
+        showingItemsNampanProduk,
+        startItemNampanProduk,
+        endItemNampanProduk,
+        visiblePagesNampanProduk,
+        goFirstNampanProduk,
+        goLastNampanProduk,
+        nextPageNampanProduk,
+        prevPageNampanProduk,
     };
 }

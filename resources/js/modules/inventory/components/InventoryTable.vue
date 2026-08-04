@@ -137,7 +137,7 @@
                             class="px-4 py-2 font-bold bg-slate-50 dark:bg-slate-950/50 border-r border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
                             {{ rekap.kategori }}</td>
                         <td class="py-2 border-r border-slate-200 dark:border-slate-800">{{ rekap.stok_awal?.unit || 0
-                            }}
+                        }}
                         </td>
                         <td class="py-2 border-r border-slate-200 dark:border-slate-800">{{
                             rekap.stok_awal?.berat?.toFixed(2) || '0.00' }}</td>
@@ -167,7 +167,7 @@
                         <td class="py-2 border-r border-slate-200 dark:border-slate-800">{{ totalRekap.awalUnit }}</td>
                         <td class="py-2 border-r border-slate-200 dark:border-slate-800">{{
                             totalRekap.awalBerat.toFixed(2)
-                            }}</td>
+                        }}</td>
                         <td
                             class="py-2 border-r border-slate-200 dark:border-slate-800 text-emerald-600 dark:text-emerald-400">
                             {{ totalRekap.masukUnit }}</td>
@@ -237,7 +237,7 @@
                         <tr v-else v-for="(item, index) in paginatedNampanProduk" :key="item.id"
                             class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
                             <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">
-                                {{ (currentPageNampanProduk - 1) * itemsPerPageNampanProduk + index + 1 }}
+                                {{ startItemNampanProduk + index }}
                             </td>
                             <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
                                 <span class="font-medium">{{ item.produk?.kodeproduk }}</span>
@@ -265,50 +265,77 @@
             </div>
 
             <!-- Pagination Footer -->
-            <div v-if="!isLoadingNampanProduk && filteredNampanProduk.length > 0"
-                class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100 dark:border-slate-800 mt-2">
-                <div class="text-xs text-slate-400">
-                    Showing {{ (currentPageNampanProduk - 1) * itemsPerPageNampanProduk + 1 }} to
-                    {{ Math.min(currentPageNampanProduk * itemsPerPageNampanProduk, filteredNampanProduk.length) }} of
-                    {{ filteredNampanProduk.length }} entries
+            <div v-if="filteredNampanProduk.length > 0"
+                class="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 px-4 py-3">
+
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+                    <!-- Info -->
+                    <div class="text-xs text-slate-500 text-center sm:text-left">
+                        Menampilkan
+                        <span class="font-semibold text-slate-700 dark:text-slate-200">
+                            {{ showingItemsNampanProduk }}
+                        </span>
+                        dari
+                        <span class="font-semibold text-slate-700 dark:text-slate-200">
+                            {{ totalItemsNampanProduk }}
+                        </span>
+                        data
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="flex items-center justify-center flex-wrap gap-1">
+
+                        <!-- First -->
+                        <button @click="goFirstNampanProduk" :disabled="currentPageNampanProduk === 1" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700
+                       bg-white dark:bg-slate-900 flex items-center justify-center
+                       hover:bg-slate-100 dark:hover:bg-slate-800
+                       disabled:opacity-40 disabled:pointer-events-none">
+                            <ChevronsLeft class="w-4 h-4" />
+                        </button>
+
+                        <!-- Prev -->
+                        <button @click="prevPageNampanProduk" :disabled="currentPageNampanProduk === 1" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700
+                       bg-white dark:bg-slate-900 flex items-center justify-center
+                       hover:bg-slate-100 dark:hover:bg-slate-800
+                       disabled:opacity-40 disabled:pointer-events-none">
+                            <ChevronLeft class="w-4 h-4" />
+                        </button>
+
+                        <!-- Number -->
+                        <button v-for="page in visiblePagesNampanProduk" :key="page"
+                            @click="currentPageNampanProduk = page" :class="[
+                                'w-8 h-8 rounded-lg text-xs font-semibold transition',
+                                currentPageNampanProduk === page
+                                    ? 'bg-blue-950 text-white'
+                                    : 'border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800'
+                            ]">
+
+                            {{ page }}
+
+                        </button>
+
+                        <!-- Next -->
+                        <button @click="nextPageNampanProduk"
+                            :disabled="currentPageNampanProduk === totalPagesNampanProduk" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700
+                       bg-white dark:bg-slate-900 flex items-center justify-center
+                       hover:bg-slate-100 dark:hover:bg-slate-800
+                       disabled:opacity-40 disabled:pointer-events-none">
+                            <ChevronRight class="w-4 h-4" />
+                        </button>
+
+                        <!-- Last -->
+                        <button @click="goLastNampanProduk"
+                            :disabled="currentPageNampanProduk === totalPagesNampanProduk" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700
+                       bg-white dark:bg-slate-900 flex items-center justify-center
+                       hover:bg-slate-100 dark:hover:bg-slate-800
+                       disabled:opacity-40 disabled:pointer-events-none">
+                            <ChevronsRight class="w-4 h-4" />
+                        </button>
+
+                    </div>
+
                 </div>
-
-                <nav class="inline-flex rounded-xl shadow-xs -space-x-px text-xs" aria-label="Pagination">
-                    <button
-                        class="relative inline-flex items-center px-2 py-1.5 rounded-l-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                        :disabled="currentPageNampanProduk === 1" @click="currentPageNampanProduk = 1">
-                        <ChevronsLeft class="w-4 h-4" />
-                    </button>
-                    <button
-                        class="relative inline-flex items-center px-3 py-1.5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                        :disabled="currentPageNampanProduk === 1"
-                        @click="currentPageNampanProduk > 1 ? currentPageNampanProduk-- : null">
-                        Previous
-                    </button>
-
-                    <button v-for="page in displayedPagesNampanProduk" :key="page"
-                        class="relative inline-flex items-center px-3 py-1.5 border border-slate-200 dark:border-slate-800 font-medium transition-all"
-                        :class="[
-                            page === currentPageNampanProduk
-                                ? 'z-10 bg-indigo-600 border-indigo-600 text-white'
-                                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-                        ]" @click="currentPageNampanProduk = page">
-                        {{ page }}
-                    </button>
-
-                    <button
-                        class="relative inline-flex items-center px-3 py-1.5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                        :disabled="currentPageNampanProduk === totalPagesNampanProduk"
-                        @click="currentPageNampanProduk < totalPagesNampanProduk && currentPageNampanProduk++">
-                        Next
-                    </button>
-                    <button
-                        class="relative inline-flex items-center px-2 py-1.5 rounded-r-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                        :disabled="currentPageNampanProduk === totalPagesNampanProduk"
-                        @click="currentPageNampanProduk = totalPagesNampanProduk">
-                        <ChevronsRight class="w-4 h-4" />
-                    </button>
-                </nav>
             </div>
         </div>
     </div>
@@ -321,21 +348,30 @@ import {
     RotateCw,
     Info,
     ChevronsLeft,
-    ChevronsRight
+    ChevronsRight,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-vue-next';
 import { useInventory } from '../composables/useInventory';
 
 const {
     isLoadingNampanProduk,
-    currentPageNampanProduk,
-    itemsPerPageNampanProduk,
     filteredNampanProduk,
-    paginatedNampanProduk,
-    displayedPagesNampanProduk,
-    totalPagesNampanProduk,
     selectedPeriodeStokData,
     searchNampanProduk,
-    rekapstok
+    rekapstok,
+    currentPageNampanProduk,
+    totalItemsNampanProduk,
+    totalPagesNampanProduk,
+    paginatedNampanProduk,
+    showingItemsNampanProduk,
+    startItemNampanProduk,
+    endItemNampanProduk,
+    visiblePagesNampanProduk,
+    goFirstNampanProduk,
+    goLastNampanProduk,
+    nextPageNampanProduk,
+    prevPageNampanProduk,
 } = useInventory();
 
 const rekapDataNormalized = computed(() => {
