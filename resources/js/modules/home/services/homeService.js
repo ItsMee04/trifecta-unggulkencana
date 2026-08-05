@@ -54,4 +54,22 @@ export const homeService = {
             throw error;
         }
     },
+
+    async getTransaksiChart() {
+        try {
+            const response = await api.get('/home/getTransaksiChart');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async getProdukTerlarisChart() {
+        try {
+            const response = await api.get('/home/getProdukTerlarisChart');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 };

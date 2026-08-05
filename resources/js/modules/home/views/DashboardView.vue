@@ -23,7 +23,18 @@
         </div>
 
         <DashboardCard />
-        <DashboardTransaksiCard/>
+        <DashboardTransaksiCard />
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div class="xl:col-span-2">
+                <DashboardTransaksiChart />
+            </div>
+
+            <div>
+                <DashboardTransaksiTerlaris/>
+            </div>
+
+        </div>
 
         <div class="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex items-center justify-between">
@@ -76,6 +87,8 @@ import { useAuthentication } from '../../authentication/composables/useAuthentic
 
 import DashboardCard from '../components/DashboardCard.vue';
 import DashboardTransaksiCard from '../components/DashboardTransaksiCard.vue';
+import DashboardTransaksiChart from '../components/DashboardTransaksiChart.vue';
+import DashboardTransaksiTerlaris from '../components/DashboardTransaksiTerlaris.vue';
 
 // Destructure data auth yang diperlukan
 const { user, avatarFallback } = useAuthentication();

@@ -74,4 +74,40 @@ class HomeController extends Controller
             'data'      => $totalPemasukan
         ]);
     }
+
+    public function getTransaksiChart()
+    {
+        try {
+            $data = $this->homeService->getTransaksiChart();
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Berhasil mengambil data transaksi.',
+                'data'    => $data,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getProdukTerlarisChart()
+    {
+        try {
+            $data = $this->homeService->getProdukTerlarisChart();
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Berhasil mengambil data transaksi terlaris.',
+                'data'    => $data,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

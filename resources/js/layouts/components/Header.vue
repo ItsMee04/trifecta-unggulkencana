@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="text-2xl font-bold tracking-wider tabular-nums text-slate-900 dark:text-white">
+                    <p class="text-2xl font-bold tracking-wider tabular-nums text-blue-950 dark:text-white">
                         {{ jam }}
                     </p>
                     <p class="text-xs text-slate-400">

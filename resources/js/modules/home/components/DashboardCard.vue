@@ -113,7 +113,7 @@ onMounted(() => {
     loadDashboard();
     interval = setInterval(() => {
         loadDashboard();
-    }, 10000); // Reload every minute
+    }, 60000); // Reload every minute
 });
 
 onUnmounted(() => {

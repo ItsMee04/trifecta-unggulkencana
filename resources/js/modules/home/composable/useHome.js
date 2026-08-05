@@ -11,6 +11,10 @@ const totalPembelianHariIni = ref(0);
 const totalPelanggan = ref(0);
 const totalPemasukanTransaksiHariIni = ref(0);
 const totalPengeluaranTransaksiHariIni = ref(0);
+const chartCategories = ref([]);
+const chartSeries = ref([]);
+const pieLabels = ref([]);
+const pieSeries = ref([]);
 
 export function useHome() {
     const fetchTotalProduk = async () => {
@@ -19,8 +23,10 @@ export function useHome() {
             const response = await homeService.getTotalProduk();
             totalProduk.value = response.data;
         } catch (error) {
-            toast.error(response.message || 'Gagal mengambil total produk');
-            console.error('Error fetching total produk:', error);
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil total produk'
+            );
         } finally {
             isLoading.value = false;
         }
@@ -32,7 +38,10 @@ export function useHome() {
             const response = await homeService.getTotalPenjualanHariIni();
             totalPenjualanHariIni.value = response.data;
         } catch (error) {
-            toast.error(response.message || 'Gagal mengambil total penjualan hari ini');
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil total penjualan hari ini'
+            );
             console.error('Error fetching total penjualan hari ini:', error);
         } finally {
             isLoading.value = false;
@@ -45,7 +54,10 @@ export function useHome() {
             const response = await homeService.getTotalPembelianHariIni();
             totalPembelianHariIni.value = response.data;
         } catch (error) {
-            toast.error(response.message || 'Gagal mengambil total pembelian hari ini');
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil total pembelian hari ini'
+            );
             console.error('Error fetching total pembelian hari ini:', error);
         } finally {
             isLoading.value = false;
@@ -58,7 +70,10 @@ export function useHome() {
             const response = await homeService.getTotalPelanggan();
             totalPelanggan.value = response.data;
         } catch (error) {
-            toast.error(response.message || 'Gagal mengambil total pelanggan');
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil total pelanggan'
+            );
             console.error('Error fetching total pelanggan:', error);
         } finally {
             isLoading.value = false;
@@ -71,7 +86,10 @@ export function useHome() {
             const response = await homeService.getTotalPemasukanHariIni();
             totalPemasukanTransaksiHariIni.value = response.data;
         } catch (error) {
-            toast.error(response.message || 'Gagal mengambil total pemasukan');
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil total pemasukan'
+            );
             console.error('Error fetching total pemasukan:', error);
         } finally {
             isLoading.value = false;
@@ -84,8 +102,47 @@ export function useHome() {
             const response = await homeService.getTotalPengeluaranHariIni();
             totalPengeluaranTransaksiHariIni.value = response.data;
         } catch (error) {
-            toast.error(response.message || 'Gagal mengambil total pengeluaran');
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil total pengeluaran'
+            );
             console.error('Error fetching total pengeluaran:', error);
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    const fetchTransaksiChart = async () => {
+        isLoading.value = true;
+        try {
+            const response = await homeService.getTransaksiChart();
+            chartCategories.value = response.data.categories;
+            chartSeries.value = response.data.series;
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil data chart transaksi'
+            );
+            console.error('Error fetching transaksi chart:', error);
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    const fetchProdukTerlarisChart = async () => {
+        isLoading.value = true;
+
+        try {
+            const response = await homeService.getProdukTerlarisChart();
+
+            pieLabels.value = response.data.labels;
+            pieSeries.value = response.data.series;
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil data produk terlaris'
+            );
+            console.error('Error fetching produk terlaris:', error);
         } finally {
             isLoading.value = false;
         }
@@ -110,6 +167,14 @@ export function useHome() {
         fetchTotalPemasukanTransaksiHariIni,
 
         totalPengeluaranTransaksiHariIni,
-        fetchTotalPengeluaranTransaksiHariIni
+        fetchTotalPengeluaranTransaksiHariIni,
+
+        chartCategories,
+        chartSeries,
+        fetchTransaksiChart,
+
+        pieLabels,
+        pieSeries,
+        fetchProdukTerlarisChart,
     };
 }
