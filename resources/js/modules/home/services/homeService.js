@@ -35,5 +35,23 @@ export const homeService = {
         } catch (error) {
             throw error;
         }
-    }
+    },
+
+    async getTotalPemasukanHariIni() {
+        try {
+            const response = await api.get('/home/getTotalPemasukanHariIni');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async getTotalPengeluaranHariIni() {
+        try {
+            const response = await api.get('/home/getTotalPengeluaranHariIni');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 };

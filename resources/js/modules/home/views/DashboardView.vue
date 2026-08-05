@@ -23,6 +23,7 @@
         </div>
 
         <DashboardCard />
+        <DashboardTransaksiCard/>
 
         <div class="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex items-center justify-between">
@@ -74,6 +75,7 @@ import { DollarSign, Users, ShoppingBag, Activity, Package2, ShoppingCart, Walle
 import { useAuthentication } from '../../authentication/composables/useAuthentication';
 
 import DashboardCard from '../components/DashboardCard.vue';
+import DashboardTransaksiCard from '../components/DashboardTransaksiCard.vue';
 
 // Destructure data auth yang diperlukan
 const { user, avatarFallback } = useAuthentication();

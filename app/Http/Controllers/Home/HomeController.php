@@ -54,4 +54,24 @@ class HomeController extends Controller
             'data'      => $totalPelanggan
         ]);
     }
+
+    public function getTotalPemasukanHariIni()
+    {
+        $totalPemasukan = $this->homeService->getTotalPemasukanHariIni();
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Berhasil mengambil total pemasukan',
+            'data'      => $totalPemasukan
+        ]);
+    }
+
+    public function getTotalPengeluaranHariIni()
+    {
+        $totalPemasukan = $this->homeService->getTotalPengeluaranHariIni();
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Berhasil mengambil total pengeluaran',
+            'data'      => $totalPemasukan
+        ]);
+    }
 }
