@@ -22,65 +22,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-start justify-between">
-                <div class="space-y-2">
-                    <span class="text-sm font-medium text-slate-400 block">Total Revenue</span>
-                    <h3 class="text-2xl font-bold text-slate-900 tracking-tight">$45,231.89</h3>
-                    <span
-                        class="inline-flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">
-                        +20.1% <span class="text-slate-400 font-normal ml-1">mo.</span>
-                    </span>
-                </div>
-                <div class="bg-indigo-50 text-indigo-600 p-3.5 rounded-xl">
-                    <DollarSign class="w-5 h-5" />
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-start justify-between">
-                <div class="space-y-2">
-                    <span class="text-sm font-medium text-slate-400 block">Active Users</span>
-                    <h3 class="text-2xl font-bold text-slate-900 tracking-tight">16</h3>
-                    <span
-                        class="inline-flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">
-                        +180.1% <span class="text-slate-400 font-normal ml-1">mo.</span>
-                    </span>
-                </div>
-                <div class="bg-sky-50 text-sky-600 p-3.5 rounded-xl">
-                    <Users class="w-5 h-5" />
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-start justify-between">
-                <div class="space-y-2">
-                    <span class="text-sm font-medium text-slate-400 block">Sales</span>
-                    <h3 class="text-2xl font-bold text-slate-900 tracking-tight">+12,234</h3>
-                    <span
-                        class="inline-flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">
-                        +19% <span class="text-slate-400 font-normal ml-1">mo.</span>
-                    </span>
-                </div>
-                <div class="bg-indigo-50 text-indigo-600 p-3.5 rounded-xl">
-                    <ShoppingBag class="w-5 h-5" />
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-start justify-between">
-                <div class="space-y-2">
-                    <span class="text-sm font-medium text-slate-400 block">Active Now</span>
-                    <h3 class="text-2xl font-bold text-slate-900 tracking-tight">+573</h3>
-                    <span
-                        class="inline-flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">
-                        +201 <span class="text-slate-400 font-normal ml-1">mo.</span>
-                    </span>
-                </div>
-                <div class="bg-amber-50 text-amber-600 p-3.5 rounded-xl">
-                    <Activity class="w-5 h-5" />
-                </div>
-            </div>
-
-        </div>
+        <DashboardCard />
 
         <div class="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex items-center justify-between">
@@ -128,8 +70,10 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { DollarSign, Users, ShoppingBag, Activity } from 'lucide-vue-next';
+import { DollarSign, Users, ShoppingBag, Activity, Package2, ShoppingCart, Wallet } from 'lucide-vue-next';
 import { useAuthentication } from '../../authentication/composables/useAuthentication';
+
+import DashboardCard from '../components/DashboardCard.vue';
 
 // Destructure data auth yang diperlukan
 const { user, avatarFallback } = useAuthentication();

@@ -101,19 +101,19 @@
                             <div class="flex items-center gap-1">
 
                                 <!-- First -->
-                                <button @click="goFirstProduk" :disabled="currentPageProduk === 1"
+                                <button type="button" @click="goFirstProduk" :disabled="currentPageProduk === 1"
                                     class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                                     <ChevronsLeft class="w-4 h-4" />
                                 </button>
 
                                 <!-- Prev -->
-                                <button @click="prevPageProduk" :disabled="currentPageProduk === 1"
+                                <button type="button" @click="prevPageProduk" :disabled="currentPageProduk === 1"
                                     class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                                     <ChevronLeft class="w-4 h-4" />
                                 </button>
 
                                 <!-- Number -->
-                                <button v-for="page in visiblePagesProduk" :key="page" @click="currentPageProduk = page"
+                                <button type="button" v-for="page in visiblePagesProduk" :key="page" @click="currentPageProduk = page"
                                     :class="[
                                         'w-8 h-8 rounded-lg text-xs font-semibold transition',
                                         currentPageProduk === page
@@ -126,13 +126,13 @@
                                 </button>
 
                                 <!-- Next -->
-                                <button @click="nextPageProduk" :disabled="currentPageProduk === totalPagesProduk"
+                                <button type="button" @click="nextPageProduk" :disabled="currentPageProduk === totalPagesProduk"
                                     class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                                     <ChevronRight class="w-4 h-4" />
                                 </button>
 
                                 <!-- Last -->
-                                <button @click="goLastProduk" :disabled="currentPageProduk === totalPagesProduk"
+                                <button type="button" @click="goLastProduk" :disabled="currentPageProduk === totalPagesProduk"
                                     class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
                                     <ChevronsRight class="w-4 h-4" />
                                 </button>

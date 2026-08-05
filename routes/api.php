@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Authentication\AuthenticationController;
+use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Inventory\StokController;
 use App\Http\Controllers\Keuangan\MutasiSaldoController;
 use App\Http\Controllers\Keuangan\SaldoController;
@@ -47,6 +48,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route untuk logout
     Route::get('me', [AuthenticationController::class, 'me']);
     Route::post('logout', [AuthenticationController::class, 'logout']);
+
+    Route::prefix('home')->group(function () {
+        Route::get('getTotalProduk', [HomeController::class, 'getTotalProduk']);
+        Route::get('getTotalPenjualanHariIni', [HomeController::class, 'getTotalPenjualanHariIni']);
+    });
 
     // Grup Route Master Data (Sekarang aman di dalam middleware)
     Route::prefix('master')->group(function () {
