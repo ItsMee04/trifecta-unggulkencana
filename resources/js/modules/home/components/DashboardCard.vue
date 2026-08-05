@@ -6,15 +6,16 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-slate-500">Total Produk</p>
-                    <h2 class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{totalProduk}}</h2>
-                    <p class="mt-3 text-xs text-slate-400">Produk aktif di inventory</p>
+                    <SkeletonCard v-if="isLoading" />
+                    <template v-else>
+                        <h2 class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{ totalProduk }}</h2>
+                        <p class="mt-3 text-xs text-slate-400">Produk aktif di inventory</p>
+                    </template>
                 </div>
                 <div class="relative">
                     <div class="w-14 h-14 rounded-2xl bg-blue-950 flex items-center justify-center">
                         <Package2 class="w-7 h-7 text-white" />
                     </div>
-                    <span class="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white">
-                    </span>
                 </div>
             </div>
         </div>
@@ -25,11 +26,11 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-slate-500">Penjualan Hari Ini</p>
-                    <h2 class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{ totalPenjualanHariIni }}</h2>
-                    <p class="mt-3 flex items-center gap-2 text-xs">
-                        <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-semibold">+4</span>
-                        <span class="text-slate-400">dibanding kemarin</span>
-                    </p>
+                    <SkeletonCard v-if="isLoading" />
+                    <template v-else>
+                        <h2 class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{ totalPenjualanHariIni }}</h2>
+                        <p class="mt-3 text-xs text-slate-400">Penjualan hari ini</p>
+                    </template>
                 </div>
                 <div class="w-14 h-14 rounded-2xl bg-blue-950 flex items-center justify-center">
                     <ShoppingCart class="w-7 h-7 text-white" />
@@ -43,11 +44,11 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-slate-500">Pembelian Hari Ini</p>
-                    <h2 class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">7</h2>
-                    <p class="mt-3 flex items-center gap-2 text-xs">
-                        <span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-semibold">Rp18,5 Jt</span>
-                        <span class="text-slate-400">total pembelian</span>
-                    </p>
+                    <SkeletonCard v-if="isLoading" />
+                    <template v-else>
+                        <h2 class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{ totalPembelianHariIni }}</h2>
+                        <p class="mt-3 text-xs text-slate-400">Pembelian hari ini</p>
+                    </template>
                 </div>
                 <div class="w-14 h-14 rounded-2xl bg-blue-950 flex items-center justify-center">
                     <Wallet class="w-7 h-7 text-white" />
@@ -61,8 +62,11 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-slate-500">Total Pelanggan</p>
-                    <h2 class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">836</h2>
-                    <p class="mt-3 text-xs text-slate-400">Customer terdaftar</p>
+                    <SkeletonCard v-if="isLoading" />
+                    <template v-else>
+                        <h2 class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{ totalPelanggan }}</h2>
+                        <p class="mt-3 text-xs text-slate-400">Customer terdaftar</p>
+                    </template>
                 </div>
                 <div class="w-14 h-14 rounded-2xl bg-blue-950 flex items-center justify-center">
                     <Users class="w-7 h-7 text-white" />
@@ -72,21 +76,49 @@
     </div>
 </template>
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { Package2, ShoppingCart, Wallet, Users } from 'lucide-vue-next';
 import { useHome } from '../composable/useHome';
 
+import SkeletonCard from './SkeletonCard.vue';
+
+let interval = null;
+
+const loadDashboard = async () => {
+    await Promise.all([
+        fetchTotalProduk(),
+        fetchTotalPenjualanHariIni(),
+        fetchTotalPembelianHariIni(),
+        fetchTotalPelanggan()
+    ]);
+}
+
 const {
+    isLoading,
+
     totalProduk,
     fetchTotalProduk,
 
     totalPenjualanHariIni,
-    fetchTotalPenjualanHariIni
+    fetchTotalPenjualanHariIni,
 
+    totalPembelianHariIni,
+    fetchTotalPembelianHariIni,
+
+    totalPelanggan,
+    fetchTotalPelanggan
 } = useHome();
 
 onMounted(() => {
-    fetchTotalProduk();
-    fetchTotalPenjualanHariIni();
+    loadDashboard();
+    interval = setInterval(() => {
+        loadDashboard();
+    }, 10000); // Reload every minute
+});
+
+onUnmounted(() => {
+    if (interval) {
+        clearInterval(interval);
+    }
 });
 </script>

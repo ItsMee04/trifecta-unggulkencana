@@ -18,4 +18,22 @@ export const homeService = {
             throw error;
         }
     },
+
+    async getTotalPembelianHariIni() {
+        try {
+            const response = await api.get('/home/getTotalPembelianHariIni');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async getTotalPelanggan() {
+        try {
+            const response = await api.get('/home/getTotalPelanggan');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 };

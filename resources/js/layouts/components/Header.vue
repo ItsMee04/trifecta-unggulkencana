@@ -7,19 +7,30 @@
                 class="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-700 rounded-xl transition shrink-0">
                 <Menu class="w-4 h-4" />
             </button>
-
-            <div
-                class="header-search relative flex-1 min-w-[70px] max-w-[110px] min-[500px]:max-w-[130px] sm:max-w-xs md:max-w-md">
-                <Search class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                <input type="text" placeholder="Search..."
-                    class="w-full pl-8 pr-2 sm:pr-12 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition" />
-                <span
-                    class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-800 px-1.5 py-0.5 rounded-md font-mono hidden sm:inline">Ctrl+K</span>
+            <div class="flex-1 flex items-center justify-between px-3">
+                <div class="flex items-center gap-2">
+                    <MapPin class="w-4 h-4 text-blue-950 dark:text-blue-400" />
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-white">
+                            {{ wilayah }}
+                        </p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">
+                            {{ tanggal }}
+                        </p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold tracking-wider tabular-nums text-slate-900 dark:text-white">
+                        {{ jam }}
+                    </p>
+                    <p class="text-xs text-slate-400">
+                        WIB
+                    </p>
+                </div>
             </div>
         </div>
 
         <div class="header-actions flex items-center gap-1 sm:gap-2.5 shrink-0 ml-2">
-
             <div class="relative" v-click-outside="closeNotif">
                 <button @click="toggleNotif"
                     class="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/40 dark:border-slate-700/30 rounded-xl transition relative">
@@ -104,7 +115,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { toggleMiniSidebar, toggleMobileSidebar } from './sidebarState';
 import { isDark, toggleDarkMode, initTheme } from './themeState';
 import { useAuthentication } from '../../modules/authentication/composables/useAuthentication'; // 🌟 1. Impor Composable Auth
-import { Menu, Search, Bell, Sun, Moon, ChevronDown, User, LogOut } from 'lucide-vue-next';
+import { Menu, MapPin, Bell, Sun, Moon, ChevronDown, User, LogOut } from 'lucide-vue-next';
 
 // 🌟 2. Destructure State & Method Auth yang dibutuhkan
 const { user, avatarFallback, handleLogout, isLoading } = useAuthentication();
@@ -130,13 +141,42 @@ const getAvatarUrl = (avatarPath) => {
     return `${baseUrl}/storage/pegawai/image/${avatarPath}`;
 };
 
+const wilayah = ref('Purwokerto');
+const tanggal = ref('');
+const jam = ref('');
+
+let timer;
+
+const updateDateTime = () => {
+    const now = new Date();
+
+    tanggal.value = new Intl.DateTimeFormat('id-ID', {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+    }).format(now);
+
+    jam.value = now.toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+}
+
 onMounted(() => {
     checkBreakpoint();
     window.addEventListener('resize', checkBreakpoint);
     initTheme();
+    updateDateTime();
+    timer = setInterval(updateDateTime, 1000);
 });
 
-onUnmounted(() => { window.removeEventListener('resize', checkBreakpoint); });
+onUnmounted(() => {
+    window.removeEventListener('resize', checkBreakpoint);
+    clearInterval(timer);
+});
 
 const vClickOutside = {
     mounted(el, binding) {

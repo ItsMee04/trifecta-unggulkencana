@@ -7,6 +7,8 @@ const toast = useToast();
 
 const totalProduk = ref(0);
 const totalPenjualanHariIni = ref(0);
+const totalPembelianHariIni = ref(0);
+const totalPelanggan = ref(0);
 
 export function useHome() {
     const fetchTotalProduk = async () => {
@@ -35,6 +37,32 @@ export function useHome() {
         }
     };
 
+    const fetchTotalPembelianHariIni = async () => {
+        isLoading.value = true;
+        try {
+            const response = await homeService.getTotalPembelianHariIni();
+            totalPembelianHariIni.value = response.data;
+        } catch (error) {
+            toast.error(response.message || 'Gagal mengambil total pembelian hari ini');
+            console.error('Error fetching total pembelian hari ini:', error);
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    const fetchTotalPelanggan = async () => {
+        isLoading.value = true;
+        try {
+            const response = await homeService.getTotalPelanggan();
+            totalPelanggan.value = response.data;
+        } catch (error) {
+            toast.error(response.message || 'Gagal mengambil total pelanggan');
+            console.error('Error fetching total pelanggan:', error);
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
     return {
         isLoading,
 
@@ -43,5 +71,11 @@ export function useHome() {
 
         totalPenjualanHariIni,
         fetchTotalPenjualanHariIni,
+
+        totalPembelianHariIni,
+        fetchTotalPembelianHariIni,
+
+        totalPelanggan,
+        fetchTotalPelanggan,
     };
 }
