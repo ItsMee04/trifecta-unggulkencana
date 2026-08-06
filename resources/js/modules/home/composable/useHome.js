@@ -15,6 +15,7 @@ const chartCategories = ref([]);
 const chartSeries = ref([]);
 const pieLabels = ref([]);
 const pieSeries = ref([]);
+const TransaksiPenjualanSatuMinggu = ref([]);
 
 export function useHome() {
     const fetchTotalProduk = async () => {
@@ -148,6 +149,22 @@ export function useHome() {
         }
     };
 
+    const fetchTransaksiPenjualanSatuMinggu = async () => {
+        isLoading.value = true;
+        try {
+            const response = await homeService.getTransaksiPenjualanSatuMinggu();
+            TransaksiPenjualanSatuMinggu.value = response.data;
+        } catch(error) {
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil data transaksi 7 hari terakhir'
+            );
+            console.error('Error fetching transaksi chart:', error);
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     return {
         isLoading,
 
@@ -176,5 +193,8 @@ export function useHome() {
         pieLabels,
         pieSeries,
         fetchProdukTerlarisChart,
+
+        TransaksiPenjualanSatuMinggu,
+        fetchTransaksiPenjualanSatuMinggu,
     };
 }

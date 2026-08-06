@@ -72,4 +72,13 @@ export const homeService = {
             throw error;
         }
     },
+
+    async getTransaksiPenjualanSatuMinggu() {
+        try {
+            const response = await api.get('/home/getTransaksiPenjualanSatuMinggu');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 };

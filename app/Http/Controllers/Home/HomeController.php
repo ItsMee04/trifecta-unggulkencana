@@ -110,4 +110,22 @@ class HomeController extends Controller
             ], 500);
         }
     }
+
+    public function getTransaksiPenjualanSatuMinggu()
+    {
+        try {
+            $data = $this->homeService->getTransaksiPenjualanSatuMinggu();
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Berhasil mengambil data transaksi dalam 7 hari terakhir.',
+                'data'    => $data,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

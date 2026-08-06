@@ -164,4 +164,24 @@ class HomeService
             'series' => $data->pluck('total'),
         ];
     }
+
+    public function getTransaksiPenjualanSatuMinggu()
+    {
+        $data = DB::table('transaksi as t')
+            ->join('transaksidetail as td', 'td.kode', '=', 't.kode')
+            ->join('pelanggan as p', 't.pelanggan_id', '=', 'p.id')
+            ->join('produk as pr', 'td.produk_id', '=', 'pr.id')
+            ->select(
+                't.kode',
+                'p.nama',
+                DB::raw('pr.nama as namaproduk'),
+                'pr.berat',
+                't.total',
+                't.tanggal'
+            )
+            ->where('t.tanggal', '>=', DB::raw('DATE_SUB(CURDATE(), INTERVAL 7 DAY)'))
+            ->get();
+
+        return $data;
+    }
 }
