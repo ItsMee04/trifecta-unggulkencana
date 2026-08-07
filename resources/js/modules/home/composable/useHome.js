@@ -1,5 +1,6 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useToast } from '../../../utilities/toast/toast';
+import { usePagination } from '../../../utilities/pagination/usePagination';
 import { homeService } from '../services/homeService';
 
 const isLoading = ref(false);
@@ -18,6 +19,9 @@ const pieSeries = ref([]);
 const TransaksiPenjualanSatuMinggu = ref([]);
 const HargaEmas = ref([]);
 const ProdukPerbaikan = ref([]);
+const filteredTransaksiPenjualanSatuMinggu = computed(() => {
+    return TransaksiPenjualanSatuMinggu.value;
+});
 
 export function useHome() {
     const fetchTotalProduk = async () => {
@@ -156,7 +160,7 @@ export function useHome() {
         try {
             const response = await homeService.getTransaksiPenjualanSatuMinggu();
             TransaksiPenjualanSatuMinggu.value = response.data;
-        } catch(error) {
+        } catch (error) {
             toast.error(
                 error.response?.data?.message ||
                 'Gagal mengambil data transaksi 7 hari terakhir'
@@ -172,7 +176,7 @@ export function useHome() {
         try {
             const response = await homeService.getHargaEmas();
             HargaEmas.value = response.data;
-        } catch(error) {
+        } catch (error) {
             toast.error(
                 error.response?.data?.message ||
                 'Gagal mengambil data harga emas'
@@ -188,7 +192,7 @@ export function useHome() {
         try {
             const response = await homeService.getProdukPerbaikan();
             ProdukPerbaikan.value = response.data;
-        } catch(error) {
+        } catch (error) {
             toast.error(
                 error.response?.data?.message ||
                 'Gagal mengambil data perbaikan'
@@ -198,6 +202,21 @@ export function useHome() {
             isLoading.value = false;
         }
     }
+
+    const {
+        currentPage: currentPageTransaksiPenjualan,
+        totalItems: totalItemsTransaksiPenjualan,
+        totalPages: totalPagesTransaksiPenjualan,
+        paginatedData: paginatedTransaksiPenjualan,
+        showingItems: showingItemsTransaksiPenjualan,
+        startItem: startItemTransaksiPenjualan,
+        endItem: endItemTransaksiPenjualan,
+        visiblePages: visiblePagesTransaksiPenjualan,
+        goFirst: goFirstTransaksiPenjualan,
+        goLast: goLastTransaksiPenjualan,
+        nextPage: nextPageTransaksiPenjualan,
+        prevPage: prevPageTransaksiPenjualan
+    } = usePagination(filteredTransaksiPenjualanSatuMinggu, 5);
 
     return {
         isLoading,
@@ -230,6 +249,18 @@ export function useHome() {
 
         TransaksiPenjualanSatuMinggu,
         fetchTransaksiPenjualanSatuMinggu,
+        currentPageTransaksiPenjualan,
+        totalItemsTransaksiPenjualan,
+        totalPagesTransaksiPenjualan,
+        paginatedTransaksiPenjualan,
+        showingItemsTransaksiPenjualan,
+        startItemTransaksiPenjualan,
+        endItemTransaksiPenjualan,
+        visiblePagesTransaksiPenjualan,
+        goFirstTransaksiPenjualan,
+        goLastTransaksiPenjualan,
+        nextPageTransaksiPenjualan,
+        prevPageTransaksiPenjualan,
 
         HargaEmas,
         fetchHargaEmas,

@@ -32,7 +32,7 @@
                         </td>
                     </tr>
 
-                    <tr v-else v-for="(item, index) in TransaksiPenjualanSatuMinggu" :key="item.id"
+                    <tr v-else v-for="(item, index) in paginatedTransaksiPenjualan" :key="item.id"
                         class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                         <td class="py-4 px-6 font-medium text-slate-900 dark:text-slate-200">{{ item.kode }}</td>
                         <td class="py-4 px-6 text-slate-700 dark:text-slate-300">{{ item.nama }}</td>
@@ -53,10 +53,61 @@
                 </tbody>
             </table>
         </div>
+        <div
+            class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+                Menampilkan
+                <span class="font-semibold">{{ showingItemsTransaksiPenjualan }}</span>
+                dari
+                <span class="font-semibold">{{ totalItemsTransaksiPenjualan }}</span>
+                data
+            </div>
+            <div class="flex items-center gap-1">
+                <!-- First -->
+                <button @click="goFirstTransaksiPenjualan" :disabled="currentPageTransaksiPenjualan === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsLeft class="w-4 h-4" />
+                </button>
+                <!-- Prev -->
+                <button @click="prevPageTransaksiPenjualan" :disabled="currentPageTransaksiPenjualan === 1"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronLeft class="w-4 h-4" />
+                </button>
+                <!-- Nomor Halaman -->
+                <button v-for="page in visiblePagesTransaksiPenjualan" :key="page"
+                    @click="currentPageTransaksiPenjualan = page" :class="[
+                        'w-8 h-8 rounded-lg text-xs font-semibold transition',
+                        currentPageTransaksiPenjualan === page
+                            ? 'bg-blue-950 text-white'
+                            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    ]">
+                    {{ page }}
+                </button>
+                <!-- Next -->
+                <button @click="nextPageTransaksiPenjualan"
+                    :disabled="currentPageTransaksiPenjualan === totalPagesTransaksiPenjualan"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronRight class="w-4 h-4" />
+                </button>
+                <!-- Last -->
+                <button @click="goLastTransaksiPenjualan"
+                    :disabled="currentPageTransaksiPenjualan === totalPagesTransaksiPenjualan"
+                    class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-center disabled:opacity-40">
+                    <ChevronsRight class="w-4 h-4" />
+                </button>
+
+            </div>
+        </div>
     </div>
 </template>
 <script setup>
-import { RotateCw } from 'lucide-vue-next';
+import {
+    RotateCw,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
+} from 'lucide-vue-next';
 import { onMounted, onUnmounted } from 'vue';
 import { useHome } from '../composable/useHome';
 import { toRupiah } from '../../../utilities/format/toRupiah.js'
@@ -67,7 +118,19 @@ let interval = null;
 
 const {
     isLoading,
+    paginatedTransaksiPenjualan,
+
+    currentPageTransaksiPenjualan,
+    totalPagesTransaksiPenjualan,
+    totalItemsTransaksiPenjualan,
+    visiblePagesTransaksiPenjualan,
+
+    goFirstTransaksiPenjualan,
+    goLastTransaksiPenjualan,
+    nextPageTransaksiPenjualan,
+    prevPageTransaksiPenjualan,
     TransaksiPenjualanSatuMinggu,
+    showingItemsTransaksiPenjualan,
     fetchTransaksiPenjualanSatuMinggu
 } = useHome();
 
