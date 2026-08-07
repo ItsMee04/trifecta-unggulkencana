@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs p-6">
+        class="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs p-6 transition hover:shadow-md hover:-translate-y-1">
 
         <!-- Header -->
         <div class="mb-6">
@@ -13,7 +13,7 @@
             </p>
         </div>
 
-        <apexchart :key="pieLabels.join('-')" type="donut" height="375" :options="chartOptions" :series="pieSeries"
+        <apexchart :key="pieLabels.join('-')" type="donut" height="360" :options="chartOptions" :series="pieSeries"
             :class="[
                 'transition-all duration-300',
                 isLoading

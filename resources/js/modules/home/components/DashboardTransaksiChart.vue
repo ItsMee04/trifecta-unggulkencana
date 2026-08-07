@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs p-6">
+        class="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs p-6 transition hover:shadow-md hover:-translate-y-1">
 
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">

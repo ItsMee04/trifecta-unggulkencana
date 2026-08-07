@@ -1,6 +1,6 @@
 <template>
     <div
-        class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs overflow-hidden">
+        class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs overflow-hidden transition hover:shadow-md hover:-translate-y-1">
         <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <h2 class="font-bold text-slate-900 dark:text-white text-base">Produk dalam perbaikan</h2>
             <button
