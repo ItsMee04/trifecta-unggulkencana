@@ -25,12 +25,23 @@
         <DashboardCard />
         <DashboardTransaksiCard />
 
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
             <div class="xl:col-span-2">
                 <DashboardTransaksiChart />
             </div>
 
             <div>
+                <DashboardTransaksiTerlaris />
+            </div>
+        </div> -->
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+            <div class="xl:col-span-8">
+                <DashboardTransaksiChart />
+            </div>
+
+            <div class="xl:col-span-4">
                 <DashboardTransaksiTerlaris />
             </div>
 
@@ -39,7 +50,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
 
             <!-- Tabel 1 -->
-             <DashboardTransaksiSatuMinggu />
+            <DashboardTransaksiSatuMinggu />
 
             <!-- Tabel 2 -->
             <div class="lg:col-span-1 bg-white rounded-2xl shadow p-4">

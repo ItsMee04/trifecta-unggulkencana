@@ -16,28 +16,27 @@
         </div>
 
         <!-- Chart -->
-        <apexchart :key="chartCategories.join('-') + '-' + chartSeries.length" type="line" height="360"
-            :options="chartOptions" :series="chartSeries" :class="[
+        <apexchart v-if="chartSeries.length" ref="chartRef" type="line" height="360" :options="chartOptions"
+            :series="chartSeries" :class="[
                 'transition-all duration-300',
                 isLoading
                     ? 'opacity-20 blur-[2px]'
                     : 'opacity-100 blur-0'
             ]" />
 
-        <!-- Loading Overlay -->
+        <!-- Loading -->
         <Transition name="fade">
             <div v-if="isLoading"
                 class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm rounded-2xl">
 
                 <div class="flex flex-col items-center">
-
                     <LoaderCircle class="w-10 h-10 text-blue-700 animate-spin" />
 
-                    <span class="mt-3 text-sm font-medium text-slate-500">
+                    <span class="mt-3 text-sm text-slate-500">
                         Memuat grafik transaksi...
                     </span>
-
                 </div>
+
             </div>
         </Transition>
 
@@ -45,33 +44,41 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
-import { LoaderCircle } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
 import VueApexCharts from 'vue3-apexcharts'
-import SkeletonChart from '../components/SkeletonCard.vue'
+import { LoaderCircle } from 'lucide-vue-next'
 import { useHome } from '../composable/useHome'
 
 const apexchart = VueApexCharts
+
+const chartRef = ref(null)
 
 const {
     isLoading,
     chartCategories,
     chartSeries,
     fetchTransaksiChart
-} = useHome();
+} = useHome()
 
 const chartOptions = computed(() => ({
     chart: {
+        type: 'line',
+
         toolbar: {
             show: false
         },
+
         zoom: {
             enabled: false
         },
+
+        redrawOnParentResize: true,
+        redrawOnWindowResize: true,
+
         animations: {
             enabled: true,
             easing: 'easeinout',
-            speed: 900
+            speed: 700
         },
 
         dropShadow: {
@@ -83,23 +90,103 @@ const chartOptions = computed(() => ({
             opacity: 0.25
         }
     },
-    yaxis: {
-        tickAmount: 4,
-        forceNiceScale: true,
+
+    colors: [
+        '#2563eb',
+        '#22c55e',
+        '#f59e0b'
+    ],
+
+    stroke: {
+        width: 6,
+        curve: 'smooth',
+        lineCap: 'round'
+    },
+
+    markers: {
+        size: 6,
+        hover: {
+            size: 8
+        },
+        strokeWidth: 3,
+        strokeColors: '#fff'
+    },
+
+    fill: {
+        opacity: 1
+    },
+
+    grid: {
+        borderColor: '#e2e8f0',
+        strokeDashArray: 4,
+        padding: {
+            left: 25,
+            right: 10
+        }
+    },
+
+    legend: {
+        position: 'bottom',
+        horizontalAlign: 'center',
+        fontSize: '13px',
+        fontWeight: 500,
+        itemMargin: {
+            horizontal: 16,
+            vertical: 8
+        },
+        markers: {
+            width: 10,
+            height: 10,
+            radius: 12
+        }
+    },
+
+    xaxis: {
+        categories: chartCategories.value,
+
+        crosshairs: {
+            show: true
+        },
 
         labels: {
-            minWidth: 90,
-            maxWidth: 120,
+            rotate: 0,
+            trim: false
+        }
+    },
 
+    yaxis: {
+        tickAmount: 4,
+
+        labels: {
             formatter(value) {
-                return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
+                return 'Rp ' + new Intl.NumberFormat('id-ID').format(value)
             }
         }
     },
+
+    dataLabels: {
+        enabled: true,
+
+        offsetY: -8,
+
+        style: {
+            fontSize: '11px',
+            fontWeight: 600
+        },
+
+        formatter(value) {
+
+            if (value == 0) return ''
+
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value)
+
+        }
+    },
+
     tooltip: {
         shared: true,
         intersect: false,
-        theme: 'light',
+
         y: {
             formatter(value) {
                 return new Intl.NumberFormat(
@@ -109,69 +196,114 @@ const chartOptions = computed(() => ({
                         currency: 'IDR',
                         maximumFractionDigits: 0
                     }
-                ).format(value);
+                ).format(value)
             }
         }
     },
-    legend: {
-        position: 'top'
-    },
-    colors: [
-        '#2563eb',
-        '#22c55e',
-        '#f59e0b'
-    ],
-    grid: {
-        borderColor: '#f1f5f9',
-        strokeDashArray: 4,
-        padding: {
-            left: 35
-        }
-    },
-    markers: {
-        size: 6,
-        strokeWidth: 3,
-        strokeColors: '#fff',
-        hover: {
-            size: 9
-        }
-    },
-    dataLabels: {
-        enabled: true,
-        offsetY: -8,
-        style: {
-            fontSize: '11px',
-            fontWeight: 600
+
+    responsive: [
+
+        {
+            breakpoint: 1024,
+            options: {
+
+                stroke: {
+                    width: 5
+                },
+
+                markers: {
+                    size: 5
+                }
+            }
         },
-        formatter(value) {
-            if (value === 0) return '';
-            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+
+        {
+            breakpoint: 768,
+            options: {
+
+                legend: {
+                    position: 'bottom'
+                },
+
+                dataLabels: {
+                    enabled: false
+                },
+
+                stroke: {
+                    width: 4
+                },
+
+                markers: {
+                    size: 4
+                },
+
+                yaxis: {
+                    labels: {
+                        formatter(value) {
+                            return new Intl.NumberFormat('id-ID', {
+                                notation: 'compact'
+                            }).format(value)
+                        }
+                    }
+                }
+            }
+        },
+
+        {
+            breakpoint: 480,
+            options: {
+
+                chart: {
+                    height: 260
+                },
+
+                stroke: {
+                    width: 3
+                },
+
+                markers: {
+                    size: 3
+                },
+
+                grid: {
+                    padding: {
+                        left: 5,
+                        right: 5
+                    }
+                },
+
+                dataLabels: {
+                    enabled: false
+                },
+
+                legend: {
+                    position: 'bottom'
+                },
+
+                yaxis: {
+                    labels: {
+                        formatter(value) {
+                            return new Intl.NumberFormat('id-ID', {
+                                notation: 'compact'
+                            }).format(value)
+                        }
+                    }
+                }
+            }
         }
-    },
-    fill: {
-        opacity: 1
-    },
-    stroke: {
-        width: 8,
-        curve: 'smooth',
-        lineCap: 'round'
-    },
-    xaxis: {
-        categories: chartCategories.value,
-        crosshairs: {
-            show: true
-        }
-    },
+
+    ]
 }))
 
-onMounted(() => {
-    fetchTransaksiChart()
+onMounted(async () => {
+    await fetchTransaksiChart()
 })
 </script>
+
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity .25s ease;
+    transition: .25s;
 }
 
 .fade-enter-from,

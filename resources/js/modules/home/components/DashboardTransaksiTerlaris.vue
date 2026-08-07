@@ -124,6 +124,78 @@ const chartOptions = computed(() => ({
         '#8b5cf6',
         '#06b6d4',
         '#84cc16'
+    ],
+    responsive: [
+        {
+            breakpoint: 1024,
+            options: {
+                chart: {
+                    height: 320
+                },
+
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        },
+
+        {
+            breakpoint: 768,
+            options: {
+                chart: {
+                    height: 300
+                },
+
+                legend: {
+                    position: 'bottom',
+                    fontSize: '12px'
+                },
+
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%'
+                        }
+                    }
+                }
+            }
+        },
+
+        {
+            breakpoint: 480,
+            options: {
+                chart: {
+                    height: 260
+                },
+
+                legend: {
+                    position: 'bottom',
+                    fontSize: '11px'
+                },
+
+                dataLabels: {
+                    enabled: false
+                },
+
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '60%',
+
+                            labels: {
+                                total: {
+                                    fontSize: '12px'
+                                },
+
+                                value: {
+                                    fontSize: '14px'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     ]
 }))
 
