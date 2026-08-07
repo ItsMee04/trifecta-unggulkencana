@@ -128,4 +128,40 @@ class HomeController extends Controller
             ], 500);
         }
     }
+
+    public function getHargaEmas()
+    {
+        try {
+            $data = $this->homeService->getHargaEmas();
+
+            return response()->json([
+                'status'    => true,
+                'message'   => 'Berhasil mengambil data harga emas',
+                'data'      => $data
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => false,
+                'message'   => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function getProdukPerbaikan()
+    {
+        try {
+            $data = $this->homeService->getProdukPerbaikan();
+
+            return response()->json([
+                'status'    => true,
+                'message'   => 'Berhasil mengambil data perbaikan',
+                'data'      => $data
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => false,
+                'message'   => $e->getMessage(),
+            ]);
+        }
+    }
 }

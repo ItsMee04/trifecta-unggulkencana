@@ -13,7 +13,7 @@
             </p>
         </div>
 
-        <apexchart :key="pieLabels.join('-')" type="donut" height="360" :options="chartOptions" :series="pieSeries"
+        <apexchart :key="pieLabels.join('-')" type="donut" height="375" :options="chartOptions" :series="pieSeries"
             :class="[
                 'transition-all duration-300',
                 isLoading

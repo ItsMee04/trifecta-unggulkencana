@@ -3,9 +3,11 @@
 namespace App\Services\Home;
 
 use App\Models\Pelanggan\Pelanggan;
+use App\Models\Produk\Harga;
 use App\Models\Produk\Produk;
 use App\Models\Transaksi\Offtake;
 use App\Models\Transaksi\Pembelian;
+use App\Models\Transaksi\Perbaikan;
 use App\Models\Transaksi\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +31,7 @@ class HomeService
     public function getTotalPembelianHariIni()
     {
         $data = Pembelian::where('tanggal', today())
-            ->where('status', 1)
+            ->where('status', 2)
             ->count();
         return $data;
     }
@@ -180,6 +182,24 @@ class HomeService
                 't.tanggal'
             )
             ->where('t.tanggal', '>=', DB::raw('DATE_SUB(CURDATE(), INTERVAL 7 DAY)'))
+            ->get();
+
+        return $data;
+    }
+
+    public function getHargaEmas()
+    {
+        $data = Harga::with(['karat', 'jeniskarat'])
+            ->where('status', 1)
+            ->get();
+
+        return $data;
+    }
+
+    public function getProdukPerbaikan()
+    {
+        $data = Perbaikan::with(['produk', 'kondisi'])
+            ->where('status', 1)
             ->get();
 
         return $data;

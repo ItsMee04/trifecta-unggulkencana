@@ -59,6 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('getTransaksiChart', [HomeController::class, 'getTransaksiChart']);
         Route::get('getProdukTerlarisChart', [HomeController::class, 'getProdukTerlarisChart']);
         Route::get('getTransaksiPenjualanSatuMinggu', [HomeController::class, 'getTransaksiPenjualanSatuMinggu']);
+        Route::get('getHargaEmas', [HomeController::class, 'getHargaEmas']);
+        Route::get('getProdukPerbaikan', [HomeController::class, 'getProdukPerbaikan']);
     });
 
     // Grup Route Master Data (Sekarang aman di dalam middleware)

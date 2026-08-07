@@ -81,4 +81,22 @@ export const homeService = {
             throw error;
         }
     },
+
+    async getHargaEmas() {
+        try {
+            const response = await api.get('/home/getHargaEmas');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async getProdukPerbaikan() {
+        try {
+            const response = await api.get('/home/getProdukPerbaikan');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
 };

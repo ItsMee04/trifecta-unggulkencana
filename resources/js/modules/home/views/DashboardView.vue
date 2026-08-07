@@ -25,16 +25,6 @@
         <DashboardCard />
         <DashboardTransaksiCard />
 
-        <!-- <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div class="xl:col-span-2">
-                <DashboardTransaksiChart />
-            </div>
-
-            <div>
-                <DashboardTransaksiTerlaris />
-            </div>
-        </div> -->
-
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
             <div class="xl:col-span-8">
@@ -48,23 +38,23 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
-
             <!-- Tabel 1 -->
             <DashboardTransaksiSatuMinggu />
+        </div>
 
-            <!-- Tabel 2 -->
-            <div class="lg:col-span-1 bg-white rounded-2xl shadow p-4">
-                ...
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Tabel Harga Emas (Lebih Kecil - 4 Kolom dari 12) -->
+            <div class="lg:col-span-3">
+                <DashboardHargaEmas />
             </div>
 
-            <!-- Tabel 3 -->
-            <div class="lg:col-span-1 bg-white rounded-2xl shadow p-4">
-                ...
+            <!-- Tabel Produk Perbaikan (Lebih Lebar - 8 Kolom dari 12) -->
+            <div class="lg:col-span-9">
+                <DashboardProdukPerbaikan />
             </div>
 
         </div>
-
-
 
     </main>
 </template>
@@ -79,6 +69,8 @@ import DashboardTransaksiCard from '../components/DashboardTransaksiCard.vue';
 import DashboardTransaksiChart from '../components/DashboardTransaksiChart.vue';
 import DashboardTransaksiTerlaris from '../components/DashboardTransaksiTerlaris.vue';
 import DashboardTransaksiSatuMinggu from '../components/DashboardTransaksiSatuMinggu.vue';
+import DashboardHargaEmas from '../components/DashboardHargaEmas.vue';
+import DashboardProdukPerbaikan from '../components/DashboardProdukPerbaikan.vue';
 
 // Destructure data auth yang diperlukan
 const { user, avatarFallback } = useAuthentication();

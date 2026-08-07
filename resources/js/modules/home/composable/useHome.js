@@ -16,6 +16,8 @@ const chartSeries = ref([]);
 const pieLabels = ref([]);
 const pieSeries = ref([]);
 const TransaksiPenjualanSatuMinggu = ref([]);
+const HargaEmas = ref([]);
+const ProdukPerbaikan = ref([]);
 
 export function useHome() {
     const fetchTotalProduk = async () => {
@@ -165,6 +167,38 @@ export function useHome() {
         }
     }
 
+    const fetchHargaEmas = async () => {
+        isLoading.value = true;
+        try {
+            const response = await homeService.getHargaEmas();
+            HargaEmas.value = response.data;
+        } catch(error) {
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil data harga emas'
+            );
+            console.error('Error fetching harga emas:', error);
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
+    const fetchProdukPerbaikan = async () => {
+        isLoading.value = true;
+        try {
+            const response = await homeService.getProdukPerbaikan();
+            ProdukPerbaikan.value = response.data;
+        } catch(error) {
+            toast.error(
+                error.response?.data?.message ||
+                'Gagal mengambil data perbaikan'
+            );
+            console.error('Error fetching produk perbaikan:', error);
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     return {
         isLoading,
 
@@ -196,5 +230,11 @@ export function useHome() {
 
         TransaksiPenjualanSatuMinggu,
         fetchTransaksiPenjualanSatuMinggu,
+
+        HargaEmas,
+        fetchHargaEmas,
+
+        ProdukPerbaikan,
+        fetchProdukPerbaikan
     };
 }
