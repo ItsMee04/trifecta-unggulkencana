@@ -523,4 +523,76 @@ class LaporanController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Mengambil data laporan produk pada nampan.
+     */
+    public function getLaporanProdukNampan(Request $request)
+    {
+        // 1. Validasi input
+        $request->validate([
+            'tanggal_awal'  => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_awal',
+        ]);
+
+        try {
+            // 2. Ambil data laporan berdasarkan periode
+            $data = DB::table('nampanproduk as np')
+                ->leftJoin('nampan as n', 'np.nampan_id', '=', 'n.id')
+                ->leftJoin('produk as p', 'np.produk_id', '=', 'p.id')
+                ->where('np.tanggal', '>=', $request->tanggal_awal)
+                ->where('np.tanggal', '<=', $request->tanggal_akhir)
+                ->orderBy('np.tanggal')
+                ->orderBy('n.nampan')
+                ->orderBy('p.nama')
+                ->orderBy('np.id')
+                ->select(
+                    'np.id',
+                    'np.tanggal',
+                    'n.nampan',
+                    'p.nama as produk',
+                    'np.produk_id',
+                    'np.jenis',
+                    'np.status'
+                )
+                ->get();
+            // 3. Cek data
+            if ($data->isEmpty()) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Data laporan produk tidak ditemukan pada periode ini.'
+                ], 404);
+            }
+            // 4. Mapping data
+            $items = $data->map(function ($row) {
+                return [
+                    'id'         => (int) $row->id,
+                    'tanggal'    => $row->tanggal,
+                    'nampan'     => $row->nampan,
+                    'produk_id'  => $row->produk_id ? (int) $row->produk_id : null,
+                    'produk'     => $row->produk,
+                    'jenis'      => $row->jenis,
+                    'status'     => (int) $row->status,
+                ];
+            })->values();
+            // 5. Susun response
+            $laporanData = [
+                'periode' => [
+                    'tanggal_awal'  => $request->tanggal_awal,
+                    'tanggal_akhir' => $request->tanggal_akhir,
+                ],
+                'items' => $items
+            ];
+            // 6. Response
+            return response()->json([
+                'status'      => true,
+                'laporanData' => $laporanData
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal memuat data laporan produk di nampan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

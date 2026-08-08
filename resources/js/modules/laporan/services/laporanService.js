@@ -63,4 +63,22 @@ export const laporanService = {
             throw error;
         }
     },
+
+    async getLaporanProdukNampan(payload) {
+        try {
+            const response = await api.get(
+                '/laporan/getLaporanProdukNampan',
+                {
+                    params: {
+                        tanggal_awal: payload.tanggal_awal,
+                        tanggal_akhir: payload.tanggal_akhir
+                    }
+                }
+            );
+
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 };

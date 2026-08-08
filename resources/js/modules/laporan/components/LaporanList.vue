@@ -85,13 +85,13 @@
         </div>
 
         <!-- Laporan Nampan per Baki -->
-        <div @click="cetakLaporanNampanPerBaki"
+        <div @click="cetakLaporanProdukNampan"
             class="bg-sky-50/50 dark:bg-slate-900/60 hover:bg-sky-100/60 dark:hover:bg-slate-800/80 border border-sky-100 dark:border-slate-800 rounded-2xl p-4 transition-all cursor-pointer flex items-center gap-3.5 shadow-xs">
             <div class="bg-white dark:bg-slate-800 p-2.5 rounded-xl shadow-xs shrink-0 text-sky-600 dark:text-sky-400">
                 <Box class="w-5 h-5" />
             </div>
             <div>
-                <h3 class="font-bold text-slate-900 dark:text-white text-sm tracking-wide">LAPORAN NAMPAN PER BAKI</h3>
+                <h3 class="font-bold text-slate-900 dark:text-white text-sm tracking-wide">LAPORAN PRODUK PER BAKI</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400">Catatan Stok</p>
             </div>
         </div>
@@ -111,6 +111,7 @@ const {
     cetakLaporanMutasiSaldo,
     cetakLaporanNampan,
     cetakLaporanProduk,
-    cetakLaporanNampanPerBaki
+    cetakLaporanNampanPerBaki,
+    cetakLaporanProdukNampan
 } = useLaporan();
 </script>

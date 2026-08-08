@@ -216,6 +216,33 @@ export function useLaporan() {
         }
     }
 
+    const cetakLaporanProdukNampan = async () => {
+        if (!validateForm()) return false;
+
+        try {
+            // 1. Ambil nilai tanggal dari reactive form
+            const tanggalAwal = formLaporan.tanggaldari;
+            const tanggalAkhir = formLaporan.tanggalsampai;
+
+            // 2. Susun Query Parameters
+            const params = new URLSearchParams({
+                tanggal_awal: tanggalAwal,
+                tanggal_akhir: tanggalAkhir
+            });
+
+            // 3. Buat URL dengan query string
+            // Contoh hasil: /CetakLaporanNampan?tanggal_awal=2026-04-01&tanggal_akhir=2026-07-26
+            const previewUrl = `/cetakLaporanProdukNampan?${params.toString()}`;
+
+            // 4. Buka di tab baru
+            window.open(previewUrl, '_blank');
+
+        } catch (e) {
+            console.error(e);
+            toast.error('Gagal mencetak laporan produk nampan');
+        }
+    }
+
     return {
         errors,
         formLaporan,
@@ -226,6 +253,7 @@ export function useLaporan() {
         cetakLaporanMutasiSaldo,
         cetakLaporanNampan,
         cetakLaporanProduk,
-        cetakLaporanNampanPerBaki
+        cetakLaporanNampanPerBaki,
+        cetakLaporanProdukNampan
     }
 }

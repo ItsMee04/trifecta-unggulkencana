@@ -11,7 +11,7 @@
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                     </path>
                 </svg>
-                <span>Menyiapkan Laporan Penjualan...</span>
+                <span>Menyiapkan Laporan Produk...</span>
             </div>
         </div>
 
@@ -24,7 +24,7 @@
                 <!-- 🌟 HEADER LAPORAN (Otomatis Diulang di Setiap Halaman A4) -->
                 <thead class="print-header">
                     <tr>
-                        <td colspan="8" class="pb-4">
+                        <td colspan="12" class="pb-4">
                             <!-- KOP SURAT / HEADER LAPORAN -->
                             <div class="grid grid-cols-12 gap-2 items-center border-b-2 border-slate-800 pb-3">
                                 <div class="col-span-8 flex gap-4 items-center">
@@ -48,7 +48,7 @@
                                 <div class="col-span-4 flex flex-col justify-between items-end">
                                     <h1
                                         class="text-base font-black uppercase tracking-wider text-slate-800 border-b-2 border-amber-500 pb-0.5 mb-1 inline-block">
-                                        Laporan Penjualan
+                                        Laporan Produk
                                     </h1>
                                     <div class="text-[9.5px] text-right font-medium text-slate-600">
                                         <span>Tanggal: </span>
